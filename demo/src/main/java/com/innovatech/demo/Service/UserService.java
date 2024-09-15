@@ -13,9 +13,11 @@ public class UserService implements CrudService<UserEntity, Long> {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity save(UserEntity userEntity){
-        return userRepository.save(userEntity);
+    //I had to change this here so that I could save the entity in a “good way” otherwise it would not let me test things. 
+    public UserEntity save(UserEntity userEntity) {
+        return userRepository.saveAndFlush(userEntity);
     }
+    
 
     @Override
     public UserEntity findById(Long id) {

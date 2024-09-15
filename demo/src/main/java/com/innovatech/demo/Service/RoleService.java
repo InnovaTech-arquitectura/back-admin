@@ -25,4 +25,9 @@ public class RoleService {
         return roleRepository.existsById(id);
     }
 
+    //this I agree because is necessary to save a role
+    public Role save(Role role){
+        return roleRepository.save(role);
+    }
+
 }

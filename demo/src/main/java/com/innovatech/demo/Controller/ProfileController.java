@@ -88,7 +88,7 @@ public class ProfileController {
     }
 
 
-    @GetMapping("/{idRole}")
+    @GetMapping("role/{idRole}")
     public ResponseEntity<?> getProfileByRole(@PathVariable Long idRole) {
         try {
             if (idRole == null) {
