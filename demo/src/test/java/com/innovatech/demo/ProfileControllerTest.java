@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 @WebMvcTest(ProfileController.class)
-@ContextConfiguration(classes = ProfileController.class) // Asegura cargar solo el controlador
+@ContextConfiguration(classes = ProfileController.class) 
 public class ProfileControllerTest {
 
     @Autowired
@@ -147,7 +147,7 @@ public class ProfileControllerTest {
         // Arrange
         Long adminId = 1L;
         UserEntity existingUser = UserEntity.builder()
-                .id(1L)  // Asegúrate de que el ID no sea nulo
+                .id(1L)  
                 .idCard(123456)
                 .name("John Doe")
                 .email("john.doe@example.com")
@@ -160,7 +160,7 @@ public class ProfileControllerTest {
                 .build();
 
         UserEntity updatedUser = UserEntity.builder()
-                .id(1L)  // Asegúrate de que el ID no sea nulo
+                .id(1L)  
                 .idCard(123456)
                 .name("Jane Doe")
                 .email("jane.doe@example.com")

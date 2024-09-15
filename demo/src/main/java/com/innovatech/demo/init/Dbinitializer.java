@@ -24,9 +24,8 @@ public class Dbinitializer implements CommandLineRunner {
     private AdministrativeEmployeeService administrativeEmployeeService;
 
     @Override
-    @Transactional // Asegura la transacción
+    @Transactional 
     public void run(String... args) throws Exception {
-        // Crear roles
         Role adminRole = new Role();
         adminRole.setName("Administrative Employee");
         roleService.save(adminRole);
@@ -39,7 +38,6 @@ public class Dbinitializer implements CommandLineRunner {
         entrepreneurRole.setName("Entrepreneurship");
         roleService.save(entrepreneurRole);
 
-        // Crear y guardar un usuario asociado a Administrative Employee
         UserEntity adminUser = UserEntity.builder()
                 .idCard(123456)
                 .name("Andres")
@@ -48,22 +46,17 @@ public class Dbinitializer implements CommandLineRunner {
                 .role(adminRole)
                 .build();
 
-        // Guarda el usuario primero
         adminUser = userService.save(adminUser);
 
-        // Crear y asociar el Administrative Employee
         AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
-                .user(adminUser) // Asocia el usuario ya persistido
+                .user(adminUser) 
                 .build();
 
-        // Guarda el Administrative Employee
         administrativeEmployee = administrativeEmployeeService.save(administrativeEmployee);
 
-        // Actualiza el usuario con la referencia del Administrative Employee
         adminUser.setAdministrativeEmployee(administrativeEmployee);
-        userService.save(adminUser); // Actualiza el usuario para reflejar la asociación bidireccional
+        userService.save(adminUser);
 
-        // Crear usuarios adicionales sin relación con Administrative Employee
         UserEntity user1 = UserEntity.builder()
                 .idCard(654321)
                 .name("Nicolas")
@@ -71,7 +64,7 @@ public class Dbinitializer implements CommandLineRunner {
                 .password("password456")
                 .role(clientRole)
                 .build();
-        userService.save(user1); // Guarda sin asociar a Administrative Employee
+        userService.save(user1); 
 
         UserEntity user2 = UserEntity.builder()
                 .idCard(789012)
@@ -80,7 +73,6 @@ public class Dbinitializer implements CommandLineRunner {
                 .password("password789")
                 .role(entrepreneurRole)
                 .build();
-        userService.save(user2); // Guarda sin asociar a Administrative Employee
-
+        userService.save(user2); 
     }
 }
