@@ -43,7 +43,7 @@ public class Dbinitializer implements CommandLineRunner {
                 .name("Andres")
                 .email("hitler@example.com")
                 .password("password123")
-                .role(adminRole)
+                .role(roleService.findByName("Administrative Employee").get())
                 .build();
 
         adminUser = userService.save(adminUser);
@@ -53,26 +53,5 @@ public class Dbinitializer implements CommandLineRunner {
                 .build();
 
         administrativeEmployee = administrativeEmployeeService.save(administrativeEmployee);
-
-        adminUser.setAdministrativeEmployee(administrativeEmployee);
-        userService.save(adminUser);
-
-        UserEntity user1 = UserEntity.builder()
-                .idCard(654321)
-                .name("Nicolas")
-                .email("jesus@example.com")
-                .password("password456")
-                .role(clientRole)
-                .build();
-        userService.save(user1); 
-
-        UserEntity user2 = UserEntity.builder()
-                .idCard(789012)
-                .name("Chamo")
-                .email("maduro@example.com")
-                .password("password789")
-                .role(entrepreneurRole)
-                .build();
-        userService.save(user2); 
     }
 }

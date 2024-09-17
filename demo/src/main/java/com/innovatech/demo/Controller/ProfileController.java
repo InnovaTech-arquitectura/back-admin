@@ -6,10 +6,8 @@ import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
-import org.h2.engine.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,7 +99,7 @@ public class ProfileController {
             if (users.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrative employees not found");
             }
-            return ResponseEntity.ok("Get the list of administrative profiles with a specific role");
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }

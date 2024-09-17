@@ -1,4 +1,8 @@
 package com.innovatech.demo.Entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +13,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_entity")
 @Data
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserEntity {
     
     @Id
@@ -29,10 +34,11 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToOne()
+    @OneToOne
     private AdministrativeEmployee administrativeEmployee;
 }
+
