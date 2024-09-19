@@ -33,11 +33,11 @@ public class PlanEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
-    private List<UserEntity> subscriptions= new ArrayList<>();
+    private List<PlanEntity> subscriptions= new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
-    private List<UserEntity> planFunctionality= new ArrayList<>();
+    private List<PlanEntity> planFunctionality= new ArrayList<>();
     
     //@Column
     //private Long id_plan_payment;
