@@ -1,18 +1,16 @@
 package com.innovatech.demo.Entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "event")
@@ -27,33 +25,32 @@ public class EventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private int Total_Cost;
 
-    @Column
+    @Column(nullable = false)
     private String date;
 
-    @Column
-    private int earnings;
+    @Column(nullable = false)
+    private int Earnings;
 
-    @Column
+    @Column(nullable = false)
     private int CostoLocal;
 
-    @Column
+    @Column(nullable = false)
     private String place;
 
-    @Column
+    @Column(nullable = false)
     private String modality;
 
-    @Column
+    @Column(nullable = true)
     private Integer Quota;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<PlanEntity> entrepreneurshipeventregistry= new ArrayList<>();
-    
+    @Builder.Default // Agregado para evitar warnings
+    private List<PlanEntity> entrepreneurshipeventregistry = new ArrayList<>();
 }

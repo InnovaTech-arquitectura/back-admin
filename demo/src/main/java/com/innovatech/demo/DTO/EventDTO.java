@@ -14,6 +14,4 @@ public class EventDTO {
     private String place;
     private String modality;
     private Integer Quota;
-
-    
 }
