@@ -5,8 +5,6 @@ import com.innovatech.demo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class UserService implements CrudService<UserEntity, Long> {
 
@@ -29,6 +27,12 @@ public class UserService implements CrudService<UserEntity, Long> {
         userRepository.deleteById(id);
     }
 
+    public boolean existsByIdCard(int idCard) {
+        return userRepository.existsByIdCard(idCard);
+    }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
 }

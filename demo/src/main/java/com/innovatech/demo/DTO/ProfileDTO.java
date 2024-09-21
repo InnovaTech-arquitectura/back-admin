@@ -1,7 +1,5 @@
 package com.innovatech.demo.DTO;
 
-import com.innovatech.demo.Entity.Role;
-import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
