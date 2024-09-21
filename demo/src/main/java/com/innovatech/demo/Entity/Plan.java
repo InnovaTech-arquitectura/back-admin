@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Plan {
 
@@ -38,4 +40,9 @@ public class Plan {
     @JsonIgnore
     @OneToMany(mappedBy = "plan")
     private List<PlanFunctionality> planFunctionality = new ArrayList<>();
+
+    public void setFunctionalities(List<PlanFunctionality> functionalities) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setFunctionalities'");
+    }
 }
