@@ -11,4 +11,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
     Optional<Plan> findById(int id);
 
+    Plan findByName(String name);
+
 }
