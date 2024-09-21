@@ -24,7 +24,7 @@ public class Dbinitializer implements CommandLineRunner {
     private AdministrativeEmployeeService administrativeEmployeeService;
 
     @Override
-    @Transactional 
+    @Transactional
     public void run(String... args) throws Exception {
         Role adminRole = new Role();
         adminRole.setName("Administrative Employee");
@@ -49,7 +49,7 @@ public class Dbinitializer implements CommandLineRunner {
         adminUser = userService.save(adminUser);
 
         AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
-                .user(adminUser) 
+                .user(adminUser)
                 .build();
 
         administrativeEmployee = administrativeEmployeeService.save(administrativeEmployee);

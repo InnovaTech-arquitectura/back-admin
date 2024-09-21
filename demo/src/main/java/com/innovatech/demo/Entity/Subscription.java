@@ -2,16 +2,10 @@ package com.innovatech.demo.Entity;
 
 import java.sql.Date;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 @Entity
 @Table(name = "Subscription")
@@ -19,9 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Subscription {
-    
-    
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "initial_date")
     private Date initialDate;
@@ -34,10 +29,11 @@ public class Subscription {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_plan", nullable = false)
-    private PlanEntity plan;
+    private Plan plan;
 
-    // The one-to-many relationship is not yet established, the entrepreneurship entity must be created
-    //@ManyToOne
-    //@JoinColumn(name = "id_entrepreneurship", nullable = false)
-    //private Entrepreneurship entrepreneurship;
+    // The one-to-many relationship is not yet established, the entrepreneurship
+    // entity must be created
+    // @ManyToOne
+    // @JoinColumn(name = "id_entrepreneurship", nullable = false)
+    // private Entrepreneurship entrepreneurship;
 }
