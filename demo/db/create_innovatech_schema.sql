@@ -213,7 +213,10 @@ CREATE TABLE innovatech.course (
     content VARCHAR,
     description VARCHAR,
     date DATE,
-    score INTEGER
+    score INTEGER,
+    modality VARCHAR,
+    title VARCHAR,
+    places INTEGER
 );
 
 CREATE TABLE innovatech.functionality (
