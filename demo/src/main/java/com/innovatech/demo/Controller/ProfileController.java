@@ -67,7 +67,7 @@ public class ProfileController {
             if (limit <= 0 || pag <= 0) {
                 return ResponseEntity.badRequest().body("Invalid parameters");
             }
-            Pageable pageable = PageRequest.of(pag, limit);
+            Pageable pageable = PageRequest.of(pag -1, limit);
             return ResponseEntity.ok(administrativeEmployeeService.findAll(pageable));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error ocurred");
