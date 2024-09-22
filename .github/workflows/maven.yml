@@ -19,7 +19,9 @@ jobs:
           java-version: '21'  # Cambia según la versión que uses
 
       - name: Build with Maven
-        run: mvn clean install
+         run: |
+          cd back-admin/demo  # Cambia al directorio correcto
+          mvn clean install
 
       - name: Run tests
         run: mvn test
