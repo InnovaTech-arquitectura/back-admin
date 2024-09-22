@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.innovatech.demo.DTO.CourseDTONoID;
@@ -34,9 +35,9 @@ public class CourseController {
     private ServiceCourse courseService;
 
     @GetMapping("/all/active")
-    public ResponseEntity<?>  listActiveCourses() {
+    public ResponseEntity<?>  listActiveCourses(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer limit ) {
   
-        List <Course> activeCourses=courseService.listActiveCourses();
+        List <Course> activeCourses=courseService.listActiveCourses(page,limit);
         
         if(activeCourses!=null)
         {
@@ -49,8 +50,8 @@ public class CourseController {
     } 
 
     @GetMapping("/all")
-    public ResponseEntity<?>  listCourses() {  
-        List <Course> coursesList=courseService.listCourses();
+    public ResponseEntity<?>  listCourses(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer limit ) {  
+        List <Course> coursesList=courseService.listCourses(page,limit);
         if(coursesList!=null)
         {
             return ResponseEntity.ok(coursesList);

@@ -5,8 +5,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Repository.CourseRepository;
@@ -17,12 +20,14 @@ public class ServiceCourse {
     @Autowired
     private CourseRepository courseRepository;
 
-    public List<Course> listCourses() {
-        return courseRepository.findAll();
+    public List<Course> listCourses(Integer page,Integer limit) {
+        PageRequest pageable= PageRequest.of(page-1, limit);
+        return courseRepository.findAll(pageable).getContent();
     }
 
-    public List<Course> listActiveCourses() {
-        return courseRepository.findAllActive(LocalDateTime.now());
+    public List<Course> listActiveCourses(Integer page,Integer limit ) {
+        PageRequest pageable= PageRequest.of(page-1, limit);
+        return courseRepository.findAllActive(LocalDateTime.now(),pageable).getContent();
     }
 
     public Course findCourse(Long id) {

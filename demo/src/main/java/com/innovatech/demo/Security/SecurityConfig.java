@@ -38,7 +38,7 @@ public class SecurityConfig {
                                         .antMatcher("/login/**")).permitAll()
                         .requestMatchers(
                                 AntPathRequestMatcher
-                                        .antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
+                                        .antMatcher("/course/**")).permitAll()//.hasAnyAuthority("Administrator", "Specialist")
                         .requestMatchers(
                                 AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
                         .anyRequest().authenticated()
