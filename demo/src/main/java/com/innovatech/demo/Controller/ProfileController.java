@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/profile")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProfileController {
     @Autowired
     private UserService userService;
@@ -34,8 +35,16 @@ public class ProfileController {
             if (profileDTO == null) {
                 return ResponseEntity.badRequest().body("Invalid parameters");
             }
-            if (roleService.existsByName(profileDTO.getRole())) {
-                Role role = roleService.findByName(profileDTO.getRole()).get();
+            if (!roleService.existsByName(profileDTO.getRole())) {
+                return ResponseEntity.badRequest().body("Role not found");
+            }
+            if (userService.existsByIdCard(profileDTO.getIdCard())) {
+                return ResponseEntity.badRequest().body("Id card already exists");
+            }
+            if (userService.existsByEmail(profileDTO.getEmail())) {
+                return ResponseEntity.badRequest().body("Email already exists");
+            }
+            Role role = roleService.findByName(profileDTO.getRole()).get();
                 UserEntity userEntity = UserEntity.builder()
                         .idCard(profileDTO.getIdCard())
                         .name(profileDTO.getName())
@@ -48,9 +57,6 @@ public class ProfileController {
                         .user(savedUser)
                         .build();
                 return ResponseEntity.ok(administrativeEmployeeService.save(administrativeEmployee));
-            } else {
-                return ResponseEntity.badRequest().body("Role not found");
-            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error ocurred");
         }
@@ -62,7 +68,7 @@ public class ProfileController {
             if (limit <= 0 || pag <= 0) {
                 return ResponseEntity.badRequest().body("Invalid parameters");
             }
-            Pageable pageable = PageRequest.of(pag, limit);
+            Pageable pageable = PageRequest.of(pag -1, limit);
             return ResponseEntity.ok(administrativeEmployeeService.findAll(pageable));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error ocurred");

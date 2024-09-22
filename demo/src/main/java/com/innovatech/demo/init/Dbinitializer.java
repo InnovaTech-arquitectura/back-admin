@@ -46,23 +46,49 @@ public class Dbinitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         Role adminRole = new Role();
-        adminRole.setName("Administrative Employee");
+        adminRole.setName("Administrator");
         roleService.save(adminRole);
 
-        Role clientRole = new Role();
-        clientRole.setName("Client");
-        roleService.save(clientRole);
+        Role marketingRole = new Role();
+        marketingRole.setName("Marketing");
+        roleService.save(marketingRole);
+
+        Role salesRole = new Role();
+        salesRole.setName("Sales");
+        roleService.save(salesRole);
+        
+        Role communityManagerRole = new Role();
+        communityManagerRole.setName("Community Manager");
+        roleService.save(communityManagerRole);
+
+        Role asesorRole = new Role();
+        asesorRole.setName("Asesor");
+        roleService.save(asesorRole);
+
+        Role supportRole = new Role();
+        supportRole.setName("Support");
+        roleService.save(supportRole);
+
+        Role billingRole = new Role();
+        billingRole.setName("Billing");
+        roleService.save(billingRole);
 
         Role entrepreneurRole = new Role();
         entrepreneurRole.setName("Entrepreneurship");
         roleService.save(entrepreneurRole);
 
+        Role clientRole = new Role();
+        clientRole.setName("Client");
+        roleService.save(clientRole);
+
+
+
         UserEntity adminUser = UserEntity.builder()
                 .idCard(123456)
                 .name("Andres")
-                .email("hitler@example.com")
+                .email("admin@example.com")
                 .password("password123")
-                .role(roleService.findByName("Administrative Employee").get())
+                .role(roleService.findByName("Administrator").get())
                 .build();
 
         adminUser = userService.save(adminUser);
