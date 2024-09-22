@@ -91,6 +91,10 @@ public class DBInitializer implements CommandLineRunner {
         billingRole.setName("Billing");
         roleService.save(billingRole);
 
+        Role specialistRole = new Role();
+        specialistRole.setName("Specialist");
+        roleService.save(specialistRole);
+
         Role entrepreneurRole = new Role();
         entrepreneurRole.setName("Entrepreneurship");
         roleService.save(entrepreneurRole);
