@@ -20,47 +20,49 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JWTAuthEntryPoint jwtAuthEntryPoint;
+        @Autowired
+        private JWTAuthEntryPoint jwtAuthEntryPoint;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                .sessionManagement(customizer -> customizer
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(AntPathRequestMatcher
-                                .antMatcher("/h2/**")).permitAll()
-                        .requestMatchers(
-                                AntPathRequestMatcher
-                                        .antMatcher("/login/**")).permitAll()
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                                .sessionManagement(customizer -> customizer
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(requests -> requests
+                                                .requestMatchers(AntPathRequestMatcher
+                                                                .antMatcher("/h2/**"))
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                AntPathRequestMatcher
+                                                                                .antMatcher("/login/**"))
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                AntPathRequestMatcher.antMatcher("/profile/**"))
+                                                .hasAuthority("Administrator")
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
 
-        http.addFilterBefore(jwtAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+                http.addFilterBefore(jwtAuthenticationFilter(),
+                                UsernamePasswordAuthenticationFilter.class);
+                return http.build();
+        }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(
+                        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
+        }
 
-    @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter();
-    }
+        @Bean
+        public JWTAuthenticationFilter jwtAuthenticationFilter() {
+                return new JWTAuthenticationFilter();
+        }
 
 }

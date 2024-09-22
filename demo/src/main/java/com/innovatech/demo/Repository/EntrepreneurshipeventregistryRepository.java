@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 
 @Repository
-public interface EntrepreneurshipeventregistryRepository extends JpaRepository<Entrepreneurshipeventregistry, Long>{
-    
+public interface EntrepreneurshipeventregistryRepository extends JpaRepository<Entrepreneurshipeventregistry, Long> {
+
 }

@@ -1,5 +1,7 @@
 package com.innovatech.demo.Service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,9 +11,6 @@ import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
-
-import java.util.List;
-
 
 @Service
 public class EventService implements CrudService<EventEntity, Long> {
@@ -26,7 +25,6 @@ public class EventService implements CrudService<EventEntity, Long> {
     public EventEntity findById(Long id) {
         return eventRepository.findById(id).orElse(null);
     }
-
 
     @Override
     public void deleteById(Long id) {
@@ -44,18 +42,18 @@ public class EventService implements CrudService<EventEntity, Long> {
     @Override
     public EventEntity save(EventEntity eventEntity) {
 
-        
         // Obtener las inscripciones de emprendedores si existen
         List<Entrepreneurshipeventregistry> registrations = eventEntity.getEntrepreneurshipeventregistry();
 
         for (Entrepreneurshipeventregistry registration : registrations) {
             if (registration.getId() != null) {
-                Entrepreneurshipeventregistry existingRegistration = EntrepreneurshipeventregistryRepository.findById(registration.getId())
+                Entrepreneurshipeventregistry existingRegistration = EntrepreneurshipeventregistryRepository
+                        .findById(registration.getId())
                         .orElse(null);
                 if (existingRegistration != null) {
                     // Actualizar la inscripción existente
                     registration.setId(existingRegistration.getId());
-                    registration.setDate(existingRegistration.getDate()); 
+                    registration.setDate(existingRegistration.getDate());
                     registration.setAmountPaid(existingRegistration.getAmountPaid());
                 } else {
                     // Si la inscripción no existe, se guarda una nueva

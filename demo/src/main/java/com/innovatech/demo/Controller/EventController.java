@@ -1,13 +1,19 @@
 package com.innovatech.demo.Controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Service.EventService;
@@ -51,29 +57,31 @@ public class EventController {
 
     // http://localhost:8090/event/add
     @PostMapping("/add")
-public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
-    try {
-        EventEntity eventname = eventService.findByName(event.getName());
+    public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
+        try {
+            EventEntity eventname = eventService.findByName(event.getName());
 
-        if (eventname != null) {
-            // Handle event with the same name already existing (e.g., HttpStatus.CONFLICT)
-            return new ResponseEntity<>("Event with the same name already exists", HttpStatus.CONFLICT);
+            if (eventname != null) {
+                // Handle event with the same name already existing (e.g., HttpStatus.CONFLICT)
+                return new ResponseEntity<>("Event with the same name already exists", HttpStatus.CONFLICT);
+            }
+
+            // Save the new event
+            EventEntity eventDB = eventService.save(event);
+
+            if (eventDB == null) {
+                // Handle error saving the event (more specific message?)
+                return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR); // Or a more
+                                                                                                       // specific error
+                                                                                                       // code
+            }
+
+            return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
+        } catch (Exception e) {
+            // Handle unexpected exceptions (log the error)
+            return new ResponseEntity<>("Unable to add event", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // Save the new event
-        EventEntity eventDB = eventService.save(event);
-
-        if (eventDB == null) {
-            // Handle error saving the event (more specific message?)
-            return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR); // Or a more specific error code
-        }
-
-        return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
-    } catch (Exception e) {
-        // Handle unexpected exceptions (log the error)
-        return new ResponseEntity<>("Unable to add event", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
 
     // http://localhost:8090/event/update
     @PutMapping("/update")
