@@ -1,48 +1,40 @@
 package com.innovatech.demo.Entity.DTO;
 
 import java.sql.Date;
-import java.sql.Timestamp;
+
+import org.springframework.data.annotation.Id;
 
 import com.innovatech.demo.Entity.Enum.Modality;
 
-import lombok.Data;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
-public class CourseInfoDTO {
-    
-    Long id;
+public class CourseDTO {
+
+    String id;
 
     String link;
 
     String description;
 
-    Timestamp date;
+    Date date;
 
     String title;
 
-    Integer places;
+    int places;
 
-    Modality modality;
+    String modality;
 
-    int availablePlaces;
-
-    float score;
-
-    public CourseInfoDTO(Long id, 
-    String link, 
-    String description,
-    Float score, 
-    Timestamp date, 
-    String title, 
-    Integer places, 
-    Modality modality,
-    int availablePlaces) {
+    public CourseDTO(String id, String link, String description, Float score, Date date, String title, int places, String modality) {
         this.id = id;
         this.link = link;
         this.description = description;
@@ -50,7 +42,5 @@ public class CourseInfoDTO {
         this.title = title;
         this.places = places;
         this.modality = modality;
-        this.score=score;
-        this.availablePlaces=availablePlaces;
     }
 }

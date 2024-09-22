@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import com.innovatech.demo.Entity.Enum.Modality;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,8 @@ import lombok.Setter;
 
 import java.sql.Date;
 
-@Data
 @Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class CourseDTONoID {
 
     String link;

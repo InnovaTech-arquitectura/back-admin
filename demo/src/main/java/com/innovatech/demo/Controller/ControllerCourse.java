@@ -1,5 +1,7 @@
 package com.innovatech.demo.Controller;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -14,14 +16,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Entity.DTO.CourseDTONoID;
+import com.innovatech.demo.Entity.DTO.CourseInfoDTO;
 import com.innovatech.demo.Service.ServiceCourse;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/course")
@@ -33,8 +35,9 @@ public class ControllerCourse {
 
     @GetMapping("/all/active")
     public ResponseEntity<?>  listActiveCourses() {
-
+  
         List <Course> activeCourses=courseService.listActiveCourses();
+        
         if(activeCourses!=null)
         {
             return ResponseEntity.ok(activeCourses);
@@ -62,7 +65,11 @@ public class ControllerCourse {
     public ResponseEntity<?> findCourse(@PathVariable Long id) {  
         try {
             Course foundCourse = courseService.findCourse(id);
-            return ResponseEntity.ok(foundCourse);
+            CourseInfoDTO infoCourse= new CourseInfoDTO(foundCourse.getId(),
+            foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
+            foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
+            foundCourse.getModality(), foundCourse.getPlaces()-foundCourse.getEntrepreneurships().size());
+            return ResponseEntity.ok(infoCourse);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");
         }
@@ -72,15 +79,16 @@ public class ControllerCourse {
     @PutMapping("/{id}")
     public ResponseEntity<?>  editCourse(@PathVariable Long id, @RequestBody CourseDTONoID editedCourseDto) {   
         try {
-            Course editedCourse=new Course(id,
-                                    editedCourseDto.getLink(), 
+            Course editedCourse=new Course(editedCourseDto.getLink(), 
                                     editedCourseDto.getDescription(),
                                     editedCourseDto.getScore(), 
                                     editedCourseDto.getDate(),
                                     editedCourseDto.getTitle(),
                                     editedCourseDto.getPlaces(),
                                     editedCourseDto.getModality());
+            editedCourse.setId(id);
             editedCourse=courseService.editCourse(editedCourse);
+
             return ResponseEntity.ok(editedCourse);
 
         } catch (DataIntegrityViolationException e) {

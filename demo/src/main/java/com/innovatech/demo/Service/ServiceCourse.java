@@ -1,6 +1,7 @@
 package com.innovatech.demo.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +18,11 @@ public class ServiceCourse {
     private RepositoryCourse courseRepository;
 
     public List<Course> listCourses() {
-        return courseRepository.findAllActive();
+        return courseRepository.findAll();
     }
 
     public List<Course> listActiveCourses() {
-        return courseRepository.findAll();
+        return courseRepository.findAllActive(LocalDateTime.now());
     }
 
     public Course findCourse(Long id) {
