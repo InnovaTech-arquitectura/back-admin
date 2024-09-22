@@ -16,6 +16,7 @@ public class UserService implements CrudService<UserEntity, Long> {
     private PasswordEncoder passwordEncoder;
 
     //I had to change this here so that I could save the entity in a “good way” otherwise it would not let me test things. 
+
     public UserEntity save(UserEntity userEntity) {
         
         String password = userEntity.getPassword();
@@ -23,11 +24,10 @@ public class UserService implements CrudService<UserEntity, Long> {
         userEntity.setPassword(encodedPassword);
         return userRepository.saveAndFlush(userEntity);
     }
-    
 
     @Override
     public UserEntity findById(Long id) {
-        return  userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -46,5 +46,4 @@ public class UserService implements CrudService<UserEntity, Long> {
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
-
 }
