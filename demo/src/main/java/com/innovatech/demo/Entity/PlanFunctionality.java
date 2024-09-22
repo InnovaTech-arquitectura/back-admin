@@ -1,10 +1,7 @@
 package com.innovatech.demo.Entity;
 
-import java.sql.Date;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,20 +9,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
-@Table(name = "Subscription")
+@Table(name = "Plan_Functionality")
 @Data
-@AllArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlanFunctionality {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_plan", nullable = false)
-    private PlanEntity plan;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    // The one-to-many relation is not yet established, the entrepreneurships entity must be created
-    //@ManyToOne
-    //@JoinColumn(name = "id_entrepreneurship", nullable = false)
-    //private Entrepreneurship entrepreneurship;
+    // Relationship with table Plan
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    @JsonIgnore
+    private Plan plan;
+
+    // Relationship with table Functionality
+    @ManyToOne
+    @JoinColumn(name = "functionality_id")
+    private Functionality functionality;
+
+    // Constructor
+    public PlanFunctionality(Plan plan, Functionality functionality) {
+        this.plan = plan;
+        this.functionality = functionality;
+    }
 }
