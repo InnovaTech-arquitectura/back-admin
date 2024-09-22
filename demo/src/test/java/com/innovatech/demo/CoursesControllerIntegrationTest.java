@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Collections;
 
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.DTO.CourseDTONoID;
 import com.innovatech.demo.DTO.CourseInfoDTO;
+import com.innovatech.demo.DTO.UserDTO;
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.Enum.Modality;
@@ -67,28 +71,86 @@ public class CoursesControllerIntegrationTest {
     @Test
     public void testGetCoursesPageable() {
 
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+
+
         String url = SERVER_URL + "/course/all?page=1&limit=1";
-        Course[] courses = rest.getForObject(url, Course[].class);
+        Course[] courses = rest.exchange(
+            url,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            Course[].class
+        ).getBody();
+        //Course[] courses = rest.getForObject(url, Course[].class);
 
         assert courses != null;
         assert courses.length == 1;
 
         String url2 = SERVER_URL + "/course/all?page=2&limit=1";
-        Course[] courses2 = rest.getForObject(url2, Course[].class);
+        
+        Course[] courses2 = rest.exchange(
+            url2,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            Course[].class
+        ).getBody();
 
         assert courses2 != null;
         assert courses2.length == 1;
         assert courses[0].getId() != courses2[0].getId();
     }
 
-
+ 
     //test funcionamiento de que solo traiga capacitaciones activas
     @Test
     public void onlyActiveCourses()
     {
+
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+
+
         String url = SERVER_URL + "/course/all/active?page=1&limit=2";
 
-        Course[] courses = rest.getForObject(url, Course[].class);
+        Course[] courses = rest.exchange(
+            url,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            Course[].class
+        ).getBody();
 
         assert courses != null;
         //assert courses.length == 1;
@@ -120,11 +182,32 @@ public class CoursesControllerIntegrationTest {
         editedCourseDto.setPlaces(3);
         editedCourseDto.setModality(PRESENCIAL);
 
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> responseLogIn = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(responseLogIn.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + responseLogIn.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(responseLogIn.getBody());
+
+        HttpEntity<CourseDTONoID> requestEntity = new HttpEntity<>(editedCourseDto, headers);
+
         // Realiza la solicitud PUT
         ResponseEntity<?> response = rest.exchange(
             SERVER_URL + "/course/{id}",
             HttpMethod.PUT,
-            new HttpEntity<>(editedCourseDto),
+            requestEntity,
             String.class,
             1L
         );
@@ -132,6 +215,7 @@ public class CoursesControllerIntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Places must be greater than 0 and date muyt be greater than todays date", response.getBody());
     }
+
 
     @Test
     public void testEditCourseWrongCapacity() {
@@ -148,11 +232,33 @@ public class CoursesControllerIntegrationTest {
         editedCourseDto.setPlaces(1);
         editedCourseDto.setModality(PRESENCIAL);
 
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> responseLogIn = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(responseLogIn.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + responseLogIn.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(responseLogIn.getBody());
+
+        HttpEntity<CourseDTONoID> requestEntity = new HttpEntity<>(editedCourseDto, headers);
+
+
         // Realiza la solicitud PUT
         ResponseEntity<?> response = rest.exchange(
             SERVER_URL + "/course/{id}",
             HttpMethod.PUT,
-            new HttpEntity<>(editedCourseDto),
+            requestEntity,
             String.class,
             1L
         );
@@ -161,14 +267,39 @@ public class CoursesControllerIntegrationTest {
         assertEquals("Edited places must be equal o greater compared to the current subscribers", response.getBody());
     }
 
+
     //test de que me encuentre la capacitacion y me muestra los cupos disponibles
     // de cantidad de empresas disponibles vs cupos disponibles
     @Test
     public void getCourse()
     {
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+
         String url = SERVER_URL + "/course/2";
 
-        CourseInfoDTO course = rest.getForObject(url, CourseInfoDTO.class);
+        CourseInfoDTO course = rest.exchange(
+            url,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            CourseInfoDTO.class
+        ).getBody();
 
         assert course != null;
         assert course.getPlaces() == 3;
