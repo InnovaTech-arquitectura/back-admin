@@ -164,6 +164,7 @@ public class PlanControllerTest {
     public void testDeletePlan_NotFound() {
         // Arrange
         Long planId = 1L;
+        
         when(planService.findById(planId)).thenReturn(null);
 
         // Act
