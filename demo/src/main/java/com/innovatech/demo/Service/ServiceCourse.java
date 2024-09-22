@@ -60,8 +60,18 @@ public class ServiceCourse {
                 editedCourse.getModality() == null ||
                 editedCourse.getPlaces() == null))
             {
-                // Lógica para agregar el curso
-                return courseRepository.save(editedCourse); // O cualquier otra lógica que necesites
+                //evaluar si las nuevas plazas abarcan los ya inscritos
+                Course courseFull=courseRepository.findById(editedCourse.getId()).orElseThrow();
+                if(courseFull.getEntrepreneurships().size()<=editedCourse.getPlaces())
+                {
+                    // Lógica para agregar el curso
+                    return courseRepository.save(editedCourse); // O cualquier otra lógica que necesites
+                }
+                else
+                {
+                    throw new IllegalArgumentException("Edited places must be equal o greater compared to the current subscribers");
+                }
+                
             }
             else
             {
