@@ -51,19 +51,29 @@ public class EventController {
 
     // http://localhost:8090/event/add
     @PostMapping("/add")
-    public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
-        try {
-            EventEntity eventDB = eventService.save(event);
+public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
+    try {
+        EventEntity eventname = eventService.findByName(event.getName());
 
-            if (eventDB == null) {
-                return new ResponseEntity<>("Unable to add Event", HttpStatus.BAD_REQUEST);
-            }
-
-            return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Unable to add Event", HttpStatus.BAD_REQUEST);
+        if (eventname != null) {
+            // Handle event with the same name already existing (e.g., HttpStatus.CONFLICT)
+            return new ResponseEntity<>("Event with the same name already exists", HttpStatus.CONFLICT);
         }
+
+        // Save the new event
+        EventEntity eventDB = eventService.save(event);
+
+        if (eventDB == null) {
+            // Handle error saving the event (more specific message?)
+            return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR); // Or a more specific error code
+        }
+
+        return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
+    } catch (Exception e) {
+        // Handle unexpected exceptions (log the error)
+        return new ResponseEntity<>("Unable to add event", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
 
     // http://localhost:8090/event/update
     @PutMapping("/update")

@@ -11,7 +11,7 @@ import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class EventService implements CrudService<EventEntity, Long> {
@@ -27,9 +27,6 @@ public class EventService implements CrudService<EventEntity, Long> {
         return eventRepository.findById(id).orElse(null);
     }
 
-    public Optional<EventEntity> findByIdOptional(Long id) {
-        return eventRepository.findById(id);
-    }
 
     @Override
     public void deleteById(Long id) {
@@ -38,6 +35,10 @@ public class EventService implements CrudService<EventEntity, Long> {
 
     public Page<EventEntity> findAll(Pageable pageable) {
         return eventRepository.findAll(pageable);
+    }
+
+    public EventEntity findByName(String name) {
+        return eventRepository.findByName(name);
     }
 
     @Override
