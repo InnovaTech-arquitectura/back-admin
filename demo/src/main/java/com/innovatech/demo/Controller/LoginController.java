@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.innovatech.demo.DTO.UserDTO;
-import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Security.JWTGenerator;
 import com.innovatech.demo.Service.UserService;
 
