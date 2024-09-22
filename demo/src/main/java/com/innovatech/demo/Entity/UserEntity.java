@@ -1,4 +1,5 @@
 package com.innovatech.demo.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -36,6 +37,7 @@ public class UserEntity {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    @JsonIgnore
     @OneToOne
     private AdministrativeEmployee administrativeEmployee;
 }
