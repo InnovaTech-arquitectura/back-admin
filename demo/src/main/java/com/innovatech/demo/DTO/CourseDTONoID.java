@@ -14,6 +14,7 @@ import java.sql.Date;
 
 @Getter
 @Data
+@NoArgsConstructor
 public class CourseDTONoID {
 
     String link;
