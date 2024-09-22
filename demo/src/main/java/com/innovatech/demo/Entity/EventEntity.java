@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,6 @@ public class EventEntity {
     private Integer Quota;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    @Builder.Default // Agregado para evitar warnings
-    private List<PlanEntity> entrepreneurshipeventregistry = new ArrayList<>();
+    @OneToMany(mappedBy = "eventEntity")
+    private List<Entrepreneurshipeventregistry> entrepreneurshipeventregistry;
 }

@@ -1,5 +1,6 @@
 package com.innovatech.demo.init;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,17 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.events.Event;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
+import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
+import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
+import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
+import com.innovatech.demo.Service.EventService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
 
@@ -41,6 +47,11 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private PlanFunctionalityRepository planFunctionalityRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+
 
     @Override
     @Transactional
@@ -103,5 +114,23 @@ public class Dbinitializer implements CommandLineRunner {
                 planFunctionalityRepository.save(planFunctionality);
             }
         }
+    
+
+     // Inicialización de eventos
+     for (int i = 1; i <= 5; i++) {
+        EventEntity eventEntity = EventEntity.builder()
+                .name("Event " + i)
+                .Total_Cost(100 + (i * 20)) 
+                .date(LocalDate.now().plusDays(i).toString()) 
+                .Earnings(50 + (i * 10)) 
+                .CostoLocal(30 + (i * 5)) 
+                .place("Place " + i) 
+                .modality("Modality " + i) 
+                .Quota(100) 
+                .build();
+    
+        eventRepository.save(eventEntity); // Call the save() method on the eventRepository instance
     }
+    } 
+
 }
