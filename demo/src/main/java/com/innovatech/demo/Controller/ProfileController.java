@@ -114,42 +114,53 @@ public class ProfileController {
     @PutMapping
     public ResponseEntity<?> updateProfile(@RequestBody AdministrativeEmployee newAdministrativeEmployee) {
         try {
-
+    
             if (newAdministrativeEmployee == null || newAdministrativeEmployee.getId() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid parameters");
             }
-
+    
             AdministrativeEmployee existingAdmin = administrativeEmployeeService.findById(newAdministrativeEmployee.getId());
-
             if (existingAdmin == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile not found");
             }
-
+    
             UserEntity userToUpdate = newAdministrativeEmployee.getUser();
             if (userToUpdate == null || userToUpdate.getId() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User data is missing or incomplete");
             }
-
+    
             if (userToUpdate.getName() == null || userToUpdate.getName().isEmpty()) {
                 return ResponseEntity.badRequest().body("Name cannot be empty");
             }
-
             if (userToUpdate.getEmail() == null || userToUpdate.getEmail().isEmpty()) {
                 return ResponseEntity.badRequest().body("Email cannot be empty");
             }
-
             if (userToUpdate.getPassword() == null || userToUpdate.getPassword().isEmpty()) {
                 return ResponseEntity.badRequest().body("Password cannot be empty");
             }
-
+    
+            if (userToUpdate.getRole() == null || userToUpdate.getRole().getId() == null) {
+                Role existingRole = existingAdmin.getUser().getRole();
+                if (existingRole == null) {
+                    return ResponseEntity.badRequest().body("Role cannot be null");
+                }
+                userToUpdate.setRole(existingRole);
+            }
+    
             userToUpdate = userService.save(userToUpdate);
             existingAdmin.setUser(userToUpdate);
-
-            return ResponseEntity.ok(administrativeEmployeeService.save(existingAdmin));
+    
+            administrativeEmployeeService.save(existingAdmin);
+    
+            return ResponseEntity.ok("Profile updated successfully");
+    
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("An unexpected error occurred: " + e.getMessage());
         }
     }
+    
+    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProfile(@PathVariable Long id){
