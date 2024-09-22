@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.innovatech.demo.DTO.CourseDTONoID;
+import com.innovatech.demo.DTO.CourseInfoDTO;
 import com.innovatech.demo.Entity.Course;
-import com.innovatech.demo.Entity.DTO.CourseDTONoID;
-import com.innovatech.demo.Entity.DTO.CourseInfoDTO;
 import com.innovatech.demo.Service.ServiceCourse;
 
 @RestController
 @RequestMapping("/course")
 @CrossOrigin(origins = "http://localhost:4200/")
-public class ControllerCourse {
+public class CourseController {
     
     @Autowired
     private ServiceCourse courseService;

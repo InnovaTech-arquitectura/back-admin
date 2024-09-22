@@ -1,4 +1,4 @@
-package com.innovatech.demo.Entity.DTO;
+package com.innovatech.demo.DTO;
 
 import java.sql.Timestamp;
 

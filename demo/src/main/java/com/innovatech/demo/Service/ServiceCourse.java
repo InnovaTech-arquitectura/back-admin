@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.innovatech.demo.Entity.Course;
-import com.innovatech.demo.Repository.RepositoryCourse;
+import com.innovatech.demo.Repository.CourseRepository;
 
 @Service
 public class ServiceCourse {
     
     @Autowired
-    private RepositoryCourse courseRepository;
+    private CourseRepository courseRepository;
 
     public List<Course> listCourses() {
         return courseRepository.findAll();

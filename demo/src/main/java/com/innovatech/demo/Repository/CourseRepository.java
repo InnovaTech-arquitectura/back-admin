@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.innovatech.demo.Entity.Course;
 
 @Repository
-public interface RepositoryCourse extends JpaRepository<Course, Long>{
+public interface CourseRepository extends JpaRepository<Course, Long>{
     
     @Query("SELECT c FROM Course c WHERE c.date > ?1")
     List<Course> findAllActive(LocalDateTime now);
