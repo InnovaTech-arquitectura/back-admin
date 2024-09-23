@@ -31,25 +31,19 @@ public class SecurityConfig {
                 .sessionManagement(customizer -> customizer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(AntPathRequestMatcher
-                                .antMatcher("/h2/**")).permitAll()
-                        .requestMatchers(
-                                AntPathRequestMatcher
-                                        .antMatcher("/login/**")).permitAll()
-                        .requestMatchers(
-                                AntPathRequestMatcher
-                                        .antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/plan/**")).hasAnyAuthority("Administrator", "Sales", "Billing")
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
 
-        http.addFilterBefore(jwtAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
+    
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
