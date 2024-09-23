@@ -1,5 +1,6 @@
 package com.innovatech.demo.Controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
+import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
+import com.innovatech.demo.Service.FunctionalityService;
 import com.innovatech.demo.Service.PlanService;
 
 @RestController
@@ -24,6 +27,9 @@ public class PlanController {
 
     @Autowired
     private PlanService planService;
+
+    @Autowired
+    private FunctionalityService functionalityService;
 
     // http://localhost:8090/plan/all?limit=n&page=m
     @GetMapping("/all")
@@ -59,6 +65,22 @@ public class PlanController {
         } catch (NumberFormatException e) {
             // If the ID is not a number, return 400 Bad Request
             return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // http://localhost:8090/plan/functionality
+    @GetMapping("/functionality")
+    public ResponseEntity<?> getAllPlanFunctionalities() {
+        try {
+            List<Functionality> functionalities = functionalityService.findAll();
+
+            if (functionalities.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No functionalities found");
+            }
+
+            return ResponseEntity.ok(functionalities);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
 

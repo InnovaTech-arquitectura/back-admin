@@ -136,7 +136,7 @@ public class Dbinitializer implements CommandLineRunner {
         }
 
         // Creating and saving 10 plans and linking them to functionalities
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 3; i++) {
             Plan plan = Plan.builder()
                     .name("Plan " + i)
                     .price(100.0 + (i * 10))
