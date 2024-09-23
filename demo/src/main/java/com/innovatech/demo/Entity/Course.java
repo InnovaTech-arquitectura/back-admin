@@ -1,9 +1,7 @@
 package com.innovatech.demo.Entity;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -15,8 +13,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -28,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.innovatech.demo.Entity.Enum.Modality;
 
 @Entity
-@Table(name = "course_entity")
+@Table(name = "Course")
 @Data
 @Getter
 @Setter
@@ -59,14 +55,14 @@ public class Course {
     @Column(nullable = false, columnDefinition = "VARCHAR(255) CHECK (modality IN ('virtual', 'presencial'))")
     @Enumerated(EnumType.STRING)
     Modality modality;
-    
 
     @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<Entrepreneurship> entrepreneurships = new HashSet<>();
 
     // Constructor con todos los atributos excepto 'id'
-    public Course(String link, String description, Float score,  Timestamp date, String title, int places, Modality modality) {
+    public Course(String link, String description, Float score, Timestamp date, String title, int places,
+            Modality modality) {
         this.link = link;
         this.description = description;
         this.score = score;
@@ -76,7 +72,8 @@ public class Course {
         this.modality = modality;
     }
 
-    public Course(long id, String link, String description, Float score,  Timestamp date, String title, int places, Modality modality) {
+    public Course(long id, String link, String description, Float score, Timestamp date, String title, int places,
+            Modality modality) {
         this.link = link;
         this.description = description;
         this.score = score;
@@ -86,7 +83,8 @@ public class Course {
         this.modality = modality;
     }
 
-    public Course(String link, String description, Float score,  Timestamp date, String title, int places, Modality modality, Set<Entrepreneurship> entrepreneurList) {
+    public Course(String link, String description, Float score, Timestamp date, String title, int places,
+            Modality modality, Set<Entrepreneurship> entrepreneurList) {
         this.link = link;
         this.description = description;
         this.score = score;
@@ -104,8 +102,10 @@ public class Course {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Course)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Course))
+            return false;
         Course that = (Course) o;
         return id != null && id.equals(that.id); // Compara por id
     }
