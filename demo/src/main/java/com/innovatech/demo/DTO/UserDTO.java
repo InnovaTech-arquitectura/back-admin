@@ -3,10 +3,7 @@ package com.innovatech.demo.DTO;
 import lombok.Data;
 
 @Data
-public class ProfileDTO {
-    private int idCard;
-    private String name;
+public class UserDTO {
     private String email;
     private String password;
-    private String role;
 }
