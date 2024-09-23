@@ -1,7 +1,6 @@
 package com.innovatech.demo.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +11,9 @@ import org.springframework.stereotype.Repository;
 import com.innovatech.demo.Entity.Course;
 
 @Repository
-public interface CourseRepository extends JpaRepository<Course, Long>{
-    
+public interface CourseRepository extends JpaRepository<Course, Long> {
+
     @Query("SELECT c FROM Course c WHERE c.date > ?1")
     Page<Course> findAllActive(LocalDateTime now, Pageable pageable);
-
 
 }
