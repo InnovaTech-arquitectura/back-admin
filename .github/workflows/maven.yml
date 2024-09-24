@@ -23,7 +23,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd back-admin 
+          cd
           cd demo
           mvn clean install
 
