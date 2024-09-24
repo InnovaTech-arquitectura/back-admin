@@ -1,11 +1,10 @@
 package com.innovatech.demo.Service;
 
+import com.innovatech.demo.Entity.UserEntity;
+import com.innovatech.demo.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.innovatech.demo.Entity.UserEntity;
-import com.innovatech.demo.Repository.UserRepository;
 
 @Service
 public class UserService implements CrudService<UserEntity, Long> {
@@ -16,14 +15,10 @@ public class UserService implements CrudService<UserEntity, Long> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleService roleService;
-
-    // I had to change this here so that I could save the entity in a “good way”
-    // otherwise it would not let me test things.
+    //I had to change this here so that I could save the entity in a “good way” otherwise it would not let me test things. 
 
     public UserEntity save(UserEntity userEntity) {
-
+        
         String password = userEntity.getPassword();
         String encodedPassword = passwordEncoder.encode(password);
         userEntity.setPassword(encodedPassword);
@@ -51,9 +46,4 @@ public class UserService implements CrudService<UserEntity, Long> {
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
-
-    public int countByRoleName(String roleName) {
-        return userRepository.countByRoleName(roleName);
-    }
-
 }
