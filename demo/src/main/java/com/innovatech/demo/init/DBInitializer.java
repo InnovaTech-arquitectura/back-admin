@@ -33,7 +33,7 @@ import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
 
 @Component
-public class DBInitializer implements CommandLineRunner {
+public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private RoleService roleService;
