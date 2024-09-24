@@ -1,6 +1,6 @@
 package com.innovatech.demo.Service;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,31 +41,27 @@ public class EventService implements CrudService<EventEntity, Long> {
 
     @Override
     public EventEntity save(EventEntity eventEntity) {
-
-        // Obtener las inscripciones de emprendedores si existen
+        // Asegurarse de que la lista de inscripciones no sea nula
         List<Entrepreneurshipeventregistry> registrations = eventEntity.getEntrepreneurshipeventregistry();
+        if (registrations == null) {
+            registrations = new ArrayList<>(); // Usa una lista temporal si es nula
+        }
 
         for (Entrepreneurshipeventregistry registration : registrations) {
+            registration.setEventEntity(eventEntity); // Establecer la relación bidireccional
             if (registration.getId() != null) {
+                // Si ya existe, actualizarla
                 Entrepreneurshipeventregistry existingRegistration = EntrepreneurshipeventregistryRepository
                         .findById(registration.getId())
                         .orElse(null);
                 if (existingRegistration != null) {
-                    // Actualizar la inscripción existente
-                    registration.setId(existingRegistration.getId());
                     registration.setDate(existingRegistration.getDate());
                     registration.setAmountPaid(existingRegistration.getAmountPaid());
-                } else {
-                    // Si la inscripción no existe, se guarda una nueva
-                    EntrepreneurshipeventregistryRepository.save(registration);
                 }
-            } else {
-                // Si la inscripción no tiene ID, se guarda como nueva
-                EntrepreneurshipeventregistryRepository.save(registration);
             }
         }
 
-        // Guardar el evento con las inscripciones
+        // Guardar el evento y sus inscripciones
         return eventRepository.save(eventEntity);
     }
 }

@@ -159,13 +159,13 @@ public class Dbinitializer implements CommandLineRunner {
         for (int i = 1; i <= 5; i++) {
             EventEntity eventEntity = EventEntity.builder()
                     .name("Event " + i)
-                    .Total_Cost(100 + (i * 20))
+                    .totalCost(100 + (i * 20))
                     .date(LocalDate.now().plusDays(i).toString())
-                    .Earnings(50 + (i * 10))
-                    .CostoLocal(30 + (i * 5))
+                    .earnings(50 + (i * 10))
+                    .costoLocal(30 + (i * 5))
                     .place("Place " + i)
                     .modality("Modality " + i)
-                    .Quota(100)
+                    .quota(100)
                     .build();
 
             eventRepository.save(eventEntity); // Call the save() method on the eventRepository instance

@@ -2,11 +2,15 @@ package com.innovatech.demo.Entity;
 
 import java.util.List;
 
+import org.hibernate.mapping.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,16 +38,16 @@ public class EventEntity {
     private String name;
 
     @Column(nullable = false)
-    private int Total_Cost;
+    private int totalCost;
 
     @Column(nullable = false)
     private String date;
 
     @Column(nullable = false)
-    private int Earnings;
+    private int earnings;
 
     @Column(nullable = false)
-    private int CostoLocal;
+    private int costoLocal;
 
     @Column(nullable = false)
     private String place;
@@ -52,9 +56,15 @@ public class EventEntity {
     private String modality;
 
     @Column(nullable = true)
-    private Integer Quota;
+    private Integer quota;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "eventEntity")
+    @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Entrepreneurshipeventregistry> entrepreneurshipeventregistry;
+
+    // Método para agregar inscripciones de emprendedores
+    public void addEntrepreneurshipEventRegistry(Entrepreneurshipeventregistry registry) {
+        this.entrepreneurshipeventregistry.add(registry);
+        registry.setEventEntity(this); // Asegura la bidireccionalidad
+    }
 }
