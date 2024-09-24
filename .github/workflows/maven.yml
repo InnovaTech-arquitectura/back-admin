@@ -12,6 +12,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: my_database
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -19,7 +34,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: '17' 
+          java-version: '17'
 
       - name: Build with Maven
         run: |
@@ -27,8 +42,11 @@ jobs:
           mvn clean install
 
       - name: Run tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/my_database
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
         run: |
-          cd back-admin  # Ensure you're in the correct directory
           mvn test
 
   auto-merge:
