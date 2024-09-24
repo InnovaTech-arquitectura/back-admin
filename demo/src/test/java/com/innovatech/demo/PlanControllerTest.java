@@ -1,25 +1,26 @@
 package com.innovatech.demo;
 
-import com.innovatech.demo.Controller.PlanController;
-import com.innovatech.demo.Entity.Plan;
-import com.innovatech.demo.Service.PlanService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import com.innovatech.demo.Controller.PlanController;
+import com.innovatech.demo.Entity.Plan;
+import com.innovatech.demo.Service.PlanService;
 
 public class PlanControllerTest {
 
@@ -164,7 +165,7 @@ public class PlanControllerTest {
     public void testDeletePlan_NotFound() {
         // Arrange
         Long planId = 1L;
-        
+
         when(planService.findById(planId)).thenReturn(null);
 
         // Act
