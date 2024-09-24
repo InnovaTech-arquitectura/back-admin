@@ -1,5 +1,6 @@
 package com.innovatech.demo.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,4 +31,9 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
+    public List<Role> findAll() {
+        return roleRepository.findAll();
+    }
+
+    
 }

@@ -16,6 +16,9 @@ public class UserService implements CrudService<UserEntity, Long> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RoleService roleService;
+
     // I had to change this here so that I could save the entity in a “good way”
     // otherwise it would not let me test things.
 
@@ -48,4 +51,9 @@ public class UserService implements CrudService<UserEntity, Long> {
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
+
+    public int countByRoleName(String roleName) {
+        return userRepository.countByRoleName(roleName);
+    }
+
 }

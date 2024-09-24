@@ -3,6 +3,7 @@ package com.innovatech.demo.Repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.innovatech.demo.Entity.UserEntity;
@@ -16,5 +17,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
    boolean existsByIdCard(int idCard);
 
    boolean existsByEmail(String email);
+
+   @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role.name = :roleName")
+   int countByRoleName(String roleName);
 
 }

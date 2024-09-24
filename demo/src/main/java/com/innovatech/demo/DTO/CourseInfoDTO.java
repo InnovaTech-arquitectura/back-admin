@@ -1,6 +1,5 @@
 package com.innovatech.demo.DTO;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import com.innovatech.demo.Entity.Enum.Modality;

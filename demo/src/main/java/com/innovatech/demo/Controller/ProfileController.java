@@ -1,5 +1,6 @@
 package com.innovatech.demo.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.innovatech.demo.DTO.ProfileDTO;
+import com.innovatech.demo.DTO.RoleDTO;
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
+
 
 @RestController
 @RequestMapping("/profile")
@@ -185,4 +188,33 @@ public class ProfileController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
+
+    @GetMapping("role/all")
+    public ResponseEntity<?> getAllRoles() {
+    try {
+        List<Role> roles = roleService.findAll();
+        if (roles.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Roles not found");
+        }
+
+        List<RoleDTO> rolesDTO = new ArrayList<>();
+        for (Role role : roles) {
+            long userCount = userService.countByRoleName(role.getName());
+
+            RoleDTO roleDTO = RoleDTO.builder()
+                .id(role.getId())
+                .name(role.getName())
+                .quantity(userCount) 
+                .build();
+
+            rolesDTO.add(roleDTO);
+        }
+
+        return ResponseEntity.ok(rolesDTO);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+    }
+}
+
+    
 }
