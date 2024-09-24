@@ -27,117 +27,110 @@ import com.innovatech.demo.Service.ServiceCourse;
 @RequestMapping("/course")
 @CrossOrigin(origins = "http://localhost:4200/")
 public class CourseController {
-    
+
     @Autowired
     private ServiceCourse courseService;
 
     @GetMapping("/all/active")
-    public ResponseEntity<?>  listActiveCourses(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer limit ) {
-  
-        List <Course> activeCourses=courseService.listActiveCourses(page,limit);
-        
-        if(activeCourses!=null)
-        {
+    public ResponseEntity<?> listActiveCourses(@RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer limit) {
+
+        List<Course> activeCourses = courseService.listActiveCourses(page, limit);
+
+        if (activeCourses != null) {
             return ResponseEntity.ok(activeCourses);
-        }
-        else
-        {
+        } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("There are no active courses");
         }
-    } 
+    }
 
     @GetMapping("/all")
-    public ResponseEntity<?>  listCourses(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "20") Integer limit ) {  
-        List <Course> coursesList=courseService.listCourses(page,limit);
-        if(coursesList!=null)
-        {
+    public ResponseEntity<?> listCourses(@RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer limit) {
+        List<Course> coursesList = courseService.listCourses(page, limit);
+        if (coursesList != null) {
             return ResponseEntity.ok(coursesList);
-        }
-        else
-        {
+        } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("There are no courses");
         }
-    } 
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findCourse(@PathVariable Long id) {  
+    public ResponseEntity<?> findCourse(@PathVariable Long id) {
         try {
             Course foundCourse = courseService.findCourse(id);
-            CourseInfoDTO infoCourse= new CourseInfoDTO(foundCourse.getId(),
-            foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
-            foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
-            foundCourse.getModality(), foundCourse.getPlaces()-foundCourse.getEntrepreneurships().size());
+            CourseInfoDTO infoCourse = new CourseInfoDTO(foundCourse.getId(),
+                    foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
+                    foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
+                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getEntrepreneurships().size());
             return ResponseEntity.ok(infoCourse);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");
         }
     }
-    
 
     @PutMapping("/{id}")
-    public ResponseEntity<?>  editCourse(@PathVariable Long id, @RequestBody CourseDTONoID editedCourseDto) {   
+    public ResponseEntity<?> editCourse(@PathVariable Long id, @RequestBody CourseDTONoID editedCourseDto) {
         try {
-            Course editedCourse=new Course(editedCourseDto.getLink(), 
-                                    editedCourseDto.getDescription(),
-                                    editedCourseDto.getScore(), 
-                                    editedCourseDto.getDate(),
-                                    editedCourseDto.getTitle(),
-                                    editedCourseDto.getPlaces(),
-                                    editedCourseDto.getModality());
+            Course editedCourse = new Course(editedCourseDto.getLink(),
+                    editedCourseDto.getDescription(),
+                    editedCourseDto.getScore(),
+                    editedCourseDto.getDate(),
+                    editedCourseDto.getTitle(),
+                    editedCourseDto.getPlaces(),
+                    editedCourseDto.getModality());
             editedCourse.setId(id);
-            editedCourse=courseService.editCourse(editedCourse);
+            editedCourse = courseService.editCourse(editedCourse);
 
             return ResponseEntity.ok(editedCourse);
 
         } catch (DataIntegrityViolationException e) {
             // Err
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("The course title is already in use");
+                    .body("The course title is already in use");
 
         } catch (IllegalArgumentException e) {
             // Manejo de excepción para argumentos inválidos
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body(e.getMessage());
+                    .body(e.getMessage());
         }
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?>  createCourse(@RequestBody CourseDTONoID newCourseDto) {   
+    public ResponseEntity<?> createCourse(@RequestBody CourseDTONoID newCourseDto) {
         try {
-            Course newCourse=new Course(newCourseDto.getLink(), 
-                                        newCourseDto.getDescription(),
-                                    0f, 
-                                    newCourseDto.getDate(),
-                                    newCourseDto.getTitle(),
-                                    newCourseDto.getPlaces(),
-                                    newCourseDto.getModality());
-            newCourse=courseService.addCourse(newCourse);
+            Course newCourse = new Course(newCourseDto.getLink(),
+                    newCourseDto.getDescription(),
+                    0f,
+                    newCourseDto.getDate(),
+                    newCourseDto.getTitle(),
+                    newCourseDto.getPlaces(),
+                    newCourseDto.getModality());
+            newCourse = courseService.addCourse(newCourse);
             return ResponseEntity.ok(newCourse);
 
         } catch (DataIntegrityViolationException e) {
             // Err
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("The course title is already in use");
+                    .body("The course title is already in use");
 
         } catch (IllegalArgumentException e) {
             // Manejo de excepción para argumentos inválidos
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body(e.getMessage());
+                    .body(e.getMessage());
 
         }
-        
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>  deleteCourse(@PathVariable Long id) {   
-        try
-        {
-             courseService.deleteCourse(id);
-             return ResponseEntity.ok("Course successfully deleted");
-        }
-        catch (NoSuchElementException e) {
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+        try {
+            courseService.deleteCourse(id);
+            return ResponseEntity.ok("Course successfully deleted");
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");
         }
-       
+
     }
 }
