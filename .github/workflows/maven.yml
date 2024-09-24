@@ -36,6 +36,13 @@ jobs:
         with:
           java-version: '17'
 
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL...";
+            sleep 5;
+          done
+
       - name: Build with Maven
         run: |
           cd demo
@@ -43,7 +50,7 @@ jobs:
 
       - name: Run tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/my_database
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/my_database?ssl=false
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
         run: |
