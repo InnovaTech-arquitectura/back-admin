@@ -1,8 +1,17 @@
 HELP.md
-target/
+
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Ignorar todo en target/classes
+
+# Ignorar todo en target/classes
+target/classes/*
+target/test-classes/*
+
+# Permitir solo los archivos .properties
+!target/classes/*.properties
+
+# Permitir solo los archivos .properties
+!target/classes/*.properties
 
 ### STS ###
 .apt_generated
