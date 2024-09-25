@@ -20,7 +20,7 @@ import com.innovatech.demo.Service.UserService;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://10.43.100.240:4200/")
 public class LoginController {
     @Autowired
     private UserService userService;
