@@ -26,6 +26,16 @@ jobs:
           cd demo
           mvn clean install
 
+      - name: Start Spring Boot Application
+        run: |
+          cd demo
+          mvn spring-boot:run &
+        env:
+          SPRING_PROFILES_ACTIVE: test  # Configura el perfil adecuado
+
+      - name: Wait for the server to start
+        run: sleep 20  # Ajusta según el tiempo que necesite tu servidor para arrancar
+
       - name: Run tests
         run: |
           mvn test
