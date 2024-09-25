@@ -27,10 +27,9 @@ import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
 
-
 @RestController
 @RequestMapping("/profile")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://10.43.100.240:4200/")
 public class ProfileController {
     @Autowired
     private UserService userService;
@@ -191,30 +190,29 @@ public class ProfileController {
 
     @GetMapping("role/all")
     public ResponseEntity<?> getAllRoles() {
-    try {
-        List<Role> roles = roleService.findAll();
-        if (roles.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Roles not found");
+        try {
+            List<Role> roles = roleService.findAll();
+            if (roles.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Roles not found");
+            }
+
+            List<RoleDTO> rolesDTO = new ArrayList<>();
+            for (Role role : roles) {
+                long userCount = userService.countByRoleName(role.getName());
+
+                RoleDTO roleDTO = RoleDTO.builder()
+                        .id(role.getId())
+                        .name(role.getName())
+                        .quantity(userCount)
+                        .build();
+
+                rolesDTO.add(roleDTO);
+            }
+
+            return ResponseEntity.ok(rolesDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
-
-        List<RoleDTO> rolesDTO = new ArrayList<>();
-        for (Role role : roles) {
-            long userCount = userService.countByRoleName(role.getName());
-
-            RoleDTO roleDTO = RoleDTO.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .quantity(userCount) 
-                .build();
-
-            rolesDTO.add(roleDTO);
-        }
-
-        return ResponseEntity.ok(rolesDTO);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
     }
-}
 
-    
 }
