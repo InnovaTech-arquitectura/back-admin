@@ -40,16 +40,22 @@ jobs:
         run: |
           cd demo  # Cambia a la carpeta demo antes de ejecutar las pruebas
           mvn test
-
   auto-merge:
     needs: test
     runs-on: ubuntu-latest
     if: success()
     steps:
-      - name: Merge pull request
+      - name: Check out the repository
+        uses: actions/checkout@v2  # Asegura que el repositorio esté clonado
+  
+      - name: Set Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+  
+      - name: Merge pull request
+        run: |
           git checkout dev
           git merge --no-ff ${{ github.event.pull_request.head.ref }}
           git push origin dev
+
