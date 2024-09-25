@@ -35,7 +35,7 @@ import com.innovatech.demo.Repository.CourseRepository;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class CoursesControllerIntegrationTest {
 
-    private static final String SERVER_URL = "http://localhost:8095";
+    private static final String SERVER_URL = "http://localhost:8090";
 
     @Autowired
     private CourseRepository courseRepository;
