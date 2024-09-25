@@ -1,4 +1,4 @@
-name: CI Java maven
+name: CI Java Maven
 
 on:
   pull_request:
@@ -12,21 +12,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: my_database
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -36,23 +21,12 @@ jobs:
         with:
           java-version: '17'
 
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for PostgreSQL...";
-            sleep 5;
-          done
-
       - name: Build with Maven
         run: |
           cd demo
           mvn clean install
 
       - name: Run tests
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/my_database?ssl=false
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
         run: |
           mvn test
 
