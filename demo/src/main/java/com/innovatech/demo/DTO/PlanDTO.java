@@ -1,11 +1,11 @@
-package com.innovatech.demo.DTO;
+    package com.innovatech.demo.DTO;
 
-import lombok.Data;
+    import lombok.Data;
 
-@Data
-public class PlanDTO {
+    @Data
+    public class PlanDTO {
 
-    private int id;
-    private String name;
-    private Double price;
-}
+        private int id;
+        private String name;
+        private Double price;
+    }
