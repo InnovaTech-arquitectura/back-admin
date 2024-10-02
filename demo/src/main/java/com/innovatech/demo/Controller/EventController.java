@@ -20,7 +20,6 @@ import com.innovatech.demo.Service.EventService;
 
 @RestController
 @RequestMapping("event")
-@CrossOrigin(origins = "*")
 public class EventController {
 
     @Autowired
