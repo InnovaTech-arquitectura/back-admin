@@ -2,6 +2,7 @@ package com.innovatech.demo.Controller;
 
 import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Service.CouponService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +14,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/coupon")
 public class CouponController {
 
-    @Autowired
-    private CouponService couponService;
+    private final CouponService couponService;
 
-    // Obtener todos los cupones con paginación opcional
+    // Constructor injection for the service
+    @Autowired
+    public CouponController(CouponService couponService) {
+        this.couponService = couponService;
+    }
+
+    // Endpoint to get all coupons with pagination
     @GetMapping("/all")
     public ResponseEntity<?> getAllCoupons(
             @RequestParam(defaultValue = "10") int limit,
@@ -29,7 +35,7 @@ public class CouponController {
         }
     }
 
-    // Obtener un cupón por su ID
+    // Endpoint to get a coupon by its ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getCouponById(@PathVariable Long id) {
         try {
@@ -45,19 +51,18 @@ public class CouponController {
         }
     }
 
-    // Agregar un nuevo cupón
+    // Endpoint to add a new coupon
     @PostMapping("/add")
     public ResponseEntity<?> addCoupon(@RequestBody Coupon coupon) {
         try {
-            // Verificar si ya existe el cupón para evitar duplicados
+            // Check if a coupon with the same description exists to prevent duplicates
             Coupon existingCoupon = couponService.findByDescription(coupon.getDescription());
             if (existingCoupon != null) {
                 return new ResponseEntity<>("Conflict: Duplicate entry", HttpStatus.CONFLICT);
             }
 
-            // Guardar el nuevo cupón
+            // Save the new coupon
             Coupon savedCoupon = couponService.save(coupon);
-
             return new ResponseEntity<>(savedCoupon, HttpStatus.CREATED);
 
         } catch (Exception e) {
@@ -65,17 +70,16 @@ public class CouponController {
         }
     }
 
-    // Actualizar un cupón
+    // Endpoint to update an existing coupon
     @PutMapping("/update")
     public ResponseEntity<?> updateCoupon(@RequestBody Coupon coupon) {
         try {
-            // Verificar si el cupón existe
+            // Check if the coupon exists before updating
             if (!couponService.existsById(coupon.getId())) {
                 return new ResponseEntity<>("Conflict: Coupon not found", HttpStatus.NOT_FOUND);
             }
 
             couponService.save(coupon);
-
             return new ResponseEntity<>("Coupon updated successfully", HttpStatus.OK);
 
         } catch (Exception e) {
@@ -83,7 +87,7 @@ public class CouponController {
         }
     }
 
-    // Eliminar un cupón
+    // Endpoint to delete a coupon by its ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteCoupon(@PathVariable Long id) {
         try {
@@ -92,7 +96,6 @@ public class CouponController {
             }
 
             couponService.deleteById(id);
-
             return new ResponseEntity<>("Coupon deleted successfully", HttpStatus.OK);
 
         } catch (Exception e) {

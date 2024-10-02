@@ -30,12 +30,12 @@ public class Coupon {
     @Column(name = "expiration_period")
     private Integer expirationPeriod;
 
-    // Relación con Entrepreneur
+    // Many-to-One relationship with Entrepreneurship
     @ManyToOne
     @JoinColumn(name = "id_Entrepreneurship", nullable = false)
     private Entrepreneurship entrepreneurship;
 
-    // Relación con la tabla intermedia CouponFunctionality
+    // One-to-Many relationship with CouponFunctionality
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CouponFunctionality> couponFunctionalities;
 }

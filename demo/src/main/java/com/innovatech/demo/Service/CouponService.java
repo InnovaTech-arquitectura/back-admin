@@ -2,25 +2,25 @@ package com.innovatech.demo.Service;
 
 import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Repository.CouponRepository;
-//import com.innovatech.demo.Repository.EntrepreneurshipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CouponService implements CrudService<Coupon, Long> {
 
-    @Autowired
-    private CouponRepository couponRepository;
+    // Constructor injection to ensure proper dependency management
+    private final CouponRepository couponRepository;
 
     @Autowired
-    //private EntrepreneurshipRepository entrepreneurshipRepository;
+    public CouponService(CouponRepository couponRepository) {
+        this.couponRepository = couponRepository;
+    }
 
     @Override
     public Coupon findById(Long id) {
+        // Correct: Long id is not autowired, it's passed as a method argument
         return couponRepository.findById(id).orElse(null);
     }
 
@@ -39,7 +39,6 @@ public class CouponService implements CrudService<Coupon, Long> {
 
     @Override
     public Coupon save(Coupon coupon) {
-        // Guardar el cupón
         return couponRepository.save(coupon);
     }
 
