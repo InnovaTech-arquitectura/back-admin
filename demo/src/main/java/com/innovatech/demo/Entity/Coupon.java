@@ -32,8 +32,9 @@ public class Coupon {
 
     // Many-to-One relationship with Entrepreneurship
     @ManyToOne
-    @JoinColumn(name = "id_Entrepreneurship", nullable = false)
+    @JoinColumn(name = "id_entrepreneurship", nullable = false)
     private Entrepreneurship entrepreneurship;
+
 
     // One-to-Many relationship with CouponFunctionality
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)

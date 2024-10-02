@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Course;
+import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
@@ -23,6 +25,7 @@ import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
 import com.innovatech.demo.Repository.CourseRepository;
+import com.innovatech.demo.Repository.CouponRepository;
 import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
@@ -59,11 +62,14 @@ public class Dbinitializer implements CommandLineRunner {
     @Autowired
     private RepositoryEntrepreneurship entrepreneurshipRepository;
 
-    public static final Modality PRESENCIAL = Modality.presencial;
-    public static final Modality VIRTUAL = Modality.virtual;
-
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
+    public static final Modality PRESENCIAL = Modality.presencial;
+    public static final Modality VIRTUAL = Modality.virtual;
 
     @Override
     @Transactional
@@ -177,6 +183,10 @@ public class Dbinitializer implements CommandLineRunner {
         System.out.println("Uploading courses");
         insertCourses();
 
+        // Crear cupones de ejemplo
+        System.out.println("Uploading coupons");
+        insertCoupons();
+
         System.out.println("all data uploaded");
     }
 
@@ -237,5 +247,33 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse2);
+    }
+
+    private void insertCoupons() {
+        // Obtener la lista de emprendimientos
+        List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
+
+        // Crear cupones de ejemplo para cada emprendimiento
+        for (Entrepreneurship entrepreneurship : entrepreneurList) {
+            Coupon coupon1 = Coupon.builder()
+                    .description("10% de descuento en productos de " + entrepreneurship.getName())
+                    .discount(10.0)
+                    .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30))) // 30 días a partir de hoy
+                    .expirationPeriod(30)
+                    .entrepreneurship(entrepreneurship)
+                    .build();
+
+            Coupon coupon2 = Coupon.builder()
+                    .description("20% de descuento en el primer pedido de " + entrepreneurship.getName())
+                    .discount(20.0)
+                    .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 60))) // 60 días a partir de hoy
+                    .expirationPeriod(60)
+                    .entrepreneurship(entrepreneurship)
+                    .build();
+
+            // Guardar los cupones en el repositorio
+            couponRepository.save(coupon1);
+            couponRepository.save(coupon2);
+        }
     }
 }
