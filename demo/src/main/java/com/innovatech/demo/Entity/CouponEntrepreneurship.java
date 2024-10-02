@@ -15,15 +15,18 @@ public class CouponEntrepreneurship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relación con Entrepreneurship
     @ManyToOne
-    @JoinColumn(name = "id_Entrepreneurship", nullable = false)
+    @JoinColumn(name = "id_entrepreneurship", nullable = false)
     private Entrepreneurship entrepreneurship;
 
+    // Relación con Coupon
     @ManyToOne
-    @JoinColumn(name = "id_Coupon", nullable = false)
+    @JoinColumn(name = "id_coupon", nullable = false)
     private Coupon coupon;
 
+    // Campo de estado activo
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true; // Valor por defecto asignado desde la aplicación
 
 }

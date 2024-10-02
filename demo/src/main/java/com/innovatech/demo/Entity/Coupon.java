@@ -3,6 +3,7 @@ package com.innovatech.demo.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,5 +39,29 @@ public class Coupon {
 
     // One-to-Many relationship with CouponFunctionality
     @OneToMany(mappedBy = "coupon", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CouponFunctionality> couponFunctionalities;
+    private List<CouponFunctionality> couponFunctionalities = new ArrayList<>();
+
+    // Method to add a functionality to the coupon
+    public void addFunctionality(Functionality functionality) {
+        CouponFunctionality couponFunctionality = new CouponFunctionality(this, functionality);
+        this.couponFunctionalities.add(couponFunctionality);
+    }
+
+    // Method to get the functionalities of the coupon
+    @Transient
+    public List<Functionality> getFunctionalities() {
+        List<Functionality> functionalities = new ArrayList<>();
+        for (CouponFunctionality cf : couponFunctionalities) {
+            functionalities.add(cf.getFunctionality());
+        }
+        return functionalities;
+    }
+
+    // Method to set the functionalities of the coupon
+    public void setFunctionalities(List<Functionality> functionalities) {
+        this.couponFunctionalities.clear();
+        for (Functionality functionality : functionalities) {
+            addFunctionality(functionality); // Use method to add functionality
+        }
+    }
 }

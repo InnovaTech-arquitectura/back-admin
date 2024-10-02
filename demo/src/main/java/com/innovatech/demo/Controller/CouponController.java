@@ -109,28 +109,22 @@ public class CouponController {
      * @return Un mensaje de éxito si la actualización fue exitosa.
      */
     @PutMapping("/update")
-public ResponseEntity<?> updateCoupon(@RequestBody Coupon coupon) {
-    try {
-        // Verificar si el cupón existe antes de actualizarlo
-        if (!couponService.existsById(coupon.getId())) {
-            return new ResponseEntity<>("El cupón que intentas actualizar no fue encontrado.", HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> updateCoupon(@RequestBody Coupon coupon) {
+        try {
+            // Verificar si el cupón existe
+            Coupon existingCoupon = couponService.findById(coupon.getId());
+            if (existingCoupon == null) {
+                return new ResponseEntity<>("Coupon not found", HttpStatus.NOT_FOUND);
+            }
+
+            // Actualizar y guardar el cupón
+            couponService.save(coupon);
+            return new ResponseEntity<>("Coupon modified successfully", HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Unable to modify Coupon", HttpStatus.BAD_REQUEST);
         }
-
-        // Validar que el emprendimiento asociado existe
-        if (coupon.getEntrepreneurship() == null || coupon.getEntrepreneurship().getId() == null) {
-            return new ResponseEntity<>("El emprendimiento asociado no es válido.", HttpStatus.BAD_REQUEST);
-        }
-
-        // Actualizar el cupón
-        Coupon updatedCoupon = couponService.save(coupon);
-        return new ResponseEntity<>(updatedCoupon, HttpStatus.OK);
-
-    } catch (Exception e) {
-        // Imprimir el error en los logs del servidor
-        e.printStackTrace();
-        return new ResponseEntity<>("No se pudo actualizar el cupón. Por favor, revisa los detalles y vuelve a intentarlo.", HttpStatus.BAD_REQUEST);
     }
-}
 
     /**
      * Endpoint para eliminar un cupón por su ID.
