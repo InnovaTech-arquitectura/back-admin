@@ -23,8 +23,7 @@ import com.innovatech.demo.Service.FunctionalityService;
 import com.innovatech.demo.Service.PlanService;
 
 @RestController
-@RequestMapping("plan")
-@CrossOrigin(origins = "http://10.43.100.240:4200/")
+@RequestMapping("/plan")
 public class PlanController {
 
     @Autowired

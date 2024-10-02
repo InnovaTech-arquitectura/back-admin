@@ -29,7 +29,6 @@ import com.innovatech.demo.Service.UserService;
 
 @RestController
 @RequestMapping("/profile")
-@CrossOrigin(origins = "http://10.43.100.240:4200/")
 public class ProfileController {
     @Autowired
     private UserService userService;

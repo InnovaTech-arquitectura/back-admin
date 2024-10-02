@@ -21,7 +21,7 @@ import com.innovatech.demo.Service.EventService;
 
 @RestController
 @RequestMapping("event")
-@CrossOrigin(origins = "http://10.43.100.240:4200/")
+@CrossOrigin(origins = "*")
 public class EventController {
 
     @Autowired

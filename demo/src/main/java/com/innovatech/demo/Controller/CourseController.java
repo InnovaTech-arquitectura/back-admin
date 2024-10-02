@@ -25,7 +25,6 @@ import com.innovatech.demo.Service.ServiceCourse;
 
 @RestController
 @RequestMapping("/course")
-@CrossOrigin(origins = "http://10.43.100.240:4200/")
 public class CourseController {
 
     @Autowired
