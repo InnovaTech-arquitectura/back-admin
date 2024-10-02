@@ -1,0 +1,15 @@
+2024-10-01 14:05:27.436789-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]NAME ID ROLE USERS"; SQL statement:
+NAME ID ROLE USERS [42000-224]
+2024-10-01 14:11:54.087870-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS_ENTITY" not found; SQL statement:
+SELECT * FROM USERS_ENTITY [42102-224]
+2024-10-01 14:12:37.610579-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'' (USER_ENTITY: ""ADMINISTRATIVE_EMPLOYEE_ID"" BIGINT)"; SQL statement:
+INSERT INTO "PUBLIC"."USER_ENTITY"("ID_CARD","ADMINISTRATIVE_EMPLOYEE_ID","ID","ROLE_ID","EMAIL","NAME","PASSWORD")VALUES(?,?,?,?,?,?,?) [22018-224]
+2024-10-01 14:12:37.611840-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "'' (USER_ENTITY: ""ADMINISTRATIVE_EMPLOYEE_ID"" BIGINT)"; SQL statement:
+INSERT INTO "PUBLIC"."USER_ENTITY"("ID_CARD","ADMINISTRATIVE_EMPLOYEE_ID","ID","ROLE_ID","EMAIL","NAME","PASSWORD")VALUES(?,?,?,?,?,?,?) [22018-224]
+2024-10-02 10:15:12.904666-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERENTITY" not found; SQL statement:
+SELECT * FROM UserEntity WHERE email = 'sebotas.botas@gmail.com' [42102-224]

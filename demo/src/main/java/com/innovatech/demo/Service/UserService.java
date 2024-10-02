@@ -1,38 +1,36 @@
 package com.innovatech.demo.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Repository.UserRepository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
-public class UserService implements CrudService<UserEntity, Long> {
+public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository userRepository; // Repositorio de usuarios
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private Map<String, String> recoveryCodes = new HashMap<>();
 
-    // I had to change this here so that I could save the entity in a “good way”
-    // otherwise it would not let me test things.
+    // Encuentra un usuario por email
+    public UserEntity findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 
+    // Guarda un usuario, sin codificar la contraseña
     public UserEntity save(UserEntity userEntity) {
-
-        String password = userEntity.getPassword();
-        String encodedPassword = passwordEncoder.encode(password);
-        userEntity.setPassword(encodedPassword);
         return userRepository.saveAndFlush(userEntity);
     }
 
-    @Override
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
@@ -45,12 +43,18 @@ public class UserService implements CrudService<UserEntity, Long> {
         return userRepository.existsByEmail(email);
     }
 
-    public UserEntity findByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
-    }
-
     public int countByRoleName(String roleName) {
         return userRepository.countByRoleName(roleName);
     }
 
+    public boolean verifyRecoveryCode(String code, String email) {
+        // Retrieve and verify recovery code for the specified email
+        String storedCode = recoveryCodes.get(email);
+        return storedCode != null && storedCode.equals(code);
+    }
+    
+    public void setRecoveryCode(String email, String code) {
+        // Store the recovery code associated with the user's email
+        recoveryCodes.put(email, code);
+    }
 }
