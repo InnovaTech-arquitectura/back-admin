@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,10 +26,8 @@ import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
 
-
 @RestController
 @RequestMapping("/profile")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ProfileController {
     @Autowired
     private UserService userService;
@@ -159,7 +156,7 @@ public class ProfileController {
                 userToUpdate.setRole(existingRole);
             }
 
-            userToUpdate = userService.save(userToUpdate);
+            userToUpdate = userService.update(userToUpdate);
             existingAdmin.setUser(userToUpdate);
 
             administrativeEmployeeService.save(existingAdmin);
@@ -191,30 +188,29 @@ public class ProfileController {
 
     @GetMapping("role/all")
     public ResponseEntity<?> getAllRoles() {
-    try {
-        List<Role> roles = roleService.findAll();
-        if (roles.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Roles not found");
+        try {
+            List<Role> roles = roleService.findAll();
+            if (roles.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Roles not found");
+            }
+
+            List<RoleDTO> rolesDTO = new ArrayList<>();
+            for (Role role : roles) {
+                long userCount = userService.countByRoleName(role.getName());
+
+                RoleDTO roleDTO = RoleDTO.builder()
+                        .id(role.getId())
+                        .name(role.getName())
+                        .quantity(userCount)
+                        .build();
+
+                rolesDTO.add(roleDTO);
+            }
+
+            return ResponseEntity.ok(rolesDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
-
-        List<RoleDTO> rolesDTO = new ArrayList<>();
-        for (Role role : roles) {
-            long userCount = userService.countByRoleName(role.getName());
-
-            RoleDTO roleDTO = RoleDTO.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .quantity(userCount) 
-                .build();
-
-            rolesDTO.add(roleDTO);
-        }
-
-        return ResponseEntity.ok(rolesDTO);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
     }
-}
 
-    
 }
