@@ -157,7 +157,7 @@ public class ProfileController {
                 userToUpdate.setRole(existingRole);
             }
 
-            userToUpdate = userService.save(userToUpdate);
+            userToUpdate = userService.update(userToUpdate);
             existingAdmin.setUser(userToUpdate);
 
             administrativeEmployeeService.save(existingAdmin);
