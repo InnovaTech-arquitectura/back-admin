@@ -2,13 +2,10 @@ package com.innovatech.demo.Entity;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.hibernate.annotations.ManyToAny;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.hibernate.annotations.ManyToAny;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,10 +45,10 @@ public class Entrepreneurship {
 
     String lastnames;
 
-    @ManyToAny(fetch = FetchType.EAGER)
-    @JoinTable(name = "course_entrepreneurship", joinColumns = @JoinColumn(name = "entrepreneurship_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
+    @OneToMany(mappedBy = "entrepreneurship",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Course> courses = new HashSet<>();
+    private List<CourseEntrepreneurship> courseEntrepreneurship = new ArrayList<>();
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
