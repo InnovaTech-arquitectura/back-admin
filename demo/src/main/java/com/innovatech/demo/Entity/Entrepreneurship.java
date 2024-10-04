@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
 
-import org.hibernate.annotations.ManyToAny;
 import java.util.List;
-
+import org.hibernate.annotations.ManyToAny;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
