@@ -13,3 +13,6 @@ INSERT INTO "PUBLIC"."USER_ENTITY"("ID_CARD","ADMINISTRATIVE_EMPLOYEE_ID","ID","
 2024-10-02 10:15:12.904666-05:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERENTITY" not found; SQL statement:
 SELECT * FROM UserEntity WHERE email = 'sebotas.botas@gmail.com' [42102-224]
+2024-10-03 23:20:18.759979-05:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM USER_ENTITY USER_ENTITY [*]USER_ENTITY"; SQL statement:
+SELECT * FROM USER_ENTITY USER_ENTITY USER_ENTITY [42000-224]
