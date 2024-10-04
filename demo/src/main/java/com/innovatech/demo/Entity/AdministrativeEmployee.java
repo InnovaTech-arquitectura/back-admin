@@ -1,6 +1,7 @@
 package com.innovatech.demo.Entity;
 
-import org.hibernate.mapping.List;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,5 +28,7 @@ public class AdministrativeEmployee {
 
     @OneToMany(mappedBy = "administrativeEmployee")
     @JsonIgnore
+    @Builder.Default
     private List<AdministrativeEmployee> administrativeEmployees = new ArrayList<>();
-}
+} 
+
