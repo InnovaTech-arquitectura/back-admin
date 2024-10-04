@@ -205,7 +205,7 @@ public class Dbinitializer implements CommandLineRunner {
                     .date2(LocalDate.now().plusDays(i+1).toString())
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
-                    .place("Place " + i)
+                    .place(i*10)
                     .modality("Modality " + i)
                     .quota(100)
                     .Description("Evento de prueba " + i)

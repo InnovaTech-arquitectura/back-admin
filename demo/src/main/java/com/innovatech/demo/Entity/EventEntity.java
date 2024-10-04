@@ -53,7 +53,7 @@ public class EventEntity {
     private int costoLocal;
 
     @Column(nullable = false)
-    private String place;
+    private int place;
 
     @Column(nullable = false)
     private String modality;
@@ -93,7 +93,7 @@ public class EventEntity {
         this.entrepreneurshipeventregistry.add(entrepreneurshipeventregistry);
     }
     //constructor
-    public EventEntity(Long id, String name, int totalCost, String date, int earnings, int costoLocal, String place, String modality, Integer quota, String description) {
+    public EventEntity(Long id, String name, int totalCost, String date, int earnings, int costoLocal, int place, String modality, Integer quota, String description) {
         this.id = id;
         this.name = name;
         this.totalCost = totalCost;
