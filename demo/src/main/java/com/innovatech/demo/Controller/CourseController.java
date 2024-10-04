@@ -60,7 +60,7 @@ public class CourseController {
             CourseInfoDTO infoCourse = new CourseInfoDTO(foundCourse.getId(),
                     foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
                     foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
-                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getEntrepreneurships().size());
+                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getCourseEntrepreneurship().size());
             return ResponseEntity.ok(infoCourse);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");

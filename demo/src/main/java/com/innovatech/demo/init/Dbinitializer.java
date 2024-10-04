@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Course;
+import com.innovatech.demo.Entity.CourseEntrepreneurship;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
@@ -22,6 +23,7 @@ import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
+import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
 import com.innovatech.demo.Repository.CourseRepository;
 import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
@@ -58,6 +60,9 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private RepositoryEntrepreneurship entrepreneurshipRepository;
+
+    @Autowired
+    private CourseEntrepreneurshipRepository courseEntrepreneurshipRepository;
 
     public static final Modality PRESENCIAL = Modality.presencial;
     public static final Modality VIRTUAL = Modality.virtual;
@@ -211,7 +216,7 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Añadir los emprendimientos al curso
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            newCourse.addEntrepreneurship(entrepreneurship);
+            courseEntrepreneurshipRepository.save(new CourseEntrepreneurship(entrepreneurship, newCourse));
         }
 
         // Guardar el nuevo curso en el repositorio
@@ -232,7 +237,7 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Añadir los emprendimientos al curso
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            newCourse2.addEntrepreneurship(entrepreneurship);
+            courseEntrepreneurshipRepository.save(new CourseEntrepreneurship(entrepreneurship, newCourse2));
         }
 
         // Guardar el nuevo curso en el repositorio
