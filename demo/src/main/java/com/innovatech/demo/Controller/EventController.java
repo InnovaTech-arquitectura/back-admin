@@ -1,5 +1,6 @@
 package com.innovatech.demo.Controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Service.EventService;
 
@@ -54,6 +56,27 @@ public class EventController {
             return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
         }
     }
+
+    // http://localhost:8090/event/{id}/entrepreneurships
+    @GetMapping("/{id}/entrepreneurships")
+    public ResponseEntity<?> getEntrepreneurshipsByEventId(@PathVariable String id) {
+        try {
+            Long eventId = Long.parseLong(id);
+            EventEntity event = eventService.findById(eventId);
+
+            if (event == null) {
+                return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+            }
+
+            List<Entrepreneurship> entrepreneurships = event.getEntrepreneurships(); // Obtiene la lista de emprendimientos
+            return new ResponseEntity<>(entrepreneurships, HttpStatus.OK);
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     // http://localhost:8090/event/add
     @PostMapping("/add")

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Entity.Entrepreneurship;
+import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
@@ -23,6 +25,7 @@ import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
 import com.innovatech.demo.Repository.CourseRepository;
+import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
@@ -64,6 +67,9 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
     @Override
     @Transactional
@@ -155,6 +161,36 @@ public class Dbinitializer implements CommandLineRunner {
             }
         }
 
+        
+
+        System.out.println("Uploading entrepreneurships");
+        insertEntrepreneurships();
+
+        System.out.println("Uploading events");
+        insertEvents();
+
+
+        System.out.println("Uploading courses");
+        insertCourses();
+
+        System.out.println("all data uploaded");
+    }
+
+
+     
+
+    private void insertEntrepreneurships() {
+        Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
+        Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
+
+        entrepreneurshipRepository.save(zara);
+        entrepreneurshipRepository.save(nike);
+    }
+
+    private void insertEvents() {
+        // Obtener la lista de emprendimientos desde el repositorio
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+    
         // Inicialización de eventos
         for (int i = 1; i <= 5; i++) {
             EventEntity eventEntity = EventEntity.builder()
@@ -166,26 +202,23 @@ public class Dbinitializer implements CommandLineRunner {
                     .place("Place " + i)
                     .modality("Modality " + i)
                     .quota(100)
+                    .Description("Evento de prueba " + i)
                     .build();
-
-            eventRepository.save(eventEntity); // Call the save() method on the eventRepository instance
+    
+            eventRepository.save(eventEntity); // Guardar el evento en el repositorio
+    
+            // Crear asociaciones con emprendimientos
+            for (int j = 0; j < i && j < entrepreneurships.size(); j++) { 
+                Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
+                        .eventEntity(eventEntity)
+                        .entrepreneurship(entrepreneurships.get(j)) 
+                        .date(Date.valueOf(eventEntity.getDate()))
+                        .amountPaid(i * 100.000)
+                        .build();
+    
+                entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry); 
+            }
         }
-
-        System.out.println("Uploading entrepreneurships");
-        insertEntrepreneurships();
-
-        System.out.println("Uploading courses");
-        insertCourses();
-
-        System.out.println("all data uploaded");
-    }
-
-    private void insertEntrepreneurships() {
-        Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
-        Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
-
-        entrepreneurshipRepository.save(zara);
-        entrepreneurshipRepository.save(nike);
     }
 
     private void insertCourses() {
