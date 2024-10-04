@@ -31,7 +31,6 @@ public class UserService {
         return userRepository.saveAndFlush(userEntity);
     }
 
-    // Removed @Override annotation
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
