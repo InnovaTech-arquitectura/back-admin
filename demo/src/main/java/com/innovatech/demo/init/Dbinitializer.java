@@ -202,6 +202,7 @@ public class Dbinitializer implements CommandLineRunner {
                     .name("Event " + i)
                     .totalCost(100 + (i * 20))
                     .date(LocalDate.now().plusDays(i).toString())
+                    .date2(LocalDate.now().plusDays(i+1).toString())
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
                     .place("Place " + i)

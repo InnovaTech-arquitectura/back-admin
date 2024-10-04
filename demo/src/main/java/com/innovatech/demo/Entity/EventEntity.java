@@ -42,6 +42,9 @@ public class EventEntity {
 
     @Column(nullable = false)
     private String date;
+    
+    @Column(nullable = false)
+    private String date2;
 
     @Column(nullable = false)
     private int earnings;
