@@ -29,9 +29,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .sessionManagement(customizer -> customizer
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(requests -> {
-                requests
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(requests -> requests
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/request")).permitAll()
@@ -41,9 +40,8 @@ public class SecurityConfig {
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/plan/**")).hasAnyAuthority("Administrator", "Sales", "Billing")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
-                    .anyRequest().authenticated();
-                
-            })
+                    .anyRequest().authenticated()
+            )
             .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
