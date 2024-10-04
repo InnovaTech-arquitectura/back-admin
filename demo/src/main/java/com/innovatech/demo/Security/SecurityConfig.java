@@ -43,8 +43,6 @@ public class SecurityConfig {
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
                     .anyRequest().authenticated();
                 
-                // Debug statement to check authorization
-                System.out.println("Checking authorization for request...");
             })
             .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
 
