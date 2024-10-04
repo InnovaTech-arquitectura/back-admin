@@ -95,4 +95,5 @@ public class PasswordRecoveryController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match.");
     }
+    //Line to commit
 }

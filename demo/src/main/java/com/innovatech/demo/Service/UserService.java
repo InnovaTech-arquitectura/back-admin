@@ -26,11 +26,12 @@ public class UserService {
     public UserEntity save(UserEntity userEntity) {
         return userRepository.saveAndFlush(userEntity);
     }
+
     public UserEntity update(UserEntity userEntity) {
         return userRepository.saveAndFlush(userEntity);
     }
 
-
+    // Removed @Override annotation
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
@@ -56,7 +57,7 @@ public class UserService {
         String storedCode = recoveryCodes.get(email);
         return storedCode != null && storedCode.equals(code);
     }
-    
+
     public void setRecoveryCode(String email, String code) {
         // Store the recovery code associated with the user's email
         recoveryCodes.put(email, code);
