@@ -33,13 +33,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(requests -> requests
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/request")).permitAll()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/verify")).permitAll()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/set-password")).permitAll()
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/event/**")).hasAnyAuthority("Administrator", "Entrepreneurship")
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/plan/**")).hasAnyAuthority("Administrator", "Sales", "Billing")
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/request")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/verify")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/set-password")).permitAll()
                 .anyRequest().authenticated()
         )
         .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
