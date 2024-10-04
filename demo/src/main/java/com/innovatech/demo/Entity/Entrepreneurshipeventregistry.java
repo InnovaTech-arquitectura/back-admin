@@ -31,6 +31,7 @@ public class Entrepreneurshipeventregistry {
 
     @ManyToOne
     @JoinColumn(name = "Id_Entrepreneurship", referencedColumnName = "id")
+    @JoinColumn(name = "name_Entrepreneurship", referencedColumnName = "name")
     private Entrepreneurship entrepreneurship;
 
     @ManyToOne
