@@ -26,7 +26,10 @@ public class UserService {
     public UserEntity save(UserEntity userEntity) {
         return userRepository.saveAndFlush(userEntity);
     }
-
+    public UserEntity update(UserEntity userEntity) {
+        return userRepository.saveAndFlush(userEntity);
+    }
+    
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }

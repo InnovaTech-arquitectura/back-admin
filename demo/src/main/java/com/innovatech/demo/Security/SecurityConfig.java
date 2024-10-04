@@ -34,7 +34,6 @@ public class SecurityConfig {
                 requests
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/login/**")).permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/register")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/request")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/verify")).permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/set-password")).permitAll()
