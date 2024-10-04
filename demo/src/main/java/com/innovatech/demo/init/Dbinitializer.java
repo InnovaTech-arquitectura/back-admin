@@ -23,6 +23,7 @@ import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
+import com.innovatech.demo.Entity.Subscription;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
 import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
@@ -185,12 +186,27 @@ public class Dbinitializer implements CommandLineRunner {
      
 
     private void insertEntrepreneurships() {
+
+    
+        // Crear emprendimientos
         Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
         Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
+        Entrepreneurship apple = new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez");
+        Entrepreneurship bodegaElBarril = new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez");
+        Entrepreneurship yogaFlow = new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez");
+        Entrepreneurship travelWithUs = new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez");
 
+        // Guardar emprendimientos
+        entrepreneurshipRepository.save(apple);
+        entrepreneurshipRepository.save(bodegaElBarril);
+        entrepreneurshipRepository.save(yogaFlow);
+        entrepreneurshipRepository.save(travelWithUs);
         entrepreneurshipRepository.save(zara);
         entrepreneurshipRepository.save(nike);
+    
+
     }
+    
 
     private void insertEvents() {
         // Obtener la lista de emprendimientos desde el repositorio

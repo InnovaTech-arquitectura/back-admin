@@ -33,7 +33,8 @@ public class Subscription {
 
     // The one-to-many relationship is not yet established, the entrepreneurship
     // entity must be created
-    // @ManyToOne
-    // @JoinColumn(name = "id_entrepreneurship", nullable = false)
-    // private Entrepreneurship entrepreneurship;
+    @ManyToOne
+    @JoinColumn(name = "entrepreneurship_id")
+    private Entrepreneurship entrepreneurship;
+
 }

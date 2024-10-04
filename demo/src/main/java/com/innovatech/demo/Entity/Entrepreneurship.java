@@ -2,6 +2,7 @@ package com.innovatech.demo.Entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -50,10 +51,16 @@ public class Entrepreneurship {
     @JsonIgnore
     private List<CourseEntrepreneurship> courseEntrepreneurship = new ArrayList<>();
 
+    //@OneToMany(mappedBy = "entrepreneurship",cascade = CascadeType.ALL)
+    //@JsonIgnore
+    //private List<Subscription> subscriptions = new ArrayList<>();
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Entrepreneurshipeventregistry> Entrepreneurshipeventregistry = new ArrayList<>();
+
+
 
     public Entrepreneurship(String name, String logo, String description, String names, String lastnames) {
         this.name = name;

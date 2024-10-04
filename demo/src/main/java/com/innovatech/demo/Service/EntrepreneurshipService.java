@@ -21,8 +21,12 @@ public class EntrepreneurshipService implements CrudService<Entrepreneurship, Lo
         return entrepreneurshipRepository.findByName(name);
     }
 
-    public List<Entrepreneurship> findAll() {
-        return entrepreneurshipRepository.findAll();
+    public List<Entrepreneurship> findAllEntrepreneurships() {
+        return entrepreneurshipRepository.findAllEntrepreneurships();
+    }
+
+    public List<Entrepreneurship> IngresosTotalesEntrepreneurships() {
+        return entrepreneurshipRepository.IngresosTotalesEntrepreneurships();
     }
 
     @Override
