@@ -11,7 +11,7 @@ public class User {
     private Long id;
 
     private String email;
-    private String password;
+
 
     // Otros campos como nombre, roles, etc.
 
@@ -32,11 +32,5 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

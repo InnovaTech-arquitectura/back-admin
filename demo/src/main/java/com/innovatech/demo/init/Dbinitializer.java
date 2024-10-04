@@ -34,6 +34,7 @@ import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
 import com.innovatech.demo.Repository.RepositoryEntrepreneurship;
+import com.innovatech.demo.Repository.SubscriptionRepository;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
@@ -52,6 +53,9 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private PlanRepository planRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @Autowired
     private FunctionalityRepository functionalityRepository;
@@ -167,11 +171,28 @@ public class Dbinitializer implements CommandLineRunner {
             }
         }
 
-        
-
         System.out.println("Uploading entrepreneurships");
         insertEntrepreneurships();
 
+
+        List<Plan> plans = planRepository.findAll();
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+
+        // Creating and saving 10 subscriptions linked to plans and entrepreneurships
+        for (int i = 1; i <= 10; i++) {
+            Subscription subscription = Subscription.builder()
+                    .initialDate(Date.valueOf("2024-01-01"))
+                    .expirationDate(Date.valueOf("2025-01-01"))
+                    .amount(100.0 + (i * 5))
+                    .plan(plans.get(i % plans.size())) // Link to a plan
+                    .entrepreneurship(entrepreneurships.get(i % entrepreneurships.size())) // Link to an entrepreneurship
+                    .build();
+
+            // Saving the subscription
+            subscriptionRepository.save(subscription);
+        }
+
+        
         System.out.println("Uploading events");
         insertEvents();
 
@@ -203,7 +224,6 @@ public class Dbinitializer implements CommandLineRunner {
         entrepreneurshipRepository.save(travelWithUs);
         entrepreneurshipRepository.save(zara);
         entrepreneurshipRepository.save(nike);
-    
 
     }
     
