@@ -65,7 +65,7 @@ public class ServiceCourse {
                     editedCourse.getPlaces() == null)) {
                 // evaluar si las nuevas plazas abarcan los ya inscritos
                 Course courseFull = courseRepository.findById(editedCourse.getId()).orElseThrow();
-                if (courseFull.getEntrepreneurships().size() <= editedCourse.getPlaces()) {
+                if (courseFull.getCourseEntrepreneurship().size() <= editedCourse.getPlaces()) {
                     // Lógica para agregar el curso
                     return courseRepository.save(editedCourse); // O cualquier otra lógica que necesites
                 } else {

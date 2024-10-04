@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
@@ -56,9 +59,9 @@ public class Course {
     @Enumerated(EnumType.STRING)
     Modality modality;
 
-    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Entrepreneurship> entrepreneurships = new HashSet<>();
+    private List<CourseEntrepreneurship> courseEntrepreneurship = new java.util.ArrayList<>();
 
     // Constructor con todos los atributos excepto 'id'
     public Course(String link, String description, Float score, Timestamp date, String title, int places,
@@ -84,7 +87,7 @@ public class Course {
     }
 
     public Course(String link, String description, Float score, Timestamp date, String title, int places,
-            Modality modality, Set<Entrepreneurship> entrepreneurList) {
+            Modality modality, List<CourseEntrepreneurship> entrepreneurList) {
         this.link = link;
         this.description = description;
         this.score = score;
@@ -92,13 +95,13 @@ public class Course {
         this.title = title;
         this.places = places;
         this.modality = modality;
-        this.entrepreneurships = entrepreneurList != null ? entrepreneurList : new HashSet<>();
+        this.courseEntrepreneurship = entrepreneurList != null ? entrepreneurList : new java.util.ArrayList<>();
     }
 
-    public void addEntrepreneurship(Entrepreneurship entrepreneurship) {
+    /*public void addEntrepreneurship(Entrepreneurship entrepreneurship) {
         this.entrepreneurships.add(entrepreneurship);
         entrepreneurship.getCourses().add(this); // Aseguramos la bidireccionalidad
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {
