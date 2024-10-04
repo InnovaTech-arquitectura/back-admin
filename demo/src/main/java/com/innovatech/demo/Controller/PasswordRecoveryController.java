@@ -47,11 +47,14 @@ public class PasswordRecoveryController {
     // Verificar código de recuperación
     @PostMapping("/verify")
     public ResponseEntity<String> verifyRecoveryCode(@RequestBody PasswordRecoveryCodeDTO codeDTO) {
-        String email = codeDTO.getEmail();
-        String code = codeDTO.getCode();
-        
-        if (recoveryCodes.containsKey(email) && recoveryCodes.get(email).equals(code)) {
-            // Mark the email as verified for password change
+        String email = recoveryCodes.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(codeDTO.getCode()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+    
+        if (email != null) {
+            // Marcar el correo como verificado para el cambio de contraseña
             verifiedEmails.put(email, true);
             return ResponseEntity.ok("Code verified. Proceed to set a new password.");
         }
@@ -61,25 +64,31 @@ public class PasswordRecoveryController {
     // Establecer nueva contraseña
     @PostMapping("/set-password")
     public ResponseEntity<String> setNewPassword(@RequestBody PasswordChangeDTO passwordDTO) {
-        // Check if the OTP was verified before allowing password change
-        if (!verifiedEmails.containsKey(passwordDTO.getEmail()) || !verifiedEmails.get(passwordDTO.getEmail())) {
+        String email = verifiedEmails.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+    
+        // Verificar si el OTP fue verificado antes de permitir el cambio de contraseña
+        if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("OTP not validated.");
         }
-        
+    
         // Validar que las contraseñas coincidan
         if (passwordDTO.getNewPassword().equals(passwordDTO.getConfirmNewPassword())) {
-            UserEntity user = userService.findByEmail(passwordDTO.getEmail());
+            UserEntity user = userService.findByEmail(email);
             if (user != null) {
                 // Actualizar la contraseña
                 user.setPassword(passwordDTO.getNewPassword());
-                
+    
                 // Guardar el usuario con la nueva contraseña
                 userService.save(user);
-
+    
                 // Limpiar la marca de verificación y el código OTP después de actualizar la contraseña
-                verifiedEmails.remove(passwordDTO.getEmail());
-                recoveryCodes.remove(passwordDTO.getEmail());
-
+                verifiedEmails.remove(email);
+                recoveryCodes.remove(email);
+    
                 return ResponseEntity.ok("Password updated successfully.");
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
