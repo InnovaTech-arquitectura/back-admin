@@ -2,11 +2,14 @@ package com.innovatech.demo.Entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
 
 import org.hibernate.annotations.ManyToAny;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
@@ -44,10 +48,10 @@ public class Entrepreneurship {
 
     String lastnames;
 
-    @ManyToAny(fetch = FetchType.EAGER)
-    @JoinTable(name = "course_entrepreneurship", joinColumns = @JoinColumn(name = "entrepreneurship_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
+    @OneToMany(mappedBy = "entrepreneurship",cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Course> courses = new HashSet<>();
+    private List<CourseEntrepreneurship> courseEntrepreneurship = new ArrayList<>();
+
 
     public Entrepreneurship(String name, String logo, String description, String names, String lastnames) {
         this.name = name;

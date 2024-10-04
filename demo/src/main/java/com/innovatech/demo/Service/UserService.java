@@ -32,6 +32,7 @@ public class UserService {
         return userRepository.saveAndFlush(userEntity);
     }
 
+
     // Actualiza un usuario, codificando la contraseña si es necesario
     public UserEntity update(UserEntity userEntity) {
         if (userEntity.getPassword() != null) {
@@ -43,6 +44,7 @@ public class UserService {
     }
 
     // Encuentra un usuario por ID
+
     public UserEntity findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,6 @@ import com.innovatech.demo.Service.ServiceCourse;
 
 @RestController
 @RequestMapping("/course")
-@CrossOrigin(origins = "http://10.43.100.240:4200/")
 public class CourseController {
 
     @Autowired
@@ -62,7 +60,7 @@ public class CourseController {
             CourseInfoDTO infoCourse = new CourseInfoDTO(foundCourse.getId(),
                     foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
                     foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
-                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getEntrepreneurships().size());
+                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getCourseEntrepreneurship().size());
             return ResponseEntity.ok(infoCourse);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");
