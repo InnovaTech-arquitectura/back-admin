@@ -1,4 +1,6 @@
-
+# Ignorar archivos específicos
 demo/target/classes/application-test.properties
 mydatabase.mv.db
-demo/target/classes/application-test.properties
+
+# Ignorar la carpeta target generada por Maven
+demo/target/
