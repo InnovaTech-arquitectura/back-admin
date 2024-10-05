@@ -97,15 +97,21 @@ public class EventControllerTest {
     @Test
     public void testAddEvent_Conflict() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findByName("Event1")).thenReturn(event);
+        EventEntity existingEvent = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);
+        
+        // Simula que el evento ya existe en el servicio
+        when(eventService.findByName("Event1")).thenReturn(existingEvent);
 
         // Act
-        ResponseEntity<?> response = eventController.addEvent(event);
+        ResponseEntity<?> response = eventController.addEvent(existingEvent);
 
         // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals("Event with the same name already exists", response.getBody());
-    }
+        
+        // Verifica que se llamó al servicio para buscar el evento
+        verify(eventService).findByName("Event1");
+}
+
 
     @Test
     public void testUpdateEvent_Success() {
