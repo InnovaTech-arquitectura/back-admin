@@ -23,39 +23,64 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd demo   # Cambia a la carpeta correcta donde está el archivo pom.xml
+          cd demo
           mvn clean install
 
       - name: Start Spring Boot Application
         run: |
-          cd demo  # Asegúrate de estar en la carpeta demo
+          cd demo
           mvn spring-boot:run &
         env:
           SPRING_PROFILES_ACTIVE: test
 
       - name: Wait for the server to start
-        run: sleep 20  # Ajusta el tiempo de espera si es necesario
+        run: sleep 20
 
       - name: Run tests
         run: |
-          cd demo  # Cambia a la carpeta demo antes de ejecutar las pruebas
+          cd demo
           mvn test
+
   auto-merge:
     needs: test
     runs-on: ubuntu-latest
-    if: success()
+    if: ${{ success() && github.event.pull_request.merged == false }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v2  # Asegura que el repositorio esté clonado
+        uses: actions/checkout@v2
   
       - name: Set Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
   
-      - name: Merge pull request
+      - name: Check for merge conflicts
+        id: conflict-check
         run: |
+          git fetch origin
           git checkout dev
-          git merge --no-ff ${{ github.event.pull_request.head.ref }}
+          if ! git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }}; then
+            echo "Merge conflict detected!" && exit 1
+          fi
+
+      - name: Check if there are changes to commit
+        id: changes-check
+        run: |
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+      - name: Merge pull request
+        if: ${{ steps['changes-check'].outcome == 'success' }}
+        run: |
+          git commit -m "Auto-merge from GitHub Actions"
           git push origin dev
 
+  notify-conflict:
+    needs: auto-merge
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify about merge conflict
+        run: echo "Merge conflict detected, cannot auto-merge PR!"
