@@ -13,6 +13,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     // Custom method for finding a coupon by its description
     Coupon findByDescription(String description);
 
-    /*@Query("SELECT u.email FROM Coupon c JOIN c.entrepreneurship e JOIN e.user u WHERE c.id = :couponId")
-    Optional<String> findUserEmailByCouponId(@Param("couponId") Long couponId);*/
+    @Query("SELECT u.email FROM Coupon c JOIN c.entrepreneurship e JOIN e.user u WHERE c.id = :couponId")
+    Optional<String> findUserEmailByCouponId(Long couponId);
+
 }

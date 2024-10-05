@@ -128,20 +128,17 @@ public ResponseEntity<?> addCoupon(@RequestBody CouponDTO couponDTO) {
 
             // Asignar el plan al cupón
             newCoupon.setPlan(plan);
+        }
 
-            // Asociar funcionalidades al plan si se proporcionaron
-            if (couponDTO.getFunctionalityIds() != null && !couponDTO.getFunctionalityIds().isEmpty()) {
-                for (Long functionalityId : couponDTO.getFunctionalityIds()) {
-                    Functionality functionality = functionalityRepository.findById(functionalityId)
-                            .orElseThrow(() -> new RuntimeException("Functionality not found with ID: " + functionalityId));
+        // Asociar funcionalidades al cupón si se proporcionaron
+        if (couponDTO.getFunctionalityIds() != null && !couponDTO.getFunctionalityIds().isEmpty()) {
+            for (Long functionalityId : couponDTO.getFunctionalityIds()) {
+                Functionality functionality = functionalityRepository.findById(functionalityId)
+                        .orElseThrow(() -> new RuntimeException("Functionality not found with ID: " + functionalityId));
 
-                    // Crear la relación entre el cupón y la funcionalidad
-                    CouponFunctionality couponFunctionality = new CouponFunctionality(newCoupon, functionality);
-                    newCoupon.getCouponFunctionalities().add(couponFunctionality);
-
-                    // Guardar la relación plan-funcionalidad
-                    plan.addFunctionality(functionality);
-                }
+                // Crear la relación entre el cupón y la funcionalidad
+                CouponFunctionality couponFunctionality = new CouponFunctionality(newCoupon, functionality);
+                newCoupon.getCouponFunctionalities().add(couponFunctionality); // Agregar las funcionalidades al cupón
             }
         }
 
@@ -158,6 +155,7 @@ public ResponseEntity<?> addCoupon(@RequestBody CouponDTO couponDTO) {
     }
 }
 
+
     
     
     /**
@@ -167,37 +165,53 @@ public ResponseEntity<?> addCoupon(@RequestBody CouponDTO couponDTO) {
      * @return Un mensaje de éxito si la actualización fue exitosa.
      */
     @PutMapping("/update")
-    public ResponseEntity<?> updateCoupon(@RequestBody CouponDTO couponDTO) {
-        try {
-            // Buscar el cupón existente
-            Coupon existingCoupon = couponService.findById(couponDTO.getId());
-            if (existingCoupon == null) {
-                return new ResponseEntity<>("Coupon not found", HttpStatus.NOT_FOUND);
-            }
-
-            // Verificar que el emprendimiento asociado exista
-            Entrepreneurship entrepreneurship = entrepreneurshipRepository.findById(couponDTO.getEntrepreneurshipId())
-                    .orElseThrow(() -> new RuntimeException("Entrepreneurship not found"));
-
-            // Verificar que el plan asociado exista
-            Plan plan = planRepository.findById(couponDTO.getPlanId())
-                    .orElseThrow(() -> new RuntimeException("Plan not found"));
-
-            // Actualizar el cupón existente
-            existingCoupon.setDescription(couponDTO.getDescription());
-            existingCoupon.setExpirationDate(couponDTO.getExpirationDate());
-            existingCoupon.setExpirationPeriod(couponDTO.getExpirationPeriod());
-            existingCoupon.setEntrepreneurship(entrepreneurship);
-            existingCoupon.setPlan(plan);
-
-            // Guardar el cupón actualizado
-            couponService.save(existingCoupon);
-            return new ResponseEntity<>("Coupon updated successfully", HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>("Unable to update coupon. Please check the request.", HttpStatus.BAD_REQUEST);
+public ResponseEntity<?> updateCoupon(@RequestBody CouponDTO couponDTO) {
+    try {
+        // Buscar el cupón existente por su ID
+        Coupon existingCoupon = couponService.findById(couponDTO.getId());
+        if (existingCoupon == null) {
+            return new ResponseEntity<>("Coupon not found", HttpStatus.NOT_FOUND);
         }
+
+        // Verificar que el emprendimiento asociado exista
+        Entrepreneurship entrepreneurship = entrepreneurshipRepository.findById(couponDTO.getEntrepreneurshipId())
+                .orElseThrow(() -> new RuntimeException("Entrepreneurship not found"));
+
+        // Verificar que el plan asociado exista
+        Plan plan = planRepository.findById(couponDTO.getPlanId())
+                .orElseThrow(() -> new RuntimeException("Plan not found"));
+
+        // Actualizar los detalles básicos del cupón
+        existingCoupon.setDescription(couponDTO.getDescription());
+        existingCoupon.setExpirationDate(couponDTO.getExpirationDate());
+        existingCoupon.setExpirationPeriod(couponDTO.getExpirationPeriod());
+        existingCoupon.setEntrepreneurship(entrepreneurship);
+        existingCoupon.setPlan(plan);
+
+        // Limpiar las funcionalidades anteriores
+        existingCoupon.getCouponFunctionalities().clear();
+
+        // Asociar nuevas funcionalidades al cupón si se proporcionaron
+        if (couponDTO.getFunctionalityIds() != null && !couponDTO.getFunctionalityIds().isEmpty()) {
+            for (Long functionalityId : couponDTO.getFunctionalityIds()) {
+                Functionality functionality = functionalityRepository.findById(functionalityId)
+                        .orElseThrow(() -> new RuntimeException("Functionality not found with ID: " + functionalityId));
+
+                // Crear la relación entre el cupón y la funcionalidad
+                CouponFunctionality couponFunctionality = new CouponFunctionality(existingCoupon, functionality);
+                existingCoupon.getCouponFunctionalities().add(couponFunctionality);
+            }
+        }
+
+        // Guardar el cupón actualizado
+        couponService.save(existingCoupon);
+        return new ResponseEntity<>("Coupon updated successfully", HttpStatus.OK);
+
+    } catch (Exception e) {
+        return new ResponseEntity<>("Unable to update coupon. Please check the request.", HttpStatus.BAD_REQUEST);
     }
+}
+
 
     /**
      * Endpoint para eliminar un cupón por su ID.

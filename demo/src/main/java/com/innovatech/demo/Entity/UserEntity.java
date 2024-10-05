@@ -48,6 +48,7 @@ public class UserEntity {
     private Role role;
 
     @JsonIgnore
-    @OneToOne
-    private AdministrativeEmployee administrativeEmployee;
+    @OneToOne(mappedBy = "user") // Relación uno a uno, especificando que UserEntity es dueño de la relación
+    private Entrepreneurship entrepreneurship;
 }
+

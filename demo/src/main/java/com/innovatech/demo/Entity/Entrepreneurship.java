@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
@@ -43,6 +44,10 @@ public class Entrepreneurship {
     String names;
 
     String lastnames;
+
+    @OneToOne(fetch = FetchType.EAGER) // Relación uno a uno con UserEntity
+    @JoinColumn(name = "user_id") // Asocia un campo user_id en Entrepreneurship
+    private UserEntity user;
 
     @ManyToAny(fetch = FetchType.EAGER)
     @JoinTable(name = "course_entrepreneurship", joinColumns = @JoinColumn(name = "entrepreneurship_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
