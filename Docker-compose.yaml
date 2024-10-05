@@ -1,7 +1,8 @@
 services:
   app:
     build:
-      context: .
+      context: .  # El contexto ahora es la raíz del proyecto
+      dockerfile: Dockerfile  # Nombre del Dockerfile en la raíz
     container_name: springboot_app
     ports:
       - "8090:8090"  # Puerto expuesto para la aplicación
@@ -26,7 +27,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     restart: always
-
 
 volumes:
   db_data:
