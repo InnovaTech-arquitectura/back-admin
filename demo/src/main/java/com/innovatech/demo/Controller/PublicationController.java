@@ -103,10 +103,10 @@ public class PublicationController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> createCourse(@ModelAttribute BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException {
+    public ResponseEntity<?> createBanner(@ModelAttribute BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException {
+        
         try {
             Banner newBanner = publicationService.createBanner(newBannerDto);
-            System.out.println("AdministrativeEmployee found with id: hola" );
 
             //save image in minio
             try {
