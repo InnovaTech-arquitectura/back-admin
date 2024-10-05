@@ -1,17 +1,13 @@
-name: CI Java Maven
+name: CI Workflow
 
 on:
   pull_request:
     branches:
       - dev
-  push:
-    branches:
-      - dev
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -26,61 +22,42 @@ jobs:
           cd demo
           mvn clean install
 
-      - name: Start Spring Boot Application
-        run: |
-          cd demo
-          mvn spring-boot:run &
-        env:
-          SPRING_PROFILES_ACTIVE: test
-
-      - name: Wait for the server to start
-        run: sleep 20
-
       - name: Run tests
         run: |
           cd demo
           mvn test
 
-  auto-merge:
-    needs: test
+  merge:
+    needs: build  # Solo se ejecuta si 'build' pasa exitosamente
     runs-on: ubuntu-latest
-    if: ${{ success() && github.event.pull_request.merged == false }}
+    if: ${{ needs.build.result == 'success' && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'dev' }}  # Condición de éxito
+
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v2
-  
-      - name: Set Git user
+      - name: Attempt to merge pull request
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-  
-      - name: Check for merge conflicts
-        id: conflict-check
-        run: |
-          git fetch origin
-          git checkout dev
-          if ! git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }}; then
+          response=$(curl -s -X PUT \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"commit_title": "Automated merge from CI", "merge_method": "merge"}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/merge")
+          echo "$response"
+          if echo "$response" | grep -q "already merged" || echo "$response" | grep -q "already up to date"; then
+            echo "Pull request already merged or up to date, skipping merge."
+            exit 0
+          elif echo "$response" | grep -q "Merge conflict"; then
             echo "Merge conflict detected!" && exit 1
           fi
 
-      - name: Check if there are changes to commit
-        id: changes-check
-        run: |
-          if git diff-index --quiet HEAD --; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-      - name: Merge pull request
-        if: ${{ steps['changes-check'].outcome == 'success' }}
-        run: |
-          git commit -m "Auto-merge from GitHub Actions"
-          git push origin dev
-
-  notify-conflict:
-    needs: auto-merge
-    if: failure()
+  reject:
+    needs: build  # Solo se ejecuta si 'build' falla
     runs-on: ubuntu-latest
+    if: ${{ needs.build.result == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'dev' }}  # Condición de fallo
+    
     steps:
-      - name: Notify about merge conflict
-        run: echo "Merge conflict detected, cannot auto-merge PR!"
+      - name: Close pull request on failure
+        run: |
+          curl -s -X PATCH \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"state": "closed"}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
