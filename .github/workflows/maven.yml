@@ -40,22 +40,39 @@ jobs:
         run: |
           cd demo  # Cambia a la carpeta demo antes de ejecutar las pruebas
           mvn test
+
   auto-merge:
-    needs: test
+    needs: test  # Asegura que el job de test termine exitosamente antes de auto-merge
     runs-on: ubuntu-latest
-    if: success()
+    if: ${{ success() && github.event.pull_request.merged == false }}  # Solo si los tests pasan y la PR no está ya mergeada
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v2  # Asegura que el repositorio esté clonado
+        uses: actions/checkout@v2
   
       - name: Set Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
   
-      - name: Merge pull request
+      - name: Check for merge conflicts
+        id: conflict-check  # Añade un id para referenciarlo
         run: |
+          git fetch origin
           git checkout dev
-          git merge --no-ff ${{ github.event.pull_request.head.ref }}
+          if ! git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }}; then
+            echo "Merge conflict detected!" && exit 1
+          fi
+
+      - name: Merge pull request
+        if: ${{ steps.conflict-check.outcome == 'success' }}
+        run: |
+          git commit -m "Auto-merge from GitHub Actions"
           git push origin dev
 
+  notify-conflict:
+    needs: auto-merge
+    if: failure()  # Solo se ejecuta si el merge falla
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify about merge conflict
+        run: echo "Merge conflict detected, cannot auto-merge PR!"

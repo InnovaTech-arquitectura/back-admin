@@ -73,44 +73,44 @@ public class ProfileControllerTest {
 
     //For run this test use the command: mvn -Dtest=ProfileControllerTest#testCreateProfile_ShouldReturnCreatedProfile test
     @Test
-    void createProfile_ShouldReturnCreatedProfile() throws Exception {
-        String jwtToken = "Bearer " + generateTestJWT();
+void createProfile_ShouldReturnCreatedProfile() throws Exception {
+    String jwtToken = "Bearer " + generateTestJWT();
 
-        ProfileDTO profileDTO = new ProfileDTO();
-        profileDTO.setIdCard(123456);
-        profileDTO.setName("John Doe");
-        profileDTO.setEmail("john.doe@example.com");
-        profileDTO.setPassword("securepassword");
-        profileDTO.setRole("ADMIN");
+    ProfileDTO profileDTO = new ProfileDTO();
+    profileDTO.setIdCard(123456);
+    profileDTO.setName("John Doe");
+    profileDTO.setEmail("sebotas.botas@gmail.com"); // Updated email
+    profileDTO.setPassword("securepassword");
+    profileDTO.setRole("ADMIN");
 
-        Role role = new Role();
-        role.setName("ADMIN");
+    Role role = new Role();
+    role.setName("ADMIN");
 
-        UserEntity userEntity = UserEntity.builder()
-                .idCard(profileDTO.getIdCard())
-                .name(profileDTO.getName())
-                .email(profileDTO.getEmail())
-                .password(profileDTO.getPassword())
-                .role(role)
-                .build();
+    UserEntity userEntity = UserEntity.builder()
+            .idCard(profileDTO.getIdCard())
+            .name(profileDTO.getName())
+            .email(profileDTO.getEmail())
+            .password(profileDTO.getPassword())
+            .role(role)
+            .build();
 
-        AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
-                .user(userEntity)
-                .build();
+    AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
+            .user(userEntity)
+            .build();
 
-        when(roleService.existsByName(profileDTO.getRole())).thenReturn(true);
-        when(roleService.findByName(profileDTO.getRole())).thenReturn(Optional.of(role));
-        when(userService.save(any(UserEntity.class))).thenReturn(userEntity);
-        when(administrativeEmployeeService.save(any(AdministrativeEmployee.class))).thenReturn(administrativeEmployee);
+    when(roleService.existsByName(profileDTO.getRole())).thenReturn(true);
+    when(roleService.findByName(profileDTO.getRole())).thenReturn(Optional.of(role));
+    when(userService.save(any(UserEntity.class))).thenReturn(userEntity);
+    when(administrativeEmployeeService.save(any(AdministrativeEmployee.class))).thenReturn(administrativeEmployee);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/profile")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", jwtToken)
-                        .content("{\"idCard\":123456,\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"password\":\"securepassword\",\"role\":\"ADMIN\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.user.name", is("John Doe")))
-                .andExpect(jsonPath("$.user.email", is("john.doe@example.com")));
-    }
+    mockMvc.perform(MockMvcRequestBuilders.post("/profile")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", jwtToken)
+                    .content("{\"idCard\":123456,\"name\":\"John Doe\",\"email\":\"sebotas.botas@gmail.com\",\"password\":\"securepassword\",\"role\":\"ADMIN\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.user.name", is("John Doe")))
+            .andExpect(jsonPath("$.user.email", is("sebotas.botas@gmail.com"))); // Updated expected email
+}
 
     //For run this test use the command: mvn -Dtest=ProfileControllerTest#testCreateProfile_ShouldReturnBadRequest test
     @Test
