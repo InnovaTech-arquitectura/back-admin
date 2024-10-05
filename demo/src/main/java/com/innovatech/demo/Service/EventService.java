@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
+import com.innovatech.demo.Repository.EntrepreneurshipRepository;
 import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
+
+import java.sql.Date;
 
 @Service
 public class EventService implements CrudService<EventEntity, Long> {
@@ -19,7 +22,8 @@ public class EventService implements CrudService<EventEntity, Long> {
     @Autowired
     private EventRepository eventRepository;
     @Autowired
-
+    private EntrepreneurshipRepository entrepreneurshipRepository;
+    @Autowired
     private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
     @Override
@@ -42,29 +46,55 @@ public class EventService implements CrudService<EventEntity, Long> {
 
     @Override
     public EventEntity save(EventEntity eventEntity) {
-        // Guardar el evento primero
+        // Guardar el evento en el repositorio
         EventEntity savedEvent = eventRepository.save(eventEntity);
         
-        // Asegurarse de que la lista de inscripciones no sea nula
-        List<Entrepreneurship> registrations = eventEntity.getEntrepreneurships();
-        if (registrations == null) {
-            registrations = new ArrayList<>(); // Usa una lista temporal si es nula
-        }
-
-        for (Entrepreneurship registration : registrations) {
-            // Solo registrar el emprendimiento si no está ya asociado
-            Entrepreneurshipeventregistry existingRegistry = entrepreneurshipeventregistryRepository
-                    .findByEventAndEntrepreneurship(savedEvent, registration);
-
-            if (existingRegistry == null) {
-                // Crear una nueva inscripción si no existe
-                Entrepreneurshipeventregistry newRegistry = new Entrepreneurshipeventregistry(savedEvent, registration);
-                entrepreneurshipeventregistryRepository.save(newRegistry);
+        // Obtener la lista de emprendimientos desde el repositorio
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+    
+        // Crear asociaciones con emprendimientos si no existen ya en el registro
+        List<Entrepreneurshipeventregistry> registrations = eventEntity.getEntrepreneurshipeventregistry();
+        
+        if (registrations == null || registrations.isEmpty()) {
+            // Si no hay inscripciones en el evento, creamos nuevas asociaciones
+            for (int i = 0; i < entrepreneurships.size(); i++) {
+                Entrepreneurshipeventregistry registration = Entrepreneurshipeventregistry.builder()
+                        .eventEntity(savedEvent)
+                        .entrepreneurship(entrepreneurships.get(i)) // Asociamos con los emprendimientos
+                        .date(Date.valueOf(eventEntity.getDate())) // Usamos la fecha del evento
+                        .amountPaid(100.000 * (i + 1)) // Asignamos pagos simulados
+                        .build();
+                
+                entrepreneurshipeventregistryRepository.save(registration);
             }
-            // Aquí puedes optar por manejar actualizaciones si es necesario
+        } else {
+            // Si ya hay inscripciones, actualizamos o guardamos las existentes
+            for (Entrepreneurshipeventregistry registration : registrations) {
+                if (registration.getId() != null) {
+                    // Recuperamos la inscripción existente
+                    Entrepreneurshipeventregistry existingRegistration = entrepreneurshipeventregistryRepository
+                            .findById(registration.getId())
+                            .orElse(null);
+                    
+                    if (existingRegistration != null) {
+                        // Actualizamos los datos con los de la base de datos
+                        registration.setId(existingRegistration.getId());
+                        registration.setEventEntity(existingRegistration.getEventEntity());
+                        registration.setEntrepreneurship(existingRegistration.getEntrepreneurship());
+                    } else {
+                        // Si no existe, la guardamos como nueva
+                        entrepreneurshipeventregistryRepository.save(registration);
+                    }
+                } else {
+                    // Guardamos inscripciones nuevas
+                    entrepreneurshipeventregistryRepository.save(registration);
+                }
+            }
         }
-
-        return savedEvent; // Retornar el evento guardado
+    
+        // Retornar el evento guardado
+        return savedEvent;
     }
+    
 
 }

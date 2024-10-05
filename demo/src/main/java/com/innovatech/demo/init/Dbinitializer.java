@@ -185,6 +185,7 @@ public class Dbinitializer implements CommandLineRunner {
      
 
     private void insertEntrepreneurships() {
+
         Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
         Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
 
@@ -208,7 +209,7 @@ public class Dbinitializer implements CommandLineRunner {
                     .place(i*10)
                     .modality("Modality " + i)
                     .quota(100)
-                    .Description("Evento de prueba " + i)
+                    .description("Evento de prueba " + i)
                     .build();
     
             eventRepository.save(eventEntity); // Guardar el evento en el repositorio

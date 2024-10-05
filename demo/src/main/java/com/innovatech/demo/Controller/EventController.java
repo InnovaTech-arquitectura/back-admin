@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Service.EventService;
@@ -57,7 +56,6 @@ public class EventController {
         }
     }
 
-    // http://localhost:8090/event/{id}/entrepreneurships
     @GetMapping("/{id}/entrepreneurships")
     public ResponseEntity<?> getEntrepreneurshipsByEventId(@PathVariable String id) {
         try {
@@ -69,6 +67,7 @@ public class EventController {
             }
 
             List<Entrepreneurship> entrepreneurships = event.getEntrepreneurships(); // Obtiene la lista de emprendimientos
+            
             return new ResponseEntity<>(entrepreneurships, HttpStatus.OK);
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
@@ -77,33 +76,12 @@ public class EventController {
         }
     }
 
-
     // http://localhost:8090/event/add
     @PostMapping("/add")
     public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
-        try {
-            EventEntity eventname = eventService.findByName(event.getName());
-
-            if (eventname != null) {
-                // Handle event with the same name already existing (e.g., HttpStatus.CONFLICT)
-                return new ResponseEntity<>("Event with the same name already exists", HttpStatus.CONFLICT);
-            }
-
-            // Save the new event
-            EventEntity eventDB = eventService.save(event);
-
-            if (eventDB == null) {
-                // Handle error saving the event (more specific message?)
-                return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR); // Or a more
-                                                                                                       // specific error
-                                                                                                       // code
-            }
-
-            return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // Handle unexpected exceptions (log the error)
-            return new ResponseEntity<>("Unable to add event", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        // Lógica para agregar el evento
+        EventEntity savedEvent = eventService.save(event);
+        return new ResponseEntity<>(savedEvent, HttpStatus.CREATED);
     }
 
     // http://localhost:8090/event/update
