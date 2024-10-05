@@ -126,7 +126,7 @@ public class PublicationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBanner(@PathVariable Long id) {
         try {
-            Banner banner= publicationService.deleteBanner(id);
+             publicationService.deleteBanner(id);
 
             //eliminar la imagen de minio
             try {

@@ -3,9 +3,13 @@ package com.innovatech.demo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +38,10 @@ import com.innovatech.demo.Controller.PublicationController;
 import com.innovatech.demo.DTO.BannerDTO;
 import com.innovatech.demo.DTO.BannerInfoDTO;
 import com.innovatech.demo.DTO.UserDTO;
+import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Banner;
+import com.innovatech.demo.Repository.AdministrativeEmployeeRepository;
+import com.innovatech.demo.Repository.BannerRepository;
 import com.innovatech.demo.Service.PublicationService;
 import com.innovatech.demo.Service.UserService;
 
@@ -56,6 +63,13 @@ public class PublicationControllerTest {
     private ResponseEntity<String> response=null;
 
     private HttpHeaders headers = new HttpHeaders();
+
+    @Autowired
+    private BannerRepository bannerRepository;
+    
+    @Autowired
+    private AdministrativeEmployeeRepository administrativeEmployeeRepository;
+
 
     @BeforeEach
     public void setUp() {
@@ -79,12 +93,30 @@ public class PublicationControllerTest {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(response.getBody());
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
         
+        Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findById(1L);
+        
+        if (adminOpt.isPresent()) {
+            Banner banner = new Banner("prueba titulo", "prueba titulo", adminOpt.get());
+            //System.out.println("AdministrativeEmployee found with id: " + banner.getTitle());
+            Banner created=bannerRepository.save(banner);
+
+            created.setMultimedia("p-"+created.getId().toString());
+
+            bannerRepository.save(created);
+        } 
 
     }
+    
 
     @Test
     public void testCreateABanner() throws IOException, java.io.IOException {
+       
+        testCreateABannerFunc();
+    }
+
+    public void testCreateABannerFunc() throws IOException, java.io.IOException {
         // Crear archivo de prueba
         MockMultipartFile mockFile = new MockMultipartFile(
                 "picture",  // El nombre debe coincidir con el nombre del campo en el controlador
@@ -95,7 +127,7 @@ public class PublicationControllerTest {
 
         // Crear los parámetros del cuerpo de la solicitud como MultiValueMap
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("title", "prueba titulo");  // Añadir el título del banner
+        body.add("title", "prueba titulo 2");  // Añadir el título del banner
         body.add("adminId", "1");  // Añadir ID del empleado administrativo
         body.add("picture", new ByteArrayResource(mockFile.getBytes()) {  // Añadir el archivo
             @Override
@@ -127,9 +159,38 @@ public class PublicationControllerTest {
 
 
     @Test
-    public void testGetAllBanners() {
+    public void testGetAllBanners() throws IOException, java.io.IOException {
+        
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
 
-        String url = SERVER_URL + "/banner/all";
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+        
+        String url = "http://localhost:8090/banner/all";
+
+        System.err.println("unicornio status "+ rest.exchange(
+            url,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            BannerInfoDTO[].class
+        ).getStatusCode());
+
+
+        System.err.println("unicornio header "+ headers);
 
         BannerInfoDTO[] banners = rest.exchange(
             url,
@@ -142,9 +203,32 @@ public class PublicationControllerTest {
 
     }
 
+
     @Test
-    public void testGetABanner() {
-        String url = SERVER_URL + "/banner/1";
+    public void testGetABanner() throws IOException, java.io.IOException {
+        
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+        
+        String url = "http://localhost:8090/banner/1";
+        
+        //String url = SERVER_URL + "/banner/1";
 
         BannerInfoDTO banner = rest.exchange(
             url,
@@ -156,9 +240,33 @@ public class PublicationControllerTest {
         assert banner != null;
     }
 
+
     @Test
-    public void testDeleteABanner() {
-        String url = SERVER_URL + "/banner/1";
+    public void testDeleteABanner() throws IOException, java.io.IOException {
+
+        //testCreateABannerFunc();
+        UserDTO user = new UserDTO();
+        user.setEmail("admin@example.com");
+        user.setPassword("password123");
+
+        //hacer el post del log in
+        ResponseEntity<String> response = rest.postForEntity(SERVER_URL + "/login", user, String.class);
+
+        System.err.println(response.getBody());
+        rest.getRestTemplate().setInterceptors(Collections.singletonList((request, body, execution) -> {
+            HttpHeaders headers = request.getHeaders();
+            headers.add("Authorization", "Bearer " + response.getBody());
+            return execution.execute(request, body);
+        }));
+
+        // Crear el objeto de solicitud con el token JWT en el encabezado de autorización
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(response.getBody());
+        
+        String url = "http://localhost:8090/banner/1";
+
+        //String url = SERVER_URL + "/banner/1";
 
         String banner = rest.exchange(
             url,
@@ -173,6 +281,8 @@ public class PublicationControllerTest {
 
     @Test
     public void testEditABanner() throws java.io.IOException {
+        
+        //testCreateABannerFunc();
 
         // Crear archivo de prueba
         MockMultipartFile mockFile = new MockMultipartFile(
@@ -214,45 +324,48 @@ public class PublicationControllerTest {
 
     }
 
+   
     @Test
     public void testCreateABannerWithRepeatedName() throws java.io.IOException {
-        // Crear archivo de prueba
-        MockMultipartFile mockFile = new MockMultipartFile(
-                "picture",  // El nombre debe coincidir con el nombre del campo en el controlador
-                "test-image.jpg",
-                "image/jpeg",
-                "Test Image Content".getBytes()
-        );
+        
+    MockMultipartFile mockFile = new MockMultipartFile(
+            "picture",  // El nombre debe coincidir con el nombre del campo en el controlador
+            "test-image.jpg",
+            "image/jpeg",
+            "Test Image Content".getBytes()
+    );
 
-        // Crear los parámetros del cuerpo de la solicitud como MultiValueMap
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("title", "prueba titulo NO 2");  // Añadir el título del banner
-        body.add("adminId", "1");  // Añadir ID del empleado administrativo
-        body.add("picture", new ByteArrayResource(mockFile.getBytes()) {  // Añadir el archivo
-            @Override
-            public String getFilename() {
-                return mockFile.getOriginalFilename();  // Definir el nombre del archivo
-            }
-        });
+    // Crear los parámetros del cuerpo de la solicitud como MultiValueMap
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("title", "prueba titulo");  // Añadir el título del banner
+    body.add("adminId", "1");  // Añadir ID del empleado administrativo
+    body.add("picture", new ByteArrayResource(mockFile.getBytes()) {  // Añadir el archivo
+        @Override
+        public String getFilename() {
+            return mockFile.getOriginalFilename();  // Definir el nombre del archivo
+        }
+    });
 
-        // Establecer headers para multipart/form-data
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    // Establecer headers para multipart/form-data
+    //headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        System.err.println("REVISAR BIEN "+headers);
+    System.err.println("REVISAR BIEN "+headers);
 
-        // Crear la entidad de la solicitud
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+    // Crear la entidad de la solicitud
+    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // Enviar la solicitud usando TestRestTemplate
-        ResponseEntity<?> response = rest.exchange(
-            SERVER_URL + "/banner/new",
-            HttpMethod.POST,
-            requestEntity,
-            Banner.class
-        );
+    // Enviar la solicitud usando TestRestTemplate
+    ResponseEntity<?> response = rest.exchange(
+        SERVER_URL + "/banner/new",
+        HttpMethod.POST,
+        requestEntity,
+        String.class
+    );
 
-        // Verificar la respuesta (aserciones)
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    // Verificar la respuesta (aserciones)
+    assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+
+        
     }
 
 }
