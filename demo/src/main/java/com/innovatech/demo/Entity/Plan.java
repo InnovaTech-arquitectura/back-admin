@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,6 +48,7 @@ public class Plan {
     // Relationship with table PlanFunctionality
     @JsonIgnore
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+   // @JsonManagedReference // Manages serialization from this side
     private List<PlanFunctionality> planFunctionality = new ArrayList<>();
 
     // Method to add functionalities to the plan
@@ -55,7 +57,7 @@ public class Plan {
         this.planFunctionality.add(planFunctionality);
     }
 
-    // Method to get the functionalities of the plan
+  // Method to get the functionalities of the plan
     @Transient
     public List<Functionality> getFunctionalities() {
         List<Functionality> functionalities = new ArrayList<>();
@@ -65,7 +67,7 @@ public class Plan {
         return functionalities;
     }
 
-    // Method to set the functionalities of the plan
+ // Method to set the functionalities of the plan
     public void setFunctionalities(List<Functionality> functionalities) {
         this.planFunctionality.clear();
         for (Functionality functionality : functionalities) {

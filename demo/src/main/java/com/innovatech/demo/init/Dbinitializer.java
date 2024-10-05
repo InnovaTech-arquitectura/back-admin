@@ -74,46 +74,41 @@ public class Dbinitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        Role adminRole = new Role();
-        adminRole.setName("Administrator");
-        roleService.save(adminRole);
+        // Seed roles, users, and administrative employees
+        seedRolesAndUsers();
 
-        Role marketingRole = new Role();
-        marketingRole.setName("Marketing");
-        roleService.save(marketingRole);
+        // Create and save functionalities
+        List<Functionality> functionalities = createFunctionalities();
 
-        Role salesRole = new Role();
-        salesRole.setName("Sales");
-        roleService.save(salesRole);
+        // Create and save plans linked to functionalities
+        List<Plan> plans = createPlansAndLinkFunctionalities(functionalities);
 
-        Role communityManagerRole = new Role();
-        communityManagerRole.setName("Community Manager");
-        roleService.save(communityManagerRole);
+        // Seed events
+        insertEvents();
 
-        Role asesorRole = new Role();
-        asesorRole.setName("Asesor");
-        roleService.save(asesorRole);
+        // Seed entrepreneurships
+        insertEntrepreneurships();
 
-        Role specialistRole = new Role();
-        specialistRole.setName("Specialist");
-        roleService.save(specialistRole);
+        // Seed courses
+        insertCourses();
 
-        Role supportRole = new Role();
-        supportRole.setName("Support");
-        roleService.save(supportRole);
+        // Seed coupons and associate them with plans
+        insertCoupons(plans);
 
-        Role billingRole = new Role();
-        billingRole.setName("Billing");
-        roleService.save(billingRole);
+        System.out.println("All data uploaded.");
+    }
 
-        Role entrepreneurRole = new Role();
-        entrepreneurRole.setName("Entrepreneurship");
-        roleService.save(entrepreneurRole);
+    private void seedRolesAndUsers() {
+        // Create roles
+        List<String> roles = List.of("Administrator", "Marketing", "Sales", "Community Manager", "Asesor", "Specialist", "Support", "Billing", "Entrepreneurship", "Client");
 
-        Role clientRole = new Role();
-        clientRole.setName("Client");
-        roleService.save(clientRole);
+        for (String roleName : roles) {
+            Role role = new Role();
+            role.setName(roleName);
+            roleService.save(role);
+        }
 
+        // Create and save admin user
         UserEntity adminUser = UserEntity.builder()
                 .idCard(123456)
                 .name("Andres")
@@ -122,36 +117,39 @@ public class Dbinitializer implements CommandLineRunner {
                 .role(roleService.findByName("Administrator").get())
                 .build();
 
-        adminUser = userService.save(adminUser);
+        userService.save(adminUser);
 
         AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
                 .user(adminUser)
                 .build();
 
-        administrativeEmployee = administrativeEmployeeService.save(administrativeEmployee);
+        administrativeEmployeeService.save(administrativeEmployee);
+    }
 
-        // Creating and saving functionalities
+    private List<Functionality> createFunctionalities() {
         List<Functionality> functionalities = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             Functionality functionality = Functionality.builder()
                     .name("Functionality " + i)
                     .description("Description of functionality " + i)
                     .build();
-
             functionalities.add(functionalityRepository.save(functionality));
         }
+        return functionalities;
+    }
 
-        // Creating and saving 10 plans and linking them to functionalities
+    private List<Plan> createPlansAndLinkFunctionalities(List<Functionality> functionalities) {
+        List<Plan> plans = new ArrayList<>();
+
         for (int i = 1; i <= 3; i++) {
             Plan plan = Plan.builder()
                     .name("Plan " + i)
                     .price(100.0 + (i * 10))
                     .build();
 
-            // Saving the plan
             plan = planRepository.save(plan);
 
-            // Creating associations with functionalities
+            // Link functionalities to each plan
             for (int j = 0; j < i; j++) {
                 PlanFunctionality planFunctionality = PlanFunctionality.builder()
                         .plan(plan)
@@ -159,9 +157,12 @@ public class Dbinitializer implements CommandLineRunner {
                         .build();
                 planFunctionalityRepository.save(planFunctionality);
             }
+            plans.add(plan);
         }
+        return plans;
+    }
 
-        // Inicialización de eventos
+    private void insertEvents() {
         for (int i = 1; i <= 5; i++) {
             EventEntity eventEntity = EventEntity.builder()
                     .name("Event " + i)
@@ -173,21 +174,8 @@ public class Dbinitializer implements CommandLineRunner {
                     .modality("Modality " + i)
                     .quota(100)
                     .build();
-
-            eventRepository.save(eventEntity); // Call the save() method on the eventRepository instance
+            eventRepository.save(eventEntity);
         }
-
-        System.out.println("Uploading entrepreneurships");
-        insertEntrepreneurships();
-
-        System.out.println("Uploading courses");
-        insertCourses();
-
-        // Crear cupones de ejemplo
-        System.out.println("Uploading coupons");
-        insertCoupons();
-
-        System.out.println("all data uploaded");
     }
 
     private void insertEntrepreneurships() {
@@ -199,19 +187,15 @@ public class Dbinitializer implements CommandLineRunner {
     }
 
     private void insertCourses() {
-        // Obtener la hora de las 3 PM
         LocalTime threePM = LocalTime.of(15, 0);
 
-        // Crear la fecha de mañana a las 3 PM
         LocalDateTime tomorrowAtThreePM = LocalDateTime.of(LocalDate.now().plusDays(1), threePM);
         Timestamp timestampForTomorrow = Timestamp.valueOf(tomorrowAtThreePM);
 
-        // Obtener la lista de emprendimientos
         List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
 
-        // Crear el nuevo curso
         Course newCourse = new Course(
-                "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NTAxZmMyMmItNzUwNS00Mjg0LWEzMTQtZTE0ZDNmZTRkNzQ2%40thread.v2/0?",
+                "https://teams.microsoft.com/l/meetup-join/...",
                 "Capacitación para atraer más clientes",
                 0f,
                 timestampForTomorrow,
@@ -219,61 +203,30 @@ public class Dbinitializer implements CommandLineRunner {
                 2,
                 VIRTUAL);
 
-        // Añadir los emprendimientos al curso
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
             newCourse.addEntrepreneurship(entrepreneurship);
         }
-
-        // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse);
-
-        // Crear la fecha de mañana a las 3 PM
-        LocalDateTime yesterdayAtThreePM = LocalDateTime.of(LocalDate.now().minusDays(1), threePM);
-        Timestamp timestampForYesterday = Timestamp.valueOf(yesterdayAtThreePM);
-
-        Course newCourse2 = new Course(
-                "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NTAxZmMyMmItNzUwNS00Mjg0LWEzMTQtZTE0ZDNmZTRkNzQ2%40thread.v2/0?",
-                "Capacitación para ser buen jefe",
-                0f,
-                timestampForYesterday,
-                "Como ser buen jefe",
-                3,
-                VIRTUAL);
-
-        // Añadir los emprendimientos al curso
-        for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            newCourse2.addEntrepreneurship(entrepreneurship);
-        }
-
-        // Guardar el nuevo curso en el repositorio
-        courseRepository.save(newCourse2);
     }
 
-    private void insertCoupons() {
-        // Obtener la lista de emprendimientos
+    private void insertCoupons(List<Plan> plans) {
         List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
 
-        // Crear cupones de ejemplo para cada emprendimiento
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            Coupon coupon1 = Coupon.builder()
-                    .description("10% de descuento en productos de " + entrepreneurship.getName())
-                    .discount(10.0)
-                    .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30))) // 30 días a partir de hoy
-                    .expirationPeriod(30)
-                    .entrepreneurship(entrepreneurship)
-                    .build();
+            for (int i = 0; i < plans.size(); i++) {
+                Plan associatedPlan = plans.get(i);
 
-            Coupon coupon2 = Coupon.builder()
-                    .description("20% de descuento en el primer pedido de " + entrepreneurship.getName())
-                    .discount(20.0)
-                    .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 60))) // 60 días a partir de hoy
-                    .expirationPeriod(60)
-                    .entrepreneurship(entrepreneurship)
-                    .build();
+                Coupon coupon = Coupon.builder()
+                        .description((i + 1) * 10 + "% de descuento en productos de " + entrepreneurship.getName())
+                        .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30 * (i + 1)))) // 30, 60, 90 days
+                        .expirationPeriod((i + 1) * 30)
+                        .entrepreneurship(entrepreneurship)
+                        .plan(associatedPlan)  // Associate with a plan
+                        .build();
 
-            // Guardar los cupones en el repositorio
-            couponRepository.save(coupon1);
-            couponRepository.save(coupon2);
+                couponRepository.save(coupon);
+            }
         }
     }
 }
+
