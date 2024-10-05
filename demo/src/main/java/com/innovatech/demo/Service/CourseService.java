@@ -12,7 +12,7 @@ import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Repository.CourseRepository;
 
 @Service
-public class ServiceCourse {
+public class CourseService {
 
     @Autowired
     private CourseRepository courseRepository;

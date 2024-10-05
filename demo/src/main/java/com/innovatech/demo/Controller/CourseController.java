@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.innovatech.demo.DTO.CourseDTONoID;
 import com.innovatech.demo.DTO.CourseInfoDTO;
 import com.innovatech.demo.Entity.Course;
-import com.innovatech.demo.Service.ServiceCourse;
+import com.innovatech.demo.Service.CourseService;
 
 @RestController
 @RequestMapping("/course")
 public class CourseController {
 
     @Autowired
-    private ServiceCourse courseService;
+    private CourseService courseService;
 
     @GetMapping("/all/active")
     public ResponseEntity<?> listActiveCourses(@RequestParam(defaultValue = "1") Integer page,
