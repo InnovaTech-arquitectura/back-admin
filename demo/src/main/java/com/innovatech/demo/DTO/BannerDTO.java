@@ -18,4 +18,10 @@ public class BannerDTO {
     private String title;
     private MultipartFile picture;
     private Long adminId;
+
+    public BannerDTO(String title, MultipartFile picture, Long adminId) {
+        this.title = title;
+        this.picture = picture;
+        this.adminId = adminId;
+    }
 }
