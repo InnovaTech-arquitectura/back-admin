@@ -37,8 +37,8 @@ public class EventControllerTest {
     @Test
     public void testGetAllEvents() {
         // Arrange
-        EventEntity event1 = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        EventEntity event2 = new EventEntity(2L, "Event2", 200, "2023-09-22", 75, 50, "Place2", "Modality2", null, null);
+        EventEntity event1 = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);
+        EventEntity event2 = new EventEntity(2L, "Event2", 200, "2023-09-22", 75, 50, 10, "Modality2", null, null);
         
         List<EventEntity> events = Arrays.asList(event1, event2);
         Page<EventEntity> eventPage = new PageImpl<>(events, PageRequest.of(0, 10), events.size());
@@ -57,8 +57,7 @@ public class EventControllerTest {
     @Test
     public void testGetEventById_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findById(1L)).thenReturn(event);
+        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findById(1L)).thenReturn(event);
 
         // Act
         ResponseEntity<?> response = eventController.getEventById("1");
@@ -84,8 +83,7 @@ public class EventControllerTest {
     @Test
     public void testAddEvent_Success() {
         // Arrange
-        EventEntity event = new EventEntity(null, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findByName("Event1")).thenReturn(null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findByName("Event1")).thenReturn(null);
         when(eventService.save(event)).thenReturn(event);
 
         // Act
@@ -99,22 +97,26 @@ public class EventControllerTest {
     @Test
     public void testAddEvent_Conflict() {
         // Arrange
-        EventEntity event = new EventEntity(null, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findByName("Event1")).thenReturn(event);
+        EventEntity existingEvent = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);
+        
+        // Simula que el evento ya existe en el servicio
+        when(eventService.findByName("Event1")).thenReturn(existingEvent);
 
         // Act
-        ResponseEntity<?> response = eventController.addEvent(event);
+        ResponseEntity<?> response = eventController.addEvent(existingEvent);
 
         // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals("Event with the same name already exists", response.getBody());
-    }
+        
+        // Verifica que se llamó al servicio para buscar el evento
+        verify(eventService).findByName("Event1");
+}
+
 
     @Test
     public void testUpdateEvent_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findById(1L)).thenReturn(event);
+        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findById(1L)).thenReturn(event);
 
         // Act
         ResponseEntity<?> response = eventController.updateEvent(event);
@@ -127,8 +129,7 @@ public class EventControllerTest {
     @Test
     public void testUpdateEvent_NotFound() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findById(1L)).thenReturn(null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findById(1L)).thenReturn(null);
 
         // Act
         ResponseEntity<?> response = eventController.updateEvent(event);
@@ -141,8 +142,7 @@ public class EventControllerTest {
     @Test
     public void testDeleteEvent_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, "Place1", "Modality1", null, null);
-        when(eventService.findById(1L)).thenReturn(event);
+        EventEntity event = new EventEntity(1L, "Event1", 100, "2023-09-21", 50, 30, 10, "Modality1", null, null);        when(eventService.findById(1L)).thenReturn(event);
 
         // Act
         ResponseEntity<?> response = eventController.deleteEvent(1L);

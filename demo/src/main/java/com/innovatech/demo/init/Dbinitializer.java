@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -15,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Course;
+import com.innovatech.demo.Entity.CourseEntrepreneurship;
 import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Entity.Entrepreneurship;
+import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
@@ -24,7 +25,9 @@ import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
+import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
 import com.innovatech.demo.Repository.CourseRepository;
+import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.CouponRepository;
 import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
@@ -66,10 +69,17 @@ public class Dbinitializer implements CommandLineRunner {
     private EventRepository eventRepository;
 
     @Autowired
+    private CourseEntrepreneurshipRepository courseEntrepreneurshipRepository;
+
+    @Autowired
     private CouponRepository couponRepository;
 
     public static final Modality PRESENCIAL = Modality.presencial;
     public static final Modality VIRTUAL = Modality.virtual;
+
+
+    @Autowired
+    private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
     @Override
     @Transactional
@@ -162,28 +172,52 @@ public class Dbinitializer implements CommandLineRunner {
         return plans;
     }
 
-    private void insertEvents() {
-        for (int i = 1; i <= 5; i++) {
-            EventEntity eventEntity = EventEntity.builder()
-                    .name("Event " + i)
-                    .totalCost(100 + (i * 20))
-                    .date(LocalDate.now().plusDays(i).toString())
-                    .earnings(50 + (i * 10))
-                    .costoLocal(30 + (i * 5))
-                    .place("Place " + i)
-                    .modality("Modality " + i)
-                    .quota(100)
-                    .build();
-            eventRepository.save(eventEntity);
-        }
-    }
+    
+
+
 
     private void insertEntrepreneurships() {
+
         Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
         Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
 
         entrepreneurshipRepository.save(zara);
         entrepreneurshipRepository.save(nike);
+    }
+
+    private void insertEvents() {
+        // Obtener la lista de emprendimientos desde el repositorio
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+    
+        // Inicialización de eventos
+        for (int i = 1; i <= 5; i++) {
+            EventEntity eventEntity = EventEntity.builder()
+                    .name("Event " + i)
+                    .totalCost(100 + (i * 20))
+                    .date(LocalDate.now().plusDays(i).toString())
+                    .date2(LocalDate.now().plusDays(i+1).toString())
+                    .earnings(50 + (i * 10))
+                    .costoLocal(30 + (i * 5))
+                    .place(i*10)
+                    .modality("Modality " + i)
+                    .quota(100)
+                    .description("Evento de prueba " + i)
+                    .build();
+    
+            eventRepository.save(eventEntity); // Guardar el evento en el repositorio
+    
+            // Crear asociaciones con emprendimientos
+            for (int j = 0; j < i && j < entrepreneurships.size(); j++) { 
+                Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
+                        .eventEntity(eventEntity)
+                        .entrepreneurship(entrepreneurships.get(j)) 
+                        .date(java.sql.Date.valueOf(eventEntity.getDate()))
+                        .amountPaid(i * 100.000)
+                        .build();
+    
+                entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry); 
+            }
+        }
     }
 
     private void insertCourses() {
@@ -204,7 +238,7 @@ public class Dbinitializer implements CommandLineRunner {
                 VIRTUAL);
 
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            newCourse.addEntrepreneurship(entrepreneurship);
+            courseEntrepreneurshipRepository.save(new CourseEntrepreneurship(entrepreneurship, newCourse));
         }
         courseRepository.save(newCourse);
     }

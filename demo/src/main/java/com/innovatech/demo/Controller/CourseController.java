@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.innovatech.demo.DTO.CourseDTONoID;
 import com.innovatech.demo.DTO.CourseInfoDTO;
 import com.innovatech.demo.Entity.Course;
-import com.innovatech.demo.Service.ServiceCourse;
+import com.innovatech.demo.Service.CourseService;
 
 @RestController
 @RequestMapping("/course")
 public class CourseController {
 
     @Autowired
-    private ServiceCourse courseService;
+    private CourseService courseService;
 
     @GetMapping("/all/active")
     public ResponseEntity<?> listActiveCourses(@RequestParam(defaultValue = "1") Integer page,
@@ -60,7 +60,7 @@ public class CourseController {
             CourseInfoDTO infoCourse = new CourseInfoDTO(foundCourse.getId(),
                     foundCourse.getLink(), foundCourse.getDescription(), foundCourse.getScore(),
                     foundCourse.getDate(), foundCourse.getTitle(), foundCourse.getPlaces(),
-                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getEntrepreneurships().size());
+                    foundCourse.getModality(), foundCourse.getPlaces() - foundCourse.getCourseEntrepreneurship().size());
             return ResponseEntity.ok(infoCourse);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course does not exist");
