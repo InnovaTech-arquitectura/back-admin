@@ -22,10 +22,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Banner {
-    
-    public Banner(String title2, String title3, AdministrativeEmployee admin) {
-        //TODO Auto-generated constructor stub
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +35,12 @@ public class Banner {
 
     @ManyToOne
     private AdministrativeEmployee administrativeEmployee;
+
+    public Banner(String title, String multimedia, AdministrativeEmployee administrativeEmployee) {
+        this.title = title;
+        this.multimedia = multimedia;
+        this.administrativeEmployee = administrativeEmployee;
+    }
 
 
 }

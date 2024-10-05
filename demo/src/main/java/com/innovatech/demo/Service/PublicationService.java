@@ -46,16 +46,20 @@ public class PublicationService {
         return bannerRepository.findAll(pageable).getContent();
     }
 
-    public Banner createBanner( BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException
+    public Banner createBanner(BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException
     {
         Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findById(newBannerDto.getAdminId());
-        System.out.println("AdministrativeEmployee found with id: "+adminOpt);
         
         if (adminOpt.isPresent()) {
-            System.out.println("AdministrativeEmployee found with id: " + newBannerDto.getAdminId());
             Banner banner = new Banner(newBannerDto.getTitle(), newBannerDto.getTitle(), adminOpt.get());
-            bannerRepository.save(banner);
-            return banner;
+            //System.out.println("AdministrativeEmployee found with id: " + banner.getTitle());
+            Banner created=bannerRepository.save(banner);
+
+            created.setMultimedia("p-"+created.getId().toString());
+
+            bannerRepository.save(created);
+
+            return created;
         } else {
             // Handle the case where the admin is not found
             throw new RuntimeException("AdministrativeEmployee not found with id: " + newBannerDto.getAdminId());
@@ -73,9 +77,15 @@ public class PublicationService {
     public Banner editBanner(Long id,BannerDTO editedBannerDto) {
         // Obtener la fecha y hora actuales como Timestamp
         Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findById(editedBannerDto.getAdminId());
+        
         if (adminOpt.isPresent()) {
-            Banner editedBanner= new Banner(editedBannerDto.getTitle(),editedBannerDto.getTitle(), adminOpt.get());
-            return new Banner();
+            System.out.println("AdministrativeEmployee found with id: " + adminOpt.get().getId());
+
+            Banner editedBanner= new Banner(id,editedBannerDto.getTitle(),"p-"+id.toString(), adminOpt.get());
+            bannerRepository.save(editedBanner);
+
+
+            return editedBanner;
         } else {
             // Handle the case where the admin is not found
             throw new RuntimeException("AdministrativeEmployee not found with id: " + editedBannerDto.getAdminId());

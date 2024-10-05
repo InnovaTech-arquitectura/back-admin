@@ -58,7 +58,15 @@ public class MinioService {
                 .object(filename)
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .build());
-    }   
+    }
+
+    public void deleteFile(String filename) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        createBucket();
+        minioClient.removeObject(RemoveObjectArgs.builder()
+                .bucket(bucketName)
+                .object(filename)
+                .build());
+    }
 
     
 }

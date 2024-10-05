@@ -61,7 +61,7 @@ public class PublicationController {
             //obtener de cada imagen de la lista de banners
             for (Banner banner : banners) {
                 //obtener la imagen de minio
-                BannerInfoDTO bannerDTO = new BannerInfoDTO(banner.getId(), banner.getTitle(), IOUtils.toByteArray(minioService.getObject(banner.getTitle())),banner.getAdministrativeEmployee().getId());
+                BannerInfoDTO bannerDTO = new BannerInfoDTO(banner.getId(), banner.getTitle(), IOUtils.toByteArray(minioService.getObject(banner.getMultimedia())),banner.getAdministrativeEmployee().getId());
                 bannersDTO.add(bannerDTO);
             }
 
@@ -74,7 +74,7 @@ public class PublicationController {
             Banner foundBanner = publicationService.findBanner(id);
 
             //obtener la imagen de minio
-            return ResponseEntity.ok(new BannerInfoDTO(foundBanner.getId(), foundBanner.getTitle(), IOUtils.toByteArray(minioService.getObject(foundBanner.getTitle())),foundBanner.getAdministrativeEmployee().getId()));
+            return ResponseEntity.ok(new BannerInfoDTO(foundBanner.getId(), foundBanner.getTitle(), IOUtils.toByteArray(minioService.getObject(foundBanner.getMultimedia())),foundBanner.getAdministrativeEmployee().getId()));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Banner not found");
         }
@@ -87,7 +87,7 @@ public class PublicationController {
 
             //save image in minio
             try {
-                minioService.uploadFile(editedBannerDto.getTitle(),editedBannerDto.getPicture());
+                minioService.uploadFile("p-"+editedBanner.getId().toString(),editedBannerDto.getPicture());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (Exception e) {
@@ -106,9 +106,11 @@ public class PublicationController {
     public ResponseEntity<?> createCourse(@ModelAttribute BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException {
         try {
             Banner newBanner = publicationService.createBanner(newBannerDto);
+            System.out.println("AdministrativeEmployee found with id: hola" );
+
             //save image in minio
             try {
-                minioService.uploadFile(newBannerDto.getTitle(),newBannerDto.getPicture());
+                minioService.uploadFile("p-"+newBanner.getId().toString(),newBannerDto.getPicture());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (Exception e) {
@@ -127,6 +129,13 @@ public class PublicationController {
             Banner banner= publicationService.deleteBanner(id);
 
             //eliminar la imagen de minio
+            try {
+                minioService.deleteFile("p-"+id.toString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Error deleting photo");
+            }
 
             return ResponseEntity.ok("Banner deleted");
         } catch (NoSuchElementException e) {
