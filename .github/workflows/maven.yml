@@ -42,9 +42,9 @@ jobs:
           mvn test
 
   auto-merge:
-    needs: test
+    needs: test  # Asegura que el job de test termine exitosamente antes de auto-merge
     runs-on: ubuntu-latest
-    if: ${{ success() && github.event.pull_request.merged == false }}  # Asegura que los tests pasaron y no está ya merged
+    if: ${{ success() && github.event.pull_request.merged == false }}  # Solo si los tests pasan y la PR no está ya mergeada
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
@@ -75,4 +75,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify about merge conflict
-        run: echo "Merge conflict detected, cannot auto-merge PR!"
+        run: echo "Merge conflict detected, cannot auto-merge PR!"
