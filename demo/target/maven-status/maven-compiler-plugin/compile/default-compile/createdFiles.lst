@@ -19,7 +19,6 @@ com/innovatech/demo/Entity/PlanFunctionality$PlanFunctionalityBuilder.class
 com/innovatech/demo/Repository/CourseRepository.class
 com/innovatech/demo/Repository/FunctionalityRepository.class
 com/innovatech/demo/Controller/ProfileController.class
-com/innovatech/demo/Service/ServiceCourse.class
 com/innovatech/demo/Entity/AdministrativeEmployee$AdministrativeEmployeeBuilder.class
 com/innovatech/demo/init/Dbinitializer.class
 com/innovatech/demo/Service/PlanService.class

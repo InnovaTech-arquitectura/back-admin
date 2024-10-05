@@ -29,6 +29,6 @@ public class AdministrativeEmployee {
     @OneToMany(mappedBy = "administrativeEmployee")
     @JsonIgnore
     @Builder.Default
-    private List<AdministrativeEmployee> administrativeEmployees = new ArrayList<>();
+    private List<Banner> banners = new ArrayList<>();
 } 
 
