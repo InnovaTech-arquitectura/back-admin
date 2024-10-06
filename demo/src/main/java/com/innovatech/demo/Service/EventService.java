@@ -1,5 +1,7 @@
 package com.innovatech.demo.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,7 @@ public class EventService implements CrudService<EventEntity, Long> {
 
         return savedEvent; // Retornar el evento guardado
     }
+    
 
     /* TODO: Fix this
     public Map<String, Object> getExpensesForSpecificMonth(int month, int year) {
@@ -91,32 +94,43 @@ public class EventService implements CrudService<EventEntity, Long> {
 
         return response;
     }
+        */
 
-    public Map<String, Object> getExpensesByYear(int year) {
-        List<Object[]> results = eventRepository.getAnnualExpensesByMonth(year);
     
-        // Inicializar el mapa con los meses
-        Map<String, Object> response = new HashMap<>();
-        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Inicializa una lista de 12 ceros
-    
-        // Procesar los resultados
-        for (Object[] result : results) {
-            Integer monthResult = (Integer) result[0]; // El mes
-            Double totalExpense = (Double) result[1]; // El total de gastos
-    
-            // Asignar el valor al mes correspondiente
-            data.set(monthResult - 1, totalExpense.intValue());
+        public Map<String, Object> getExpensesByYear(int year) {
+            List<Object[]> results = eventRepository.getAnnualExpensesByYear(year);
+        
+            // Inicializar el mapa con los meses
+            Map<String, Object> response = new HashMap<>();
+            String[] months = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                                "Octubre", "Noviembre", "Diciembre" };
+            List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Inicializa una lista de 12 ceros
+        
+            // Procesar los resultados
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+            for (Object[] result : results) {
+                String dateString = (String) result[0]; // La fecha como String en formato 'yyyy-MM-dd'
+                Double totalExpense = (Double) result[1]; // El total de gastos
+        
+                // Convertir el String en formato 'YYYY-MM-DD' a un mes usando LocalDate
+                LocalDate date = LocalDate.parse(dateString, formatter);
+                int monthResult = date.getMonthValue(); // Extraer el mes como entero
+        
+                // Asignar el valor al mes correspondiente (meses en 0-index, por eso restamos 1)
+                data.set(monthResult - 1, totalExpense.intValue());
+            }
+        
+            // Preparar la respuesta
+            response.put("labels", months);
+            response.put("data", data);
+            response.put("label", "Gastos Anuales " + year);
+        
+            return response;
         }
+        
+
     
-        // Preparar la respuesta
-        response.put("labels", months);
-        response.put("data", data);
-        response.put("label", "Gastos Anuales " + year);
-    
-        return response;
-    }
-    */
     
 
 }

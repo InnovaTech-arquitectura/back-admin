@@ -24,14 +24,22 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
         "WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month " +
         "GROUP BY MONTH(e.date)")
     List<Object[]> getExpensesByMonthAndYear(@Param("month") int month, @Param("year") int year);
-
-    @Query("SELECT MONTH(e.date) AS month, " +
-        "SUM(COALESCE(e.totalCost, 0)) AS totalExpense " +
-        "FROM Event e " +
-        "WHERE YEAR(e.date) = :year " +
-        "GROUP BY MONTH(e.date) " +
-        "ORDER BY month")
-    List<Object[]> getAnnualExpensesByMonth(@Param("year") int year);
     */
+
+    @Query("SELECT e.date, SUM(CAST(e.totalCost AS double)) AS totalExpense " +
+        "FROM EventEntity e " +
+        "WHERE e.date LIKE CONCAT(:year, '%') " +
+        "GROUP BY e.date " +
+        "ORDER BY e.date")
+    List<Object[]> getAnnualExpensesByYear(@Param("year") int year);
+
+
+
+
+
+
+
+
+    
 
 }

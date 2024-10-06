@@ -3,6 +3,8 @@ package com.innovatech.demo.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,14 @@ public interface EntrepreneurshipRepository extends JpaRepository<Entrepreneursh
 
     @Query("SELECT e FROM Entrepreneurship e")
     List<Entrepreneurship> findAllEntrepreneurships();
+
+    @Query("SELECT e, p.name FROM Entrepreneurship e " +
+        "JOIN Subscription s ON e.id = s.entrepreneurship.id " +
+        "JOIN Plan p ON s.plan.id = p.id " +
+        "WHERE CURRENT_DATE BETWEEN s.initialDate AND s.expirationDate " +
+        "AND s.initialDate = (SELECT MAX(s2.initialDate) FROM Subscription s2 WHERE s2.entrepreneurship.id = e.id)")
+        List<Object[]> findAllWithActivePlan();
+
 
     @Query("SELECT e.id, e.name, SUM(COALESCE(s.amount, 0)) + SUM(COALESCE(r.amountPaid, 0)) AS totalIncome " +
             "FROM Entrepreneurship e " +

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,33 @@ public class EntrepreneurshipService implements CrudService<Entrepreneurship, Lo
     public Page<Entrepreneurship> findAll(Pageable pageable) {
         return entrepreneurshipRepository.findAll(pageable);
     }
+
+    // Dashboard
+    public List<Map<String, Object>> findAllWithActivePlan() {
+        List<Object[]> result = entrepreneurshipRepository.findAllWithActivePlan();
+
+        // Prepara la respuesta en el formato deseado
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] row : result) {
+            Entrepreneurship entrepreneurship = (Entrepreneurship) row[0];
+            String planName = (String) row[1];  // Nombre del plan
+
+            // Crea el JSON de emprendimiento con los campos
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", entrepreneurship.getId());
+            item.put("name", entrepreneurship.getName());
+            item.put("logo", entrepreneurship.getLogo());
+            item.put("description", entrepreneurship.getDescription());
+            item.put("names", entrepreneurship.getNames());
+            item.put("lastnames", entrepreneurship.getLastnames());
+            item.put("plan_name", planName);  // Agrega el nombre del plan
+
+            response.add(item);
+        }
+
+        return response;
+    }
+
 
     // Dashboard
     public List<Object[]> IngresosTotalesEntrepreneurships() {
@@ -69,8 +97,8 @@ public class EntrepreneurshipService implements CrudService<Entrepreneurship, Lo
 
         // Inicializar el mapa con los meses
         Map<String, Object> response = new HashMap<>();
-        String[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
-                "October", "November", "December" };
+        String[] months = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                "Octubre", "Noviembre", "Diciembre" };
         List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Inicializa una lista de 12 ceros
 
         // Procesar los resultados
