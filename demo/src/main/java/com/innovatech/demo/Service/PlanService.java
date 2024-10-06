@@ -39,12 +39,6 @@ public class PlanService implements CrudService<Plan, Long> {
         return planRepository.findByName(name);
     }
 
-    public List<Plan> Subscriptionforplan() {
-
-        return planRepository.Subscriptionforplan();
-    }
-
-
     @Override
     public Plan save(Plan plan) {
         // Get the functionalities of the plan
@@ -70,5 +64,4 @@ public class PlanService implements CrudService<Plan, Long> {
         // Save the plan with the functionalities in the dbb
         return planRepository.save(plan);
     }
-
 }
