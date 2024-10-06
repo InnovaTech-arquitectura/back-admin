@@ -1,9 +1,6 @@
 name: Deploy SpringBoot App to Testing
 
 on:
-  push:
-    branches:
-      - main  # Se activa en un push a la rama main
   workflow_run:
     workflows: ["TestDeployment"]  # Se activa cuando el workflow 'TestDeployment' se completa
     types:
@@ -12,8 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: [self-hosted, test-admin]  # Runner local para 'testing'
-    
-    if: ${{ github.event_name == 'push' && github.event.workflow_run.conclusion == 'success' }}  # Ejecuta si es un push a main y el workflow anterior fue exitoso
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Solo ejecuta si 'TestDeployment' fue exitoso
 
     steps:
     - name: Comprobando el repositorio
