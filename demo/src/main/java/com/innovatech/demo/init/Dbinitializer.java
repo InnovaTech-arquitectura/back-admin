@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
+import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.EventEntity;
@@ -28,6 +30,7 @@ import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
 import com.innovatech.demo.Repository.RepositoryEntrepreneurship;
+import com.innovatech.demo.Repository.CouponRepository;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
@@ -64,6 +67,8 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Override
     @Transactional
@@ -237,5 +242,25 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse2);
+    }
+
+    private void insertCoupons(List<Plan> plans) {
+        List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
+
+        for (Entrepreneurship entrepreneurship : entrepreneurList) {
+            for (int i = 0; i < plans.size(); i++) {
+                Plan associatedPlan = plans.get(i);
+
+                Coupon coupon = Coupon.builder()
+                        .description((i + 1) * 10 + "% de descuento en productos de " + entrepreneurship.getName())
+                        .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30 * (i + 1)))) // 30, 60, 90 days
+                        .expirationPeriod((i + 1) * 30)
+                        .entrepreneurship(entrepreneurship)
+                        .plan(associatedPlan)  // Associate with a plan
+                        .build();
+
+                couponRepository.save(coupon);
+            }
+        }
     }
 }
