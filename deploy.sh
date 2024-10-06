@@ -19,7 +19,11 @@ cd back-admin || exit 1
 
 # Detener y eliminar los contenedores existentes
 echo "Deteniendo y eliminando contenedores existentes..."
-docker-compose down
+docker-compose down --remove-orphans  # Asegúrate de detener y eliminar contenedores huérfanos
+
+# Eliminar cualquier contenedor existente por si acaso (en caso de que el comando anterior no los elimine)
+echo "Eliminando contenedores existentes..."
+docker rm -f $(docker ps -aq)  # Elimina todos los contenedores, aunque estén detenidos
 
 # Ejecutar docker-compose con el argumento de entorno
 echo "Ejecutando docker-compose..."
