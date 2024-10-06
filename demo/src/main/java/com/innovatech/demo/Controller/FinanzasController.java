@@ -22,6 +22,7 @@ import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Service.EntrepreneurshipService;
 import com.innovatech.demo.Service.EventService;
 import com.innovatech.demo.Service.PlanService;
+import com.innovatech.demo.Service.SubscriptionService;
 
 @RestController
 @RequestMapping("/finance")
@@ -32,6 +33,9 @@ public class FinanzasController {
 
     @Autowired
     private EntrepreneurshipService entrepreneurshipService;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
 
     // Method to get all entrepreneurships with pagination
     // http://localhost:8090/finanzas/all?limit=n&page=m
@@ -134,6 +138,22 @@ public class FinanzasController {
         return ResponseEntity.ok(expenseData);
     }
     */
+
+    // Method to get the number of plans subscribed by entrepreneurs per year
+    // http://localhost:8090/finance/usersByPlan?year=2021
+    @GetMapping("/usersByPlan")
+    public ResponseEntity<Map<String, Object>> getUsersByPlan(@RequestParam("year") int year) {
+        Map<String, Object> result = subscriptionService.getUsersByPlanForYear(year);
+        return ResponseEntity.ok(result);
+    }
+
+    // Method to get the income of plans per year
+    // http://localhost:8090/finance/incomeByPlan?year=2021
+    @GetMapping("/incomeByPlan")
+    public ResponseEntity<Map<String, Object>> getIncomeByPlan(@RequestParam("year") int year) {
+        Map<String, Object> result = subscriptionService.getIncomeByPlanForYear(year);
+        return ResponseEntity.ok(result);
+    }
 }
 
 
