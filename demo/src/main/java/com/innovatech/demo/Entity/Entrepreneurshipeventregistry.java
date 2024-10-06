@@ -24,16 +24,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Entrepreneurshipeventregistry {
 
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_Entrepreneurship", referencedColumnName = "id")
-    private Entrepreneurship entrepreneurship;
+    // @ManyToOne
+    // @JoinColumn(name = "Id_Entrepreneurship", referencedColumnName = "id")
+    // private Entrepreneurship entrepreneurship;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_event", nullable = false)
     private EventEntity eventEntity;
 
@@ -42,10 +41,4 @@ public class Entrepreneurshipeventregistry {
 
     @Column(nullable = false)
     private double amountPaid;
-
-    public Entrepreneurshipeventregistry(EventEntity eventEntity, Entrepreneurship entrepreneurship) {
-        this.eventEntity = eventEntity;
-        this.entrepreneurship = entrepreneurship;
-    }
-
 }
