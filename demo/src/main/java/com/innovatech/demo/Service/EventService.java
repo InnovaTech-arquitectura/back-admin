@@ -67,4 +67,56 @@ public class EventService implements CrudService<EventEntity, Long> {
         return savedEvent; // Retornar el evento guardado
     }
 
+    /* TODO: Fix this
+    public Map<String, Object> getExpensesForSpecificMonth(int month, int year) {
+        List<Object[]> results = eventRepository.getExpensesByMonthAndYear(month, year);
+
+        // Inicializar el mapa de respuesta
+        Map<String, Object> response = new HashMap<>();
+
+        // Procesar el resultado
+        if (!results.isEmpty()) {
+            Object[] result = results.get(0); // Solo habrá un resultado para el mes
+            Integer monthResult = (Integer) result[0];
+            Double totalExpense = (Double) result[1];
+
+            response.put("label", "Gastos del Mes");
+            response.put("month", monthResult); // El mes
+            response.put("totalExpense", totalExpense.intValue()); // El gasto total
+        } else {
+            // Si no hay gastos, devolver 0
+            response.put("month", month);
+            response.put("totalExpense", 0);
+        }
+
+        return response;
+    }
+
+    public Map<String, Object> getExpensesByYear(int year) {
+        List<Object[]> results = eventRepository.getAnnualExpensesByMonth(year);
+    
+        // Inicializar el mapa con los meses
+        Map<String, Object> response = new HashMap<>();
+        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Inicializa una lista de 12 ceros
+    
+        // Procesar los resultados
+        for (Object[] result : results) {
+            Integer monthResult = (Integer) result[0]; // El mes
+            Double totalExpense = (Double) result[1]; // El total de gastos
+    
+            // Asignar el valor al mes correspondiente
+            data.set(monthResult - 1, totalExpense.intValue());
+        }
+    
+        // Preparar la respuesta
+        response.put("labels", months);
+        response.put("data", data);
+        response.put("label", "Gastos Anuales " + year);
+    
+        return response;
+    }
+    */
+    
+
 }
