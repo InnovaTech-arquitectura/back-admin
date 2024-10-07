@@ -17,9 +17,11 @@ import com.innovatech.demo.DTO.BannerDTO;
 import com.innovatech.demo.Entity.AdministrativeEmployee;
 import com.innovatech.demo.Entity.Banner;
 import com.innovatech.demo.Entity.Course;
+import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Repository.AdministrativeEmployeeRepository;
 import com.innovatech.demo.Repository.BannerRepository;
 import com.innovatech.demo.Repository.EventRepository;
+import com.innovatech.demo.Repository.UserRepository;
 
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -33,6 +35,9 @@ public class PublicationService {
 
     @Autowired
     private BannerRepository bannerRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     
     @Autowired
     private AdministrativeEmployeeRepository administrativeEmployeeRepository;
@@ -46,9 +51,11 @@ public class PublicationService {
         return bannerRepository.findAll(pageable).getContent();
     }
 
-    public Banner createBanner(BannerDTO newBannerDto) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException
+    public Banner createBanner(BannerDTO newBannerDto, String email) throws InvalidKeyException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidResponseException, XmlParserException, InternalException, IOException
     {
-        Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findById(newBannerDto.getAdminId());
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+
+        Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findByUser(user.get());
         
         if (adminOpt.isPresent()) {
             Banner banner = new Banner(newBannerDto.getTitle(), newBannerDto.getTitle(), adminOpt.get());
@@ -74,9 +81,11 @@ public class PublicationService {
     }
 
 
-    public Banner editBanner(Long id,BannerDTO editedBannerDto) {
+    public Banner editBanner(Long id,BannerDTO editedBannerDto, String email) {
         // Obtener la fecha y hora actuales como Timestamp
-        Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findById(editedBannerDto.getAdminId());
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+
+        Optional<AdministrativeEmployee> adminOpt = administrativeEmployeeRepository.findByUser(user.get());
         
         if (adminOpt.isPresent()) {
             System.out.println("AdministrativeEmployee found with id: " + adminOpt.get().getId());
