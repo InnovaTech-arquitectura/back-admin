@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/event/**")).hasAnyAuthority("Administrator", "Entrepreneurship")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/plan/**")).hasAnyAuthority("Administrator", "Sales", "Billing")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/course/**")).hasAnyAuthority("Administrator", "Specialist")
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/banner/**")).hasAnyAuthority("Administrator", "Marketing")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/profile/**")).hasAuthority("Administrator")
                         .anyRequest().authenticated()
                 )
