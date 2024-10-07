@@ -87,7 +87,7 @@ public class PublicationController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (Exception e) {
-                return ResponseEntity.badRequest().body("Error uploading photo");
+                return ResponseEntity.internalServerError().body("Error uploading photo");
             }
 
             return ResponseEntity.ok(editedBanner);
@@ -108,8 +108,10 @@ public class PublicationController {
             try {
                 minioService.uploadFile("p-"+newBanner.getId().toString(),newBannerDto.getPicture());
             } catch (IOException e) {
+                publicationService.deleteBanner(newBanner.getId());
                 throw new RuntimeException(e);
             } catch (Exception e) {
+                publicationService.deleteBanner(newBanner.getId());
                 return ResponseEntity.badRequest().body("Error uploading photo");
             }
 
