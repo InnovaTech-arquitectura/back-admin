@@ -87,9 +87,8 @@ public class CapaTest {
         submitButton.click();
 
         // Vuelve a la tabla para ver que se cree la capacitación
-        driver.navigate().refresh();
-
         WebElement newCapa = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/app-ver-capacitaciones/body/section/div[3]/table/tbody/tr[3]/td[4]/div/a[1]")));
+
         String capaId = newCapa.getAttribute("id");
         String[] parts = capaId.split("-");
         String idAfterDash = parts[1];
@@ -105,17 +104,17 @@ public class CapaTest {
         WebElement saveCapa = wait.until(ExpectedConditions.elementToBeClickable(By.id("saveCapa")));
         saveCapa.click();
 
-        // Vuelve a la tabla para ver que se edite la capacitación
-        driver.navigate().refresh();
-
         // Elimina la capacitación
         WebElement deleteCapa = wait.until(ExpectedConditions.elementToBeClickable(By.id("delete-" + idAfterDash)));
         deleteCapa.click();
 
-        driver.navigate().refresh();
+        WebElement confirmPopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[1]")));
+        confirmPopup.click();
 
-        // Para que cargue la página
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("edit-1")));
+        WebElement closePopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[1]")));
+        closePopup.click();
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("edit-1")));
     }
     
     @AfterEach
