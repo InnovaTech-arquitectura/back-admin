@@ -1,4 +1,4 @@
-package com.innovatech.demo;
+package com.innovatech.demo.Controller;
 
 import com.innovatech.demo.Controller.EventController;
 import com.innovatech.demo.Entity.EventEntity;
