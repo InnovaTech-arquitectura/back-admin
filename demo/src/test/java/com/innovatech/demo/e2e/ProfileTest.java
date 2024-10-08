@@ -86,7 +86,7 @@ public class ProfileTest {
         WebElement adminButton2 = wait.until(ExpectedConditions.elementToBeClickable(By.id("profile-1")));
         adminButton2.click();
 
-        WebElement newProfile = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/app-perfil-tipo/body/section/div[2]/table/tbody/tr[3]/td[4]/div/a[1]")));
+        WebElement newProfile = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/app-perfil-tipo/body/section/div[2]/table/tbody/tr[2]/td[4]/div/a[1]")));
         String profileId = newProfile.getAttribute("id");
         String[] parts = profileId.split("-");
         String idAfterDash = parts[1];
@@ -110,7 +110,11 @@ public class ProfileTest {
         WebElement deleteEmployee = wait.until(ExpectedConditions.elementToBeClickable(By.id("delete-" + idAfterDash)));
         deleteEmployee.click();
 
-        driver.navigate().refresh();
+        WebElement confirmPopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[3]")));
+        confirmPopup.click();
+
+        WebElement closePopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[1]")));
+        closePopup.click();
 
         // Para que cargue la página
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("edit-1")));
