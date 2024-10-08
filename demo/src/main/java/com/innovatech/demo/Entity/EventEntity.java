@@ -1,8 +1,7 @@
 package com.innovatech.demo.Entity;
 
 import java.util.List;
-
-import org.hibernate.mapping.Set;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -16,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,13 +58,49 @@ public class EventEntity {
     @Column(nullable = true)
     private Integer quota;
 
-    @JsonIgnore
+    @Column(nullable = true)
+    private String Description;
+
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Entrepreneurshipeventregistry> entrepreneurshipeventregistry;
 
-    // Método para agregar inscripciones de emprendedores
-    public void addEntrepreneurshipEventRegistry(Entrepreneurshipeventregistry registry) {
-        this.entrepreneurshipeventregistry.add(registry);
-        registry.setEventEntity(this); // Asegura la bidireccionalidad
+
+
+    // Method to get the entrepreneurships of the event
+    @Transient
+    public List<Entrepreneurship> getEntrepreneurships() {
+        List<Entrepreneurship> entrepreneurships = new ArrayList<>();
+        for (Entrepreneurshipeventregistry registry : this.entrepreneurshipeventregistry) {
+            entrepreneurships.add(registry.getEntrepreneurship());
+        }
+        return entrepreneurships;
     }
+
+    // Method to set the entrepreneurships of the event
+    public void setEntrepreneurships(List<Entrepreneurship> entrepreneurships) {
+        this.entrepreneurshipeventregistry.clear();
+        for (Entrepreneurship entrepreneurship : entrepreneurships) {
+            registryEntrepreneurship(entrepreneurship); // registry functionality
+        }
+    }
+
+    // Method to registry the entrepreneurships to events
+    public void registryEntrepreneurship(Entrepreneurship entrepreneurship) {
+        Entrepreneurshipeventregistry entrepreneurshipeventregistry = new Entrepreneurshipeventregistry(this, entrepreneurship);
+        this.entrepreneurshipeventregistry.add(entrepreneurshipeventregistry);
+    }
+    //constructor
+    public EventEntity(Long id, String name, int totalCost, String date, int earnings, int costoLocal, String place, String modality, Integer quota, String description) {
+        this.id = id;
+        this.name = name;
+        this.totalCost = totalCost;
+        this.date = date;
+        this.earnings = earnings;
+        this.costoLocal = costoLocal;
+        this.place = place;
+        this.modality = modality;
+        this.quota = quota;
+        this.Description = description;
+    }
+    
 }

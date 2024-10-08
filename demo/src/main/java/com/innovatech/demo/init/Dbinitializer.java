@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,25 +14,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.innovatech.demo.Entity.AdministrativeEmployee;
-import com.innovatech.demo.Entity.Coupon;
 import com.innovatech.demo.Entity.Course;
 import com.innovatech.demo.Entity.CourseEntrepreneurship;
 import com.innovatech.demo.Entity.Entrepreneurship;
+import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
+import com.innovatech.demo.Entity.Subscription;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
+import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
 import com.innovatech.demo.Repository.CourseRepository;
+import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
 import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
 import com.innovatech.demo.Repository.RepositoryEntrepreneurship;
-import com.innovatech.demo.Repository.CouponRepository;
-import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
+import com.innovatech.demo.Repository.SubscriptionRepository;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
@@ -53,6 +55,9 @@ public class Dbinitializer implements CommandLineRunner {
     private PlanRepository planRepository;
 
     @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
     private FunctionalityRepository functionalityRepository;
 
     @Autowired
@@ -67,14 +72,14 @@ public class Dbinitializer implements CommandLineRunner {
     @Autowired
     private CourseEntrepreneurshipRepository courseEntrepreneurshipRepository;
 
-
     public static final Modality PRESENCIAL = Modality.presencial;
     public static final Modality VIRTUAL = Modality.virtual;
 
     @Autowired
     private EventRepository eventRepository;
+
     @Autowired
-    private CouponRepository couponRepository;
+    private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
     @Override
     @Transactional
@@ -166,6 +171,67 @@ public class Dbinitializer implements CommandLineRunner {
             }
         }
 
+        System.out.println("Uploading entrepreneurships");
+        insertEntrepreneurships();
+
+
+        List<Plan> plans = planRepository.findAll();
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+
+        // Creating and saving 10 subscriptions linked to plans and entrepreneurships
+        for (int i = 1; i <= 10; i++) {
+            Subscription subscription = Subscription.builder()
+                    .initialDate(Date.valueOf("2024-01-01"))
+                    .expirationDate(Date.valueOf("2025-01-01"))
+                    .amount(100.0 + (i * 5))
+                    .plan(plans.get(i % plans.size())) // Link to a plan
+                    .entrepreneurship(entrepreneurships.get(i % entrepreneurships.size())) // Link to an entrepreneurship
+                    .build();
+
+            // Saving the subscription
+            subscriptionRepository.save(subscription);
+        }
+
+        
+        System.out.println("Uploading events");
+        insertEvents();
+
+
+        System.out.println("Uploading courses");
+        insertCourses();
+
+        System.out.println("all data uploaded");
+    }
+
+
+     
+
+    private void insertEntrepreneurships() {
+
+    
+        // Crear emprendimientos
+        Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
+        Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
+        Entrepreneurship apple = new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez");
+        Entrepreneurship bodegaElBarril = new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez");
+        Entrepreneurship yogaFlow = new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez");
+        Entrepreneurship travelWithUs = new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez");
+
+        // Guardar emprendimientos
+        entrepreneurshipRepository.save(apple);
+        entrepreneurshipRepository.save(bodegaElBarril);
+        entrepreneurshipRepository.save(yogaFlow);
+        entrepreneurshipRepository.save(travelWithUs);
+        entrepreneurshipRepository.save(zara);
+        entrepreneurshipRepository.save(nike);
+
+    }
+    
+
+    private void insertEvents() {
+        // Obtener la lista de emprendimientos desde el repositorio
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+    
         // Inicialización de eventos
         for (int i = 1; i <= 5; i++) {
             EventEntity eventEntity = EventEntity.builder()
@@ -177,26 +243,23 @@ public class Dbinitializer implements CommandLineRunner {
                     .place("Place " + i)
                     .modality("Modality " + i)
                     .quota(100)
+                    .Description("Evento de prueba " + i)
                     .build();
-
-            eventRepository.save(eventEntity); // Call the save() method on the eventRepository instance
+    
+            eventRepository.save(eventEntity); // Guardar el evento en el repositorio
+    
+            // Crear asociaciones con emprendimientos
+            for (int j = 0; j < i && j < entrepreneurships.size(); j++) { 
+                Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
+                        .eventEntity(eventEntity)
+                        .entrepreneurship(entrepreneurships.get(j)) 
+                        .date(Date.valueOf(eventEntity.getDate()))
+                        .amountPaid(i * 100.000)
+                        .build();
+    
+                entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry); 
+            }
         }
-
-        System.out.println("Uploading entrepreneurships");
-        insertEntrepreneurships();
-
-        System.out.println("Uploading courses");
-        insertCourses();
-
-        System.out.println("all data uploaded");
-    }
-
-    private void insertEntrepreneurships() {
-        Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
-        Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
-
-        entrepreneurshipRepository.save(zara);
-        entrepreneurshipRepository.save(nike);
     }
 
     private void insertCourses() {
@@ -248,25 +311,5 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse2);
-    }
-
-    private void insertCoupons(List<Plan> plans) {
-        List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
-
-        for (Entrepreneurship entrepreneurship : entrepreneurList) {
-            for (int i = 0; i < plans.size(); i++) {
-                Plan associatedPlan = plans.get(i);
-
-                Coupon coupon = Coupon.builder()
-                        .description((i + 1) * 10 + "% de descuento en productos de " + entrepreneurship.getName())
-                        .expirationDate(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30 * (i + 1)))) // 30, 60, 90 days
-                        .expirationPeriod((i + 1) * 30)
-                        .entrepreneurship(entrepreneurship)
-                        .plan(associatedPlan)  // Associate with a plan
-                        .build();
-
-                couponRepository.save(coupon);
-            }
-        }
     }
 }
