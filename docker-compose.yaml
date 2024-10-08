@@ -8,6 +8,4 @@ services:
       - "8090:8090"  # Puerto expuesto para la aplicación
     environment:
       SPRING_PROFILES_ACTIVE: prod  # Activar el perfil de producción (o test)
-    env_file:
-      -  demo/.env  # Archivo de variables de entorno
     restart: always
