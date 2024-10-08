@@ -83,6 +83,9 @@ public class PlansTest {
 
         //Espera que cargue la pagina principal
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-1")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-1")));
+        driver.navigate().refresh(); // Porque selenium es muy rápido       
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-1")));  
         driver.navigate().refresh(); // Porque selenium es muy rápido       
 
         WebElement newCard = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/app-ver-planes/body/section/div[2]/div[4]")));
@@ -103,16 +106,19 @@ public class PlansTest {
 
         //Espera que cargue la pagina principal
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-1")));
-        driver.navigate().refresh(); // Porque selenium es muy rápido
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-" + idAfterDash)));
 
         // Elimina el plan
         WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("delete-" + idAfterDash)));
         deleteButton.click();
 
-        driver.navigate().refresh();
+        WebElement confirmPopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[3]")));
+        confirmPopup.click();
 
-        // Para que cargue la página
+        WebElement closePopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div[6]/button[1]")));
+        closePopup.click();
+
+        //Para que cargue la página
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("plan-1")));
     }
 
