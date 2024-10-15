@@ -23,6 +23,9 @@ public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JWTGenerator jwtGenerator;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(
@@ -34,4 +37,20 @@ public class CustomUserDetailService implements UserDetailsService {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 
+    public String getUserRoleFromToken(String token) {
+        if (jwtGenerator.validateToken(token)) {
+            // Extraer el nombre de usuario del token
+            String username = jwtGenerator.getUserFromJwt(token);
+            
+            // Cargar los detalles del usuario desde la base de datos
+            UserDetails userDetails = loadUserByUsername(username);
+
+            // Obtener el rol del usuario
+            return userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(authority -> authority.getAuthority())
+                    .orElse("ROLE_USER"); // Retornar un valor predeterminado si no se encuentra ningún rol
+        }
+        throw new IllegalArgumentException("Invalid JWT token");
+    }
 }
