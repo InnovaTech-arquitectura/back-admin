@@ -1,7 +1,9 @@
 package com.innovatech.demo.Controller;
 
 import java.util.List;
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.innovatech.demo.Entity.Entrepreneurship;
+import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
+import com.innovatech.demo.Entity.Plan;
+import com.innovatech.demo.Repository.EntrepreneurshipRepository;
+import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Service.EventService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("event")
@@ -25,6 +34,8 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
     // http://localhost:8090/event/all
     @GetMapping("/all")
@@ -35,7 +46,9 @@ public class EventController {
             Pageable pageable = PageRequest.of(page, limit);
             return ResponseEntity.ok(eventService.findAll(pageable));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .contentType(MediaType.TEXT_PLAIN)
+                             .body("An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -51,73 +64,67 @@ public class EventController {
             }
 
             return new ResponseEntity<>(event, HttpStatus.OK);
+
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/{id}/entrepreneurships")
-    public ResponseEntity<?> getEntrepreneurshipsByEventId(@PathVariable String id) {
-        try {
-            Long eventId = Long.parseLong(id);
-            EventEntity event = eventService.findById(eventId);
-
-            if (event == null) {
-                return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
-            }
-
-            List<Entrepreneurship> entrepreneurships = event.getEntrepreneurships(); // Obtiene la lista de emprendimientos
-            
-            return new ResponseEntity<>(entrepreneurships, HttpStatus.OK);
-        } catch (NumberFormatException e) {
-            return new ResponseEntity<>("Invalid parameters", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // http://localhost:8090/event/add
     @PostMapping("/add")
     public ResponseEntity<?> addEvent(@RequestBody EventEntity event) {
         try {
-            EventEntity eventname = eventService.findByName(event.getName());
-
-            if (eventname != null) {
-                // Handle event with the same name already existing (e.g., HttpStatus.CONFLICT)
+            // Verificar si el evento ya existe
+            EventEntity existingEvent = eventService.findByName(event.getName());
+            if (existingEvent != null) {
                 return new ResponseEntity<>("Event with the same name already exists", HttpStatus.CONFLICT);
             }
-
-            // Save the new event
-            EventEntity eventDB = eventService.save(event);
-
-            if (eventDB == null) {
-                // Handle error saving the event (more specific message?)
-                return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR); // Or a more
-                                                                                                       // specific error
-                                                                                                       // code
+    
+            // Guardar el evento primero
+            EventEntity savedEvent = eventService.save(event);
+            
+            // Asegúrate de que se guardó correctamente
+            if (savedEvent == null) {
+                return new ResponseEntity<>("Unable to save event", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-            return new ResponseEntity<>(eventDB, HttpStatus.CREATED);
+    
+            // Ahora puedes agregar los registros de Entrepreneurshipeventregistry
+            for (Entrepreneurshipeventregistry registry : savedEvent.getEntrepreneurshipeventregistry()) {
+                // Establecer el evento actual para cada registro
+                registry.setEventEntity(savedEvent);
+            }
+    
+            // Guardar todos los registros de Entrepreneurshipeventregistry
+            entrepreneurshipeventregistryRepository.saveAll(savedEvent.getEntrepreneurshipeventregistry());
+    
+            return new ResponseEntity<>(savedEvent, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Invalid input: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DataAccessException e) {
+            return new ResponseEntity<>("Database error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            // Handle unexpected exceptions (log the error)
-            return new ResponseEntity<>("Unable to add event", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // http://localhost:8090/event/update
+    // http://localhost:8090/event/update@PutMapping("/update") 
     @PutMapping("/update")
     public ResponseEntity<?> updateEvent(@RequestBody EventEntity event) {
         try {
-            EventEntity existingEvent = eventService.findById(event.getId());
+        EventEntity existingEvent= eventService.findById(event.getId());
 
-            if (existingEvent == null) {
-                return new ResponseEntity<>("Conflict: Event not found", HttpStatus.NOT_FOUND);
-            }
+        // If the plan does not exist, return 409 Conflict
+        if (existingEvent == null) {
+            return new ResponseEntity<>("Conflict: Event not found", HttpStatus.NOT_FOUND);
+        }
 
-            eventService.save(event);
-            return new ResponseEntity<>("Event modified successfully", HttpStatus.OK);
+        eventService.updateEvent(event);
+
+            // Return 201 Created if the update was successful
+            return new ResponseEntity<>("Event modified successfully", HttpStatus.CREATED);
+
         } catch (Exception e) {
-            return new ResponseEntity<>("Unable to modify Event", HttpStatus.BAD_REQUEST);
+            // Handle any other exception and return 400 Bad Request
+            return new ResponseEntity<>("Unable to modify Event"+ e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

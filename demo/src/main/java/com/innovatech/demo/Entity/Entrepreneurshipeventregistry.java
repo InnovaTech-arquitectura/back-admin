@@ -1,5 +1,6 @@
 package com.innovatech.demo.Entity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -39,8 +40,8 @@ public class Entrepreneurshipeventregistry {
     @JsonIgnore
     private EventEntity eventEntity;
 
-    @Column(name = "date", nullable = false)
-    private Date date;
+    @Column( nullable = false)
+    Timestamp date;
 
     @Column(nullable = false)
     private double amountPaid;

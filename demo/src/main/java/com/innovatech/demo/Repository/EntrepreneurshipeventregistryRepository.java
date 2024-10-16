@@ -13,6 +13,4 @@ import com.innovatech.demo.Entity.EventEntity;
 @Repository
 public interface EntrepreneurshipeventregistryRepository extends JpaRepository<Entrepreneurshipeventregistry, Long> {
 
-    @Query("SELECT e FROM Entrepreneurshipeventregistry e WHERE e.eventEntity = :eventEntity AND e.entrepreneurship IN :entrepreneurships")
-    List<Entrepreneurshipeventregistry> findByEventAndEntrepreneurshipIn(@Param("eventEntity") EventEntity eventEntity, @Param("entrepreneurships") Set<Entrepreneurship> entrepreneurships);
 }

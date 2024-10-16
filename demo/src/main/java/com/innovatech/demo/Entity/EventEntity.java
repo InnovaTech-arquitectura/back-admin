@@ -1,8 +1,11 @@
 package com.innovatech.demo.Entity;
 
 import java.util.List;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -52,10 +55,10 @@ public class EventEntity {
     private String name;
 
     @Column(nullable = false)
-    private String date;
+    Timestamp date;
 
     @Column(nullable = false)
-    private String date2;
+    Timestamp date2;
 
     @Column(nullable = false)
     private int totalCost;
@@ -81,16 +84,15 @@ public class EventEntity {
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Entrepreneurshipeventregistry> entrepreneurshipeventregistry;
 
-    // Method to get the entrepreneurships of the event
-    @Transient
-    public List<Entrepreneurship> getEntrepreneurships() {
-        List<Entrepreneurship> entrepreneurships = new ArrayList<>();
-        for (Entrepreneurshipeventregistry registry : this.entrepreneurshipeventregistry) {
-            entrepreneurships.add(registry.getEntrepreneurship());
-        }
-        return entrepreneurships;
-    }
-    
+     // Method to get the entrepreneurships of the event
+     @Transient
+     public List<Entrepreneurship> getEntrepreneurships() {
+         List<Entrepreneurship> entrepreneurships = new ArrayList<>();
+         for (Entrepreneurshipeventregistry registry : this.entrepreneurshipeventregistry) {
+             entrepreneurships.add(registry.getEntrepreneurship());
+         }
+         return entrepreneurships;
+     }
 
     // Method to set the entrepreneurships of the event
     public void setEntrepreneurships(List<Entrepreneurship> entrepreneurships) {
@@ -107,11 +109,12 @@ public class EventEntity {
     }
 
      //constructor
-     public EventEntity(Long id, String name, int totalCost, String date, int earnings, int costoLocal, int place, String modality, Integer quota, String description) {
+     public EventEntity(Long id, String name, int totalCost, Timestamp date, Timestamp date2, int earnings, int costoLocal, int place, String modality, Integer quota, String description) {
         this.id = id;
         this.name = name;
         this.totalCost = totalCost;
         this.date = date;
+        this.date2 = date2;
         this.earnings = earnings;
         this.costoLocal = costoLocal;
         this.place = place;

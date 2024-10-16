@@ -202,8 +202,8 @@ public class Dbinitializer implements CommandLineRunner {
             EventEntity eventEntity = EventEntity.builder()
                     .name("Event " + i)
                     .totalCost(100 + (i * 20))
-                    .date(LocalDate.now().plusDays(i).toString())
-                    .date2(LocalDate.now().plusDays(i+1).toString())
+                    .date(Timestamp.valueOf(LocalDate.now().plusDays(i).atStartOfDay()))
+                    .date2(Timestamp.valueOf(LocalDate.now().plusDays(i+1).atStartOfDay()))
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
                     .place(i*10)
@@ -219,8 +219,8 @@ public class Dbinitializer implements CommandLineRunner {
                 Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
                         .eventEntity(eventEntity)
                         .entrepreneurship(entrepreneurships.get(j)) 
-                        .date(Date.valueOf(eventEntity.getDate()))
-                        .amountPaid(i * 100.000)
+                        .date(eventEntity.getDate())
+                        .amountPaid(i * 100000)
                         .build();
     
                 entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry); 
