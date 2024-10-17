@@ -13,7 +13,7 @@ import com.innovatech.demo.Entity.EventEntity;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
 
-    Optional<EventEntity> findById(Long id);
+    Optional<EventEntity> findById(int id);
 
     EventEntity findByName(String name);
 
