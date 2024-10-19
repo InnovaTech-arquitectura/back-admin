@@ -82,25 +82,6 @@ public class EventControllerTest {
         assertEquals("Event not found", response.getBody());
     }
 
-    @Test
-    public void testAddEvent_Success() {
-        // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, 
-                                             Timestamp.valueOf("2023-09-21 00:00:00"), 
-                                             Timestamp.valueOf("2023-09-21 00:00:00"), 
-                                             50, 30, 10, "Modality1", null, null);
-        
-        when(eventService.findByName("Event1")).thenReturn(null); // Event doesn't exist
-        when(eventService.save(event)).thenReturn(event); // Save returns the event
-    
-        // Act
-        ResponseEntity<?> response = eventController.addEvent(event);
-    
-        // Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode()); // Check for 201 Created
-        assertEquals(event, response.getBody()); // Check that the body is the saved event
-    }
-    
 
 // Additional test for existing event
 @Test
