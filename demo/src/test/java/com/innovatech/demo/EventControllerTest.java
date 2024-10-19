@@ -129,7 +129,7 @@ public void testAddEvent_AlreadyExists() {
         ResponseEntity<?> response = eventController.updateEvent(event);
 
         // Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Event modified successfully", response.getBody());
     }
 
