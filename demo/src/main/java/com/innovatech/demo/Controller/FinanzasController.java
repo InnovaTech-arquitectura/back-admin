@@ -62,7 +62,7 @@ public class FinanzasController {
     }
 
     // Method to get the income by Month and Year
-    // http://localhost:8090/finance/incomeByMonth?month=1&year=2021
+    // http://localhost:8090/finance/incomeByMonthYear?month=1&year=2021
     @GetMapping("/incomeByMonthYear")
     public ResponseEntity<Map<String, Object>> getIncomeByMonthAndYear(
             @RequestParam(value = "month", required = true) Integer month,
