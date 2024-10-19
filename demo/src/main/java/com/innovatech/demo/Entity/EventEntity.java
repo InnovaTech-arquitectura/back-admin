@@ -1,10 +1,13 @@
 package com.innovatech.demo.Entity;
 
 import java.util.List;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,6 +31,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonPropertyOrder({
+    "id",
+    "name",
+    "date",
+    "date2",
+    "totalCost",
+    "earnings",
+    "costoLocal",
+    "place",
+    "modality",
+    "quota",
+    "description",  
+    "entrepreneurshipeventregistry"
+})
 public class EventEntity {
 
     @Id
@@ -38,10 +55,13 @@ public class EventEntity {
     private String name;
 
     @Column(nullable = false)
-    private int totalCost;
+    Timestamp date;
 
     @Column(nullable = false)
-    private String date;
+    Timestamp date2;
+
+    @Column(nullable = false)
+    private int totalCost;
 
     @Column(nullable = false)
     private int earnings;
@@ -50,7 +70,7 @@ public class EventEntity {
     private int costoLocal;
 
     @Column(nullable = false)
-    private String place;
+    private int place;
 
     @Column(nullable = false)
     private String modality;
@@ -59,22 +79,11 @@ public class EventEntity {
     private Integer quota;
 
     @Column(nullable = true)
-    private String Description;
+    private String description; 
 
     @OneToMany(mappedBy = "eventEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Entrepreneurshipeventregistry> entrepreneurshipeventregistry;
 
-
-
-    // Method to get the entrepreneurships of the event
-    @Transient
-    public List<Entrepreneurship> getEntrepreneurships() {
-        List<Entrepreneurship> entrepreneurships = new ArrayList<>();
-        for (Entrepreneurshipeventregistry registry : this.entrepreneurshipeventregistry) {
-            entrepreneurships.add(registry.getEntrepreneurship());
-        }
-        return entrepreneurships;
-    }
 
     // Method to set the entrepreneurships of the event
     public void setEntrepreneurships(List<Entrepreneurship> entrepreneurships) {
@@ -89,18 +98,19 @@ public class EventEntity {
         Entrepreneurshipeventregistry entrepreneurshipeventregistry = new Entrepreneurshipeventregistry(this, entrepreneurship);
         this.entrepreneurshipeventregistry.add(entrepreneurshipeventregistry);
     }
-    //constructor
-    public EventEntity(Long id, String name, int totalCost, String date, int earnings, int costoLocal, String place, String modality, Integer quota, String description) {
+
+     //constructor
+     public EventEntity(Long id, String name, int totalCost, Timestamp date, Timestamp date2, int earnings, int costoLocal, int place, String modality, Integer quota, String description) {
         this.id = id;
         this.name = name;
         this.totalCost = totalCost;
         this.date = date;
+        this.date2 = date2;
         this.earnings = earnings;
         this.costoLocal = costoLocal;
         this.place = place;
         this.modality = modality;
         this.quota = quota;
-        this.Description = description;
+        this.description = description;
     }
-    
 }
