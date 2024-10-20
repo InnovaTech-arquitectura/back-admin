@@ -68,12 +68,12 @@ public class PQRSController {
         return ResponseEntity.ok("Pregunta eliminada");
     }
 
-    @PostMapping("/{index}")
+    @PutMapping("/{index}")
     public ResponseEntity<String> responderPregunta(@PathVariable int index) {
         return ResponseEntity.ok("Pregunta editada");
     }
 
-    @PutMapping("")
+    @PostMapping("")
     public ResponseEntity<String> agregarPregunta() {
         return ResponseEntity.ok("Pregunta agregada");
     }
