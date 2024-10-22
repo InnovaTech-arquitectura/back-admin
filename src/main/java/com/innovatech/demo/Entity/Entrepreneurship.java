@@ -52,6 +52,11 @@ public class Entrepreneurship {
     @JsonIgnore
     private List<CourseEntrepreneurship> courseEntrepreneurship = new ArrayList<>();
 
+
+    @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CouponEntrepreneurship> coupoinEntrepreneurship = new ArrayList<>();
+
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Subscription> subscriptions = new ArrayList<>();
