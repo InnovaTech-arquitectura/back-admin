@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Table(name = "Entrepreneurship")
@@ -60,7 +61,7 @@ public class Entrepreneurship {
     private List<Entrepreneurshipeventregistry> eventRegistries = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserEntity userEntity;
 
     public Entrepreneurship(String name, String logo, String description, String names, String lastnames) {
