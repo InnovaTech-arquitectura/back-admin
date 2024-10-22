@@ -1,6 +1,5 @@
 package com.innovatech.demo.Controller;
 
-import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -18,15 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
-import com.innovatech.demo.Entity.Plan;
-import com.innovatech.demo.Repository.EntrepreneurshipRepository;
 import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Service.EventService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("event")
