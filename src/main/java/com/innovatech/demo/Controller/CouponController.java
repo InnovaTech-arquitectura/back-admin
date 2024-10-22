@@ -6,7 +6,6 @@ import com.innovatech.demo.Entity.CouponFunctionality;
 import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
-import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 
 /**
  * Controlador para manejar las operaciones CRUD relacionadas con los cupones (Coupon).
