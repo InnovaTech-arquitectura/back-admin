@@ -1,5 +1,10 @@
 package com.innovatech.demo.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +25,9 @@ public class AdministrativeEmployee {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+    @OneToMany(mappedBy = "administrativeEmployee")
+    @JsonIgnore
+    @Builder.Default
+    private List<Banner> banners = new ArrayList<>();
 }

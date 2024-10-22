@@ -42,11 +42,13 @@ public class Plan {
     // Relationship with table Subscription
     @JsonIgnore
     @OneToMany(mappedBy = "plan")
+    @Builder.Default
     private List<Subscription> subscriptions = new ArrayList<>();
 
     // Relationship with table PlanFunctionality
     @JsonIgnore
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PlanFunctionality> planFunctionality = new ArrayList<>();
 
     // Method to add functionalities to the plan

@@ -3,11 +3,11 @@ services:
     build:
       context: .  # El contexto es la raíz del proyecto
       dockerfile: Dockerfile  # Nombre del Dockerfile que se encuentra en la raíz
-    container_name: back-sv-inventory
+    container_name: back-sv-admin  # Nombre del contenedor
     ports:
       - "8090:8090"  # Exponer el puerto 8090 de la aplicación
     environment:
-      SPRING_PROFILES_ACTIVE: dev  # Activar el perfil de producción (o test)
+      SPRING_PROFILES_ACTIVE: prod  # Activar el perfil de producción (o test)
     env_file:  # Cargar variables de entorno desde el archivo .env
       - .env
     restart: always  # Reiniciar siempre que sea necesario

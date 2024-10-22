@@ -35,6 +35,7 @@ public class Functionality {
     // Relationship with table PlanFunctionality
     @JsonIgnore
     @OneToMany(mappedBy = "functionality")
+    @Builder.Default
     private List<PlanFunctionality> planFunctionality = new ArrayList<>();
 
 }
