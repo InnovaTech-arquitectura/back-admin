@@ -50,4 +50,8 @@ public class UserEntity {
     @JsonIgnore
     @OneToOne
     private AdministrativeEmployee administrativeEmployee;
+
+    @JsonIgnore
+    @OneToOne()
+    private Entrepreneurship entrepreneurship;
 }

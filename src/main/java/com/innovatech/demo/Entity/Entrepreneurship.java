@@ -59,6 +59,10 @@ public class Entrepreneurship {
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Entrepreneurshipeventregistry> eventRegistries = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserEntity userEntity;
+
     public Entrepreneurship(String name, String logo, String description, String names, String lastnames) {
         this.name = name;
         this.logo = logo;
