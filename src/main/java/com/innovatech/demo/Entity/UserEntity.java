@@ -51,7 +51,7 @@ public class UserEntity {
     @OneToOne
     private AdministrativeEmployee administrativeEmployee;
 
-    @JsonIgnore
-    @OneToOne()
-    private Entrepreneurship entrepreneurship;
+    //@JsonIgnore
+    //@OneToOne()
+    //private Entrepreneurship entrepreneurship;
 }
