@@ -60,8 +60,8 @@ public class Entrepreneurship {
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Entrepreneurshipeventregistry> eventRegistries = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "entrepreneurship", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
+    @JoinColumn(name = "user_entity_id") // La FK se genera aquí en la tabla de emprendimiento
     private UserEntity userEntity;
 
     public Entrepreneurship(String name, String logo, String description, String names, String lastnames) {
