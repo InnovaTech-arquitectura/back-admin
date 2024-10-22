@@ -120,7 +120,7 @@ public class FinanzasController {
     
 
     // Method to get the number of plans subscribed by entrepreneurs per year
-    // http://localhost:8090/finance/usersByPlan?year=2021
+    // http://localhost:8090/finance/usersByPlan?year=2024
     @GetMapping("/usersByPlan")
     public ResponseEntity<Map<String, Object>> getUsersByPlan(@RequestParam("year") int year) {
         Map<String, Object> result = subscriptionService.getUsersByPlanForYear(year);
@@ -128,7 +128,7 @@ public class FinanzasController {
     }
 
     // Method to get the income of plans per year
-    // http://localhost:8090/finance/incomeByPlan?year=2021
+    // http://localhost:8090/finance/incomeByPlan?year=2024
     @GetMapping("/incomeByPlan")
     public ResponseEntity<Map<String, Object>> getIncomeByPlan(@RequestParam("year") int year) {
         Map<String, Object> result = subscriptionService.getIncomeByPlanForYear(year);

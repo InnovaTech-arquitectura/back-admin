@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Entity.PlanFunctionality;
 import com.innovatech.demo.Entity.Role;
+import com.innovatech.demo.Entity.Subscription;
 import com.innovatech.demo.Entity.UserEntity;
 import com.innovatech.demo.Entity.Enum.Modality;
 import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
@@ -33,6 +35,7 @@ import com.innovatech.demo.Repository.FunctionalityRepository;
 import com.innovatech.demo.Repository.PlanFunctionalityRepository;
 import com.innovatech.demo.Repository.PlanRepository;
 import com.innovatech.demo.Repository.RepositoryEntrepreneurship;
+import com.innovatech.demo.Repository.SubscriptionRepository;
 import com.innovatech.demo.Service.AdministrativeEmployeeService;
 import com.innovatech.demo.Service.RoleService;
 import com.innovatech.demo.Service.UserService;
@@ -51,6 +54,9 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private PlanRepository planRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     @Autowired
     private FunctionalityRepository functionalityRepository;
@@ -75,6 +81,8 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
+
+    private static final Logger logger = Logger.getLogger(Dbinitializer.class.getName());
 
     @Override
     @Transactional
@@ -166,19 +174,38 @@ public class Dbinitializer implements CommandLineRunner {
             }
         }
 
-        
-
-        System.out.println("Uploading entrepreneurships");
+        logger.info("Uploading entrepreneurships");
         insertEntrepreneurships();
 
-        System.out.println("Uploading events");
+        logger.info("Uploading events");
         insertEvents();
 
-
-        System.out.println("Uploading courses");
+        logger.info("Uploading courses");
         insertCourses();
 
-        System.out.println("all data uploaded");
+        logger.info("Uploading subscriptions");
+        insertSubscriptions();
+
+        logger.info("all data uploaded");
+    }
+
+    private void insertSubscriptions() {
+        List<Plan> plans = planRepository.findAll();
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+
+        // Creating and saving 10 subscriptions linked to plans and entrepreneurships
+        for (int i = 1; i <= 10; i++) {
+            Subscription subscription = Subscription.builder()
+                    .initialDate(Date.valueOf("2024-01-01"))
+                    .expirationDate(Date.valueOf("2025-01-01"))
+                    .amount(100.0 + (i * 5))
+                    .plan(plans.get(i % plans.size())) // Link to a plan
+                    .entrepreneurship(entrepreneurships.get(i % entrepreneurships.size())) // Link to an entrepreneurship
+                    .build();
+
+            // Saving the subscription
+            subscriptionRepository.save(subscription);
+        }
     }
 
 
@@ -186,11 +213,22 @@ public class Dbinitializer implements CommandLineRunner {
 
     private void insertEntrepreneurships() {
 
+        // Crear emprendimientos
         Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
         Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
+        Entrepreneurship apple = new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez");
+        Entrepreneurship bodegaElBarril = new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez");
+        Entrepreneurship yogaFlow = new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez");
+        Entrepreneurship travelWithUs = new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez");
 
+        // Guardar emprendimientos
+        entrepreneurshipRepository.save(apple);
+        entrepreneurshipRepository.save(bodegaElBarril);
+        entrepreneurshipRepository.save(yogaFlow);
+        entrepreneurshipRepository.save(travelWithUs);
         entrepreneurshipRepository.save(zara);
         entrepreneurshipRepository.save(nike);
+
     }
 
     private void insertEvents() {
