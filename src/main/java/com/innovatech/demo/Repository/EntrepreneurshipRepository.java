@@ -22,6 +22,8 @@ public interface EntrepreneurshipRepository extends JpaRepository<Entrepreneursh
     @Query("SELECT e FROM Entrepreneurship e")
     List<Entrepreneurship> findAllEntrepreneurships();
 
+    Optional<Entrepreneurship> findByUserEntity_Id(Long userId);
+
     @Query("SELECT e, p.name FROM Entrepreneurship e " +
         "JOIN Subscription s ON e.id = s.entrepreneurship.id " +
         "JOIN Plan p ON s.plan.id = p.id " +
