@@ -54,4 +54,8 @@ public class UserEntity {
     @JsonIgnore
     @OneToOne()
     private Entrepreneurship entrepreneurship;
+
+    @JsonIgnore
+    @OneToOne
+    private Client client;
 }

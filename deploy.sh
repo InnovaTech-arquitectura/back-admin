@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Iniciando proceso de despliegue..."
+echo "Iniciando proceso de despliegue de la aplicación Spring Boot..."
 
 # Cambiar al directorio donde se clonará el repositorio
 cd /home/estudiante/Desktop || exit 1
@@ -17,16 +17,24 @@ git clone https://github.com/InnovaTech-arquitectura/back-admin.git
 # Cambiar al directorio del repositorio clonado
 cd back-admin || exit 1
 
-# Detener y eliminar los contenedores existentes
+# Establecer el entorno según el argumento pasado al script
+if [[ $1 == "production" ]]; then
+    export ENVIRONMENT=prod
+else
+    export ENVIRONMENT=testing
+fi
+
+echo "Compilando el proyecto Maven..."
+mvn clean install  # Compilar el proyecto
+
 echo "Deteniendo y eliminando contenedores existentes..."
-docker-compose down --remove-orphans  # Asegúrate de detener y eliminar contenedores huérfanos
+docker-compose down
 
-# Eliminar cualquier contenedor existente por si acaso (en caso de que el comando anterior no los elimine)
-echo "Eliminando contenedores existentes..."
-docker rm -f $(docker ps -aq)  # Elimina todos los contenedores, aunque estén detenidos
+echo "Limpiando imágenes de Docker no utilizadas..."
+docker image prune -f
 
-# Ejecutar docker-compose con el argumento de entorno
-echo "Ejecutando docker-compose..."
+# Levantar el contenedor
+echo "Levantando el contenedor con docker-compose..."
 docker-compose up --build -d
 
 echo "Despliegue completado."

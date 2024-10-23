@@ -31,20 +31,16 @@ public class DashboardController {
 
         // Create product sales chart data
         Map<String, Object> chartData2 = new HashMap<>();
-        chartData2.put("labels", new String[] { "Producto A", "Producto B", "Producto C", "Producto D", "Producto E" });
-        chartData2.put("datasets", new Object[] {
-                new HashMap<String, Object>() {
-                    {
-                        put("label", "Ventas " + year);
-                        if (year == 2021) {
-                            put("data", new int[] { 300, 500, 400, 350, 250 });
-                        } else if (year == 2022) {
-                            put("data", new int[] { 320, 480, 410, 360, 270 });
-                        }
-                        put("Color", new String[] { "#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71" });
-                    }
-                }
-        });
+        chartData2.put("labels", 
+                new String[] { "Producto A", "Producto B", "Producto C", "Producto D", "Producto E" });
+        
+        if (year == 2021) {
+            chartData2.put("data", new int[] { 300, 500, 400, 350, 250 });
+        } else if (year == 2022) {
+            chartData2.put("data", new int[] { 320, 480, 410, 360, 270 });
+        }
+        chartData2.put("label", "Ventas " + year);
+        chartData2.put("color", new String[] { "#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71" });
 
         // Create summary data
         Map<String, Object> summaryData = new HashMap<>();

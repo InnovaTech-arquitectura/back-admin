@@ -35,7 +35,7 @@ public class FinanzasController {
     private EventService eventService;
 
     // Method to get all entrepreneurships with pagination
-    // http://localhost:8090/finanzas/all?limit=n&page=m
+    // http://localhost:8090/finance/all?limit=n&page=m
     @GetMapping("/all")
     public ResponseEntity<?> getAllEntrepreneurshipsWithActivePlan() {
         try {
@@ -91,8 +91,16 @@ public class FinanzasController {
 
         // Call the service to get the income for the specific year
         Map<String, Object> incomeData = entrepreneurshipService.getIncomeByYear(year);
+
+        // Check if incomeData is null or doesn't contain valid income information
+        if (incomeData == null || incomeData.isEmpty() || incomeData.containsKey("error")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "No income data found for the year " + year));
+        }
+
+        // Return the income data if found
         return ResponseEntity.ok(incomeData);
     }
+
 
     //Method to get expenses by year
     // http://localhost:8090/finance/expensesByYear?year=2021
@@ -112,7 +120,7 @@ public class FinanzasController {
     
 
     // Method to get the number of plans subscribed by entrepreneurs per year
-    // http://localhost:8090/finance/usersByPlan?year=2021
+    // http://localhost:8090/finance/usersByPlan?year=2024
     @GetMapping("/usersByPlan")
     public ResponseEntity<Map<String, Object>> getUsersByPlan(@RequestParam("year") int year) {
         Map<String, Object> result = subscriptionService.getUsersByPlanForYear(year);
@@ -120,7 +128,7 @@ public class FinanzasController {
     }
 
     // Method to get the income of plans per year
-    // http://localhost:8090/finance/incomeByPlan?year=2021
+    // http://localhost:8090/finance/incomeByPlan?year=2024
     @GetMapping("/incomeByPlan")
     public ResponseEntity<Map<String, Object>> getIncomeByPlan(@RequestParam("year") int year) {
         Map<String, Object> result = subscriptionService.getIncomeByPlanForYear(year);
