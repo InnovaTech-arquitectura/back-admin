@@ -48,10 +48,17 @@ public class Entrepreneurship {
 
     String lastnames;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
+    private List<ServiceS> services = new ArrayList<>();
+
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<CourseEntrepreneurship> courseEntrepreneurship = new ArrayList<>();
-
 
     @OneToMany(mappedBy = "entrepreneurship", cascade = CascadeType.ALL)
     @JsonIgnore
