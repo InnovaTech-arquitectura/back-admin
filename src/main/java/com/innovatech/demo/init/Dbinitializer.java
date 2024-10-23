@@ -14,32 +14,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.innovatech.demo.Entity.AdministrativeEmployee;
-import com.innovatech.demo.Entity.Course;
-import com.innovatech.demo.Entity.CourseEntrepreneurship;
-import com.innovatech.demo.Entity.Entrepreneurship;
-import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
-import com.innovatech.demo.Entity.EventEntity;
-import com.innovatech.demo.Entity.Functionality;
-import com.innovatech.demo.Entity.Plan;
-import com.innovatech.demo.Entity.PlanFunctionality;
-import com.innovatech.demo.Entity.Role;
-import com.innovatech.demo.Entity.Subscription;
-import com.innovatech.demo.Entity.UserEntity;
+import com.innovatech.demo.Entity.*;
 import com.innovatech.demo.Entity.Enum.Modality;
-import com.innovatech.demo.Repository.CourseEntrepreneurshipRepository;
-import com.innovatech.demo.Repository.CourseRepository;
-import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
-import com.innovatech.demo.Repository.EventRepository;
-import com.innovatech.demo.Repository.FunctionalityRepository;
-import com.innovatech.demo.Repository.PlanFunctionalityRepository;
-import com.innovatech.demo.Repository.PlanRepository;
-import com.innovatech.demo.Repository.RepositoryEntrepreneurship;
-import com.innovatech.demo.Repository.SubscriptionRepository;
-import com.innovatech.demo.Service.AdministrativeEmployeeService;
-import com.innovatech.demo.Service.RoleService;
-import com.innovatech.demo.Service.UserService;
-
+import com.innovatech.demo.Repository.*;
+import com.innovatech.demo.Service.*;
 @Component
 public class Dbinitializer implements CommandLineRunner {
 
@@ -73,60 +51,77 @@ public class Dbinitializer implements CommandLineRunner {
     @Autowired
     private CourseEntrepreneurshipRepository courseEntrepreneurshipRepository;
 
-    public static final Modality PRESENCIAL = Modality.presencial;
-    public static final Modality VIRTUAL = Modality.virtual;
-
     @Autowired
     private EventRepository eventRepository;
 
     @Autowired
     private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
+    // Repositorios adicionales
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private StateRepository stateRepository;
+
+    @Autowired
+    private OrderStateRepository orderStateRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private SalesRepository salesRepository;
+
+    public static final Modality PRESENCIAL = Modality.presencial;
+    public static final Modality VIRTUAL = Modality.virtual;
+
     private static final Logger logger = Logger.getLogger(Dbinitializer.class.getName());
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        Role adminRole = new Role();
-        adminRole.setName("Administrator");
-        roleService.save(adminRole);
+        // Roles
+        initializeRoles();
 
-        Role marketingRole = new Role();
-        marketingRole.setName("Marketing");
-        roleService.save(marketingRole);
+        // Usuario Admin
+        UserEntity adminUser = createAdminUser();
+        createAdminEmployee(adminUser);
 
-        Role salesRole = new Role();
-        salesRole.setName("Sales");
-        roleService.save(salesRole);
+        // Funcionalidades y Planes
+        createFunctionalitiesAndPlans();
 
-        Role communityManagerRole = new Role();
-        communityManagerRole.setName("Community Manager");
-        roleService.save(communityManagerRole);
+        // Emprendimientos y Usuarios
+        insertEntrepreneurships();
 
-        Role asesorRole = new Role();
-        asesorRole.setName("Asesor");
-        roleService.save(asesorRole);
+        // Eventos
+        insertEvents();
 
-        Role specialistRole = new Role();
-        specialistRole.setName("Specialist");
-        roleService.save(specialistRole);
+        // Cursos
+        insertCourses();
 
-        Role supportRole = new Role();
-        supportRole.setName("Support");
-        roleService.save(supportRole);
+        // Subscripciones
+        insertSubscriptions();
 
-        Role billingRole = new Role();
-        billingRole.setName("Billing");
-        roleService.save(billingRole);
+        // Ciudades y Estados
+        initializeStatesAndCities();
 
-        Role entrepreneurRole = new Role();
-        entrepreneurRole.setName("Entrepreneurship");
-        roleService.save(entrepreneurRole);
+        // Estados de Orden
+        initializeOrderStates();
 
-        Role clientRole = new Role();
-        clientRole.setName("Client");
-        roleService.save(clientRole);
+        logger.info("All data uploaded.");
+    }
 
+    private void initializeRoles() {
+        String[] roles = {"Administrator", "Marketing", "Sales", "Community Manager", "Asesor", "Specialist", "Support", "Billing", "Entrepreneurship", "Client"};
+        for (String roleName : roles) {
+            Role role = new Role();
+            role.setName(roleName);
+            roleService.save(role);
+        }
+    }
+
+    private UserEntity createAdminUser() {
         UserEntity adminUser = UserEntity.builder()
                 .idCard(123456)
                 .name("Andres")
@@ -134,37 +129,33 @@ public class Dbinitializer implements CommandLineRunner {
                 .password("password123")
                 .role(roleService.findByName("Administrator").get())
                 .build();
+        return userService.save(adminUser);
+    }
 
-        adminUser = userService.save(adminUser);
-
+    private void createAdminEmployee(UserEntity adminUser) {
         AdministrativeEmployee administrativeEmployee = AdministrativeEmployee.builder()
                 .user(adminUser)
                 .build();
+        administrativeEmployeeService.save(administrativeEmployee);
+    }
 
-        administrativeEmployee = administrativeEmployeeService.save(administrativeEmployee);
-
-        // Creating and saving functionalities
+    private void createFunctionalitiesAndPlans() {
         List<Functionality> functionalities = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             Functionality functionality = Functionality.builder()
                     .name("Functionality " + i)
                     .description("Description of functionality " + i)
                     .build();
-
             functionalities.add(functionalityRepository.save(functionality));
         }
 
-        // Creating and saving 10 plans and linking them to functionalities
         for (int i = 1; i <= 3; i++) {
             Plan plan = Plan.builder()
                     .name("Plan " + i)
                     .price(100.0 + (i * 10))
                     .build();
-
-            // Saving the plan
             plan = planRepository.save(plan);
 
-            // Creating associations with functionalities
             for (int j = 0; j < i; j++) {
                 PlanFunctionality planFunctionality = PlanFunctionality.builder()
                         .plan(plan)
@@ -173,113 +164,64 @@ public class Dbinitializer implements CommandLineRunner {
                 planFunctionalityRepository.save(planFunctionality);
             }
         }
-
-        logger.info("Uploading entrepreneurships");
-        insertEntrepreneurships();
-
-        logger.info("Uploading events");
-        insertEvents();
-
-        logger.info("Uploading courses");
-        insertCourses();
-
-        logger.info("Uploading subscriptions");
-        insertSubscriptions();
-
-        logger.info("all data uploaded");
     }
-
-    private void insertSubscriptions() {
-        List<Plan> plans = planRepository.findAll();
-        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
-
-        // Creating and saving 10 subscriptions linked to plans and entrepreneurships
-        for (int i = 1; i <= 10; i++) {
-            Subscription subscription = Subscription.builder()
-                    .initialDate(Date.valueOf("2024-01-01"))
-                    .expirationDate(Date.valueOf("2025-01-01"))
-                    .amount(100.0 + (i * 5))
-                    .plan(plans.get(i % plans.size())) // Link to a plan
-                    .entrepreneurship(entrepreneurships.get(i % entrepreneurships.size())) // Link to an entrepreneurship
-                    .build();
-
-            // Saving the subscription
-            subscriptionRepository.save(subscription);
-        }
-    }
-
-
-     
 
     private void insertEntrepreneurships() {
+        // Crear y guardar emprendimientos
+        List<Entrepreneurship> entrepreneurshipList = List.of(
+                new Entrepreneurship("Zara", "", "ropa", "maria", "martinez"),
+                new Entrepreneurship("Nike", "", "deporte", "juan", "perez"),
+                new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez"),
+                new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez"),
+                new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez"),
+                new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez"),
+                new Entrepreneurship("Tech Solutions", "tech_logo.png", "Tech company providing innovative solutions", "John", "Doe"),
+                new Entrepreneurship("Creative Designs", "design_logo.png", "Graphic and web design services", "Jane", "Smith"),
+                new Entrepreneurship("Healthy Eats", "healthy_logo.png", "Organic and healthy food products", "Emily", "Davis")
+        );
 
-        // Crear emprendimientos
-        Entrepreneurship zara = new Entrepreneurship("Zara", "", "ropa", "maria", "martinez");
-        Entrepreneurship nike = new Entrepreneurship("Nike", "", "deporte", "juan", "perez");
-        Entrepreneurship apple = new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez");
-        Entrepreneurship bodegaElBarril = new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez");
-        Entrepreneurship yogaFlow = new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez");
-        Entrepreneurship travelWithUs = new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez");
-
-        // Guardar emprendimientos
-        entrepreneurshipRepository.save(apple);
-        entrepreneurshipRepository.save(bodegaElBarril);
-        entrepreneurshipRepository.save(yogaFlow);
-        entrepreneurshipRepository.save(travelWithUs);
-        entrepreneurshipRepository.save(zara);
-        entrepreneurshipRepository.save(nike);
-
+        entrepreneurshipRepository.saveAll(entrepreneurshipList);
     }
 
     private void insertEvents() {
-        // Obtener la lista de emprendimientos desde el repositorio
         List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
-    
-        // Inicialización de eventos
         for (int i = 1; i <= 5; i++) {
             EventEntity eventEntity = EventEntity.builder()
                     .name("Event " + i)
                     .totalCost(100 + (i * 20))
                     .date(Timestamp.valueOf(LocalDate.now().plusDays(i).atStartOfDay()))
-                    .date2(Timestamp.valueOf(LocalDate.now().plusDays(i+1).atStartOfDay()))
+                    .date2(Timestamp.valueOf(LocalDate.now().plusDays(i + 1).atStartOfDay()))
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
-                    .place(i*10)
+                    .place(i * 10)
                     .modality("Modality " + i)
                     .quota(100)
                     .description("Evento de prueba " + i)
                     .build();
-    
-            eventRepository.save(eventEntity); // Guardar el evento en el repositorio
-    
-            // Crear asociaciones con emprendimientos
-            for (int j = 0; j < i && j < entrepreneurships.size(); j++) { 
+
+            eventRepository.save(eventEntity);
+
+            for (int j = 0; j < i && j < entrepreneurships.size(); j++) {
                 Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
                         .eventEntity(eventEntity)
-                        .entrepreneurship(entrepreneurships.get(j)) 
+                        .entrepreneurship(entrepreneurships.get(j))
                         .date(eventEntity.getDate())
                         .amountPaid(i * 100000)
                         .build();
-    
-                entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry); 
+                entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry);
             }
         }
     }
 
     private void insertCourses() {
-        // Obtener la hora de las 3 PM
         LocalTime threePM = LocalTime.of(15, 0);
-
-        // Crear la fecha de mañana a las 3 PM
         LocalDateTime tomorrowAtThreePM = LocalDateTime.of(LocalDate.now().plusDays(1), threePM);
         Timestamp timestampForTomorrow = Timestamp.valueOf(tomorrowAtThreePM);
 
-        // Obtener la lista de emprendimientos
         List<Entrepreneurship> entrepreneurList = entrepreneurshipRepository.findAll();
 
-        // Crear el nuevo curso
         Course newCourse = new Course(
-                "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NTAxZmMyMmItNzUwNS00Mjg0LWEzMTQtZTE0ZDNmZTRkNzQ2%40thread.v2/0?",
+                "https://teams.microsoft.com/meetup-link",
                 "Capacitación para atraer más clientes",
                 0f,
                 timestampForTomorrow,
@@ -287,33 +229,78 @@ public class Dbinitializer implements CommandLineRunner {
                 2,
                 VIRTUAL);
 
-        // Añadir los emprendimientos al curso
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
             courseEntrepreneurshipRepository.save(new CourseEntrepreneurship(entrepreneurship, newCourse));
         }
 
-        // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse);
 
-        // Crear la fecha de mañana a las 3 PM
         LocalDateTime yesterdayAtThreePM = LocalDateTime.of(LocalDate.now().minusDays(1), threePM);
         Timestamp timestampForYesterday = Timestamp.valueOf(yesterdayAtThreePM);
 
         Course newCourse2 = new Course(
-                "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NTAxZmMyMmItNzUwNS00Mjg0LWEzMTQtZTE0ZDNmZTRkNzQ2%40thread.v2/0?",
+                "https://teams.microsoft.com/meetup-link",
                 "Capacitación para ser buen jefe",
                 0f,
                 timestampForYesterday,
-                "Como ser buen jefe",
+                "Cómo ser buen jefe",
                 3,
                 VIRTUAL);
 
-        // Añadir los emprendimientos al curso
         for (Entrepreneurship entrepreneurship : entrepreneurList) {
             courseEntrepreneurshipRepository.save(new CourseEntrepreneurship(entrepreneurship, newCourse2));
         }
 
-        // Guardar el nuevo curso en el repositorio
         courseRepository.save(newCourse2);
+    }
+
+    private void insertSubscriptions() {
+        List<Plan> plans = planRepository.findAll();
+        List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+
+        for (int i = 1; i <= 10; i++) {
+            Subscription subscription = Subscription.builder()
+                    .initialDate(Date.valueOf("2024-01-01"))
+                    .expirationDate(Date.valueOf("2025-01-01"))
+                    .amount(100.0 + (i * 5))
+                    .plan(plans.get(i % plans.size()))
+                    .entrepreneurship(entrepreneurships.get(i % entrepreneurships.size()))
+                    .build();
+            subscriptionRepository.save(subscription);
+        }
+    }
+
+    private void initializeStatesAndCities() {
+        if (stateRepository.count() == 0) {
+            List<State> states = List.of(
+                    State.builder().name("California").build(),
+                    State.builder().name("Texas").build(),
+                    State.builder().name("New York").build()
+            );
+            stateRepository.saveAll(states);
+        }
+
+        if (cityRepository.count() == 0) {
+            State california = stateRepository.findAll().stream().filter(s -> s.getName().equals("California")).findFirst().orElse(null);
+            if (california != null) {
+                List<City> cities = List.of(
+                        City.builder().name("Los Angeles").state(california).build(),
+                        City.builder().name("San Francisco").state(california).build()
+                );
+                cityRepository.saveAll(cities);
+            }
+        }
+    }
+
+    private void initializeOrderStates() {
+        if (orderStateRepository.count() == 0) {
+            List<OrderState> orderStates = List.of(
+                    OrderState.builder().state("Pending").build(),
+                    OrderState.builder().state("Shipped").build(),
+                    OrderState.builder().state("Delivered").build(),
+                    OrderState.builder().state("Cancelled").build()
+            );
+            orderStateRepository.saveAll(orderStates);
+        }
     }
 }
