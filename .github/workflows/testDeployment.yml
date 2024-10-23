@@ -22,10 +22,8 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd demo
           mvn clean install
 
       - name: Run tests
         run: |
-          cd demo
           mvn test
