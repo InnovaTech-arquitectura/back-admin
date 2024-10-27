@@ -23,9 +23,9 @@ jobs:
 
     - name: Ejecutar el script de despliegue
       run: |
-        ssh -o StrictHostKeyChecking=no estudiante@10.43.100.236 'bash -s' < ./deploy.sh testing
+        ssh -o StrictHostKeyChecking=no estudiante@10.43.101.155 'bash -s' < ./deploy.sh testing
       working-directory: ./  # Establece el directorio de trabajo a la raíz del repositorio
 
     - name: Comprobar estado de despliegue
       run: |
-        ssh -o StrictHostKeyChecking=no estudiante@10.43.100.236 'docker ps'
+        ssh -o StrictHostKeyChecking=no estudiante@10.43.101.155 'docker ps'
