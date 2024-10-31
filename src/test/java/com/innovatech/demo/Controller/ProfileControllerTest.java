@@ -1,4 +1,4 @@
-package com.innovatech.demo;
+package com.innovatech.demo.Controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
