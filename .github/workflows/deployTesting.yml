@@ -23,7 +23,7 @@ jobs:
 
     - name: Ejecutar el script de despliegue
       run: |
-        ssh -o StrictHostKeyChecking=no estudiante@10.43.100.236 'bash -s' < ./deploy.sh test
+        ssh -o StrictHostKeyChecking=no estudiante@10.43.101.155 'bash -s' < ./deploy.sh test
 
       working-directory: ./  # Establece el directorio de trabajo a la raíz del repositorio
 
