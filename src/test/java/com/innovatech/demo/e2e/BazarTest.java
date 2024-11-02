@@ -23,7 +23,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class BazarTest {
     
-    private final String BASE_URL = "http://localhost:4200/";
+    private final String BASE_URL = "http://10.43.101.107/";
 
     private WebDriver driver;
     private WebDriverWait wait;
