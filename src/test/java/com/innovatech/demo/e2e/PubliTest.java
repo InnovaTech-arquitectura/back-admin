@@ -72,7 +72,7 @@ public class PubliTest {
         inputTitle.sendKeys("Banner de prueba");
         
         String projectPath = System.getProperty("user.dir");
-        String filePath = projectPath + "\\src\\test\\java\\com\\innovatech\\demo\\e2e\\bannerTest.jpg";
+        String filePath = projectPath + "/src/test/java/com/innovatech/demo/e2e/bannerTest.jpg";
         
         uploadElement.sendKeys(filePath);
 
@@ -90,7 +90,7 @@ public class PubliTest {
         WebElement inputTitleEdit = wait.until(ExpectedConditions.elementToBeClickable(By.id("titleDescription")));
         inputTitleEdit.sendKeys(" editado");
 
-        String filePathEdit = projectPath + "\\src\\test\\java\\com\\innovatech\\demo\\e2e\\bannerEditTest.jpg";
+        String filePathEdit = projectPath + "/src/test/java/com/innovatech/demo/e2e/bannerEditTest.jpg";
         
         WebElement uploadElementEdit = driver.findElement(By.id("imageUpload"));
         uploadElementEdit.sendKeys(filePathEdit);
