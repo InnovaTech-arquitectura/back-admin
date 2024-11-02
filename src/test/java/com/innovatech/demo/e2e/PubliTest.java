@@ -88,8 +88,7 @@ public class PubliTest {
         js.executeScript("arguments[0].click();", editButton);
 
         WebElement inputTitleEdit = wait.until(ExpectedConditions.elementToBeClickable(By.id("titleDescription")));
-        inputTitleEdit.clear();
-        inputTitleEdit.sendKeys("Prueba editado");
+        inputTitleEdit.sendKeys(" editado");
 
         String filePathEdit = projectPath + "\\src\\test\\java\\com\\innovatech\\demo\\e2e\\bannerEditTest.jpg";
         
