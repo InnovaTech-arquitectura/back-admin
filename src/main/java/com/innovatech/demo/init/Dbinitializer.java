@@ -207,16 +207,18 @@ public class Dbinitializer implements CommandLineRunner {
             // Guarda el usuario en la base de datos
             user = userService.save(user);
     
-            // Asocia el usuario al emprendimiento
+            // Asocia el usuario al emprendimiento y viceversa
             entrepreneurship.setUserEntity(user);
-            
+            user.setEntrepreneurship(entrepreneurship);
+    
             // Guarda el emprendimiento con el usuario asociado
             entrepreneurshipRepository.save(entrepreneurship);
     
-            // Crear cupones para el emprendimiento y asociarlos a funcionalidades
-            // createCouponsForEntrepreneurship(entrepreneurship);
+            // Actualiza el usuario con la relación de emprendimiento no nula
+            userService.save(user);
         }
     }
+    
 
 //     // Método para crear cupones, asociarlos a funcionalidades y al emprendimiento
 // private void createCouponsForEntrepreneurship(Entrepreneurship entrepreneurship) {
