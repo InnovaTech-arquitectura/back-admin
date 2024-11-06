@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -72,6 +73,15 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private SalesRepository salesRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
+    @Autowired
+    private CouponFunctionalityRepository couponFunctionalityRepository;
+
+    @Autowired
+    private CouponEntrepreneurshipRepository couponEntrepreneurshipRepository;
 
     public static final Modality PRESENCIAL = Modality.presencial;
     public static final Modality VIRTUAL = Modality.virtual;
@@ -167,21 +177,87 @@ public class Dbinitializer implements CommandLineRunner {
     }
 
     private void insertEntrepreneurships() {
-        // Crear y guardar emprendimientos
+        // Lista de emprendimientos con información del usuario
         List<Entrepreneurship> entrepreneurshipList = List.of(
-                new Entrepreneurship("Zara", "", "ropa", "maria", "martinez"),
-                new Entrepreneurship("Nike", "", "deporte", "juan", "perez"),
-                new Entrepreneurship("Apple", "", "tecnología", "laura", "gonzalez"),
-                new Entrepreneurship("Bodega El Barril", "", "alimentos", "carlos", "lopez"),
-                new Entrepreneurship("Yoga Flow", "", "salud", "sofia", "martinez"),
-                new Entrepreneurship("Travel With Us", "", "turismo", "jose", "rodriguez"),
+                new Entrepreneurship("Zara", "", "ropa", "Maria", "Martinez"),
+                new Entrepreneurship("Nike", "", "deporte", "Juan", "Perez"),
+                new Entrepreneurship("Apple", "", "tecnología", "Laura", "Gonzalez"),
+                new Entrepreneurship("Bodega El Barril", "", "alimentos", "Carlos", "Lopez"),
+                new Entrepreneurship("Yoga Flow", "", "salud", "Sofia", "Martinez"),
+                new Entrepreneurship("Travel With Us", "", "turismo", "Jose", "Rodriguez"),
                 new Entrepreneurship("Tech Solutions", "tech_logo.png", "Tech company providing innovative solutions", "John", "Doe"),
                 new Entrepreneurship("Creative Designs", "design_logo.png", "Graphic and web design services", "Jane", "Smith"),
                 new Entrepreneurship("Healthy Eats", "healthy_logo.png", "Organic and healthy food products", "Emily", "Davis")
         );
-
-        entrepreneurshipRepository.saveAll(entrepreneurshipList);
+    
+        // Obtén el rol de "Entrepreneurship" para asignarlo a cada usuario creado
+        Role entrepreneurshipRole = roleService.findByName("Entrepreneurship")
+                .orElseThrow(() -> new RuntimeException("Role 'Entrepreneurship' not found"));
+    
+        for (Entrepreneurship entrepreneurship : entrepreneurshipList) {
+            // Crear un usuario para cada emprendimiento
+            UserEntity user = UserEntity.builder()
+                    .idCard((int) (Math.random() * 100000)) // ID aleatorio de prueba
+                    .name(entrepreneurship.getNames() + " " + entrepreneurship.getLastnames())
+                    .email(entrepreneurship.getName().toLowerCase() + "@example.com")
+                    .password("1234") // Contraseña predeterminada
+                    .role(entrepreneurshipRole)
+                    .build();
+    
+            // Guarda el usuario en la base de datos
+            user = userService.save(user);
+    
+            // Asocia el usuario al emprendimiento
+            entrepreneurship.setUserEntity(user);
+            
+            // Guarda el emprendimiento con el usuario asociado
+            entrepreneurshipRepository.save(entrepreneurship);
+    
+            // Crear cupones para el emprendimiento y asociarlos a funcionalidades
+            // createCouponsForEntrepreneurship(entrepreneurship);
+        }
     }
+
+//     // Método para crear cupones, asociarlos a funcionalidades y al emprendimiento
+// private void createCouponsForEntrepreneurship(Entrepreneurship entrepreneurship) {
+//     // Funcionalidades que se asociarán a los cupones
+//     List<Functionality> functionalities = functionalityRepository.findAll();
+
+//     List<Coupon> coupons = List.of(
+//             Coupon.builder()
+//                     .description("Cupon de funcionalidades 1")
+//                     .expirationDate(Date.from(LocalDate.now().plusMonths(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
+//                     .expirationPeriod(30)
+//                     .entrepreneurship(entrepreneurship)
+//                     .build(),
+//             Coupon.builder()
+//                     .description("Cupon de funcionalidades 2")
+//                     .expirationDate(Date.from(LocalDate.now().plusMonths(2).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
+//                     .expirationPeriod(60)
+//                     .entrepreneurship(entrepreneurship)
+//                     .build()
+//     );
+
+//     // Guardar cada cupón y asignar funcionalidades
+//     for (Coupon coupon : coupons) {
+//         coupon = couponRepository.save(coupon);
+
+//         // Asociar algunas funcionalidades al cupón
+//         for (int i = 0; i < 3 && i < functionalities.size(); i++) {
+//             CouponFunctionality couponFunctionality = new CouponFunctionality(coupon, functionalities.get(i));
+//             couponFunctionalityRepository.save(couponFunctionality);
+//             coupon.addFunctionality(functionalities.get(i)); // Agrega la funcionalidad al cupón
+//         }
+
+//         // Asignar el cupón al emprendimiento mediante CouponEntrepreneurship, con active en false
+//         CouponEntrepreneurship couponEntrepreneurship = CouponEntrepreneurship.builder()
+//                 .entrepreneurship(entrepreneurship)
+//                 .coupon(coupon)
+//                 .active(false) // Estado active establecido en false
+//                 .build();
+//         couponEntrepreneurshipRepository.save(couponEntrepreneurship);
+//     }
+// }
 
     private void insertEvents() {
         List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
