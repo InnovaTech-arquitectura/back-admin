@@ -21,6 +21,7 @@ import com.innovatech.demo.Entity.Functionality;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Service.FunctionalityService;
 import com.innovatech.demo.Service.PlanService;
+import com.innovatech.demo.Service.SubscriptionService;
 
 @RestController
 @RequestMapping("/plan")
@@ -31,6 +32,9 @@ public class PlanController {
 
     @Autowired
     private FunctionalityService functionalityService;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
 
     // http://localhost:8090/plan/all?limit=n&page=m
     @GetMapping("/all")
@@ -137,27 +141,31 @@ public class PlanController {
     }
 
     // http://localhost:8090/plan/delete/{idPlan}
+    // PlanController.java
     @DeleteMapping("/delete/{idPlan}")
     public ResponseEntity<?> deletePlan(@PathVariable Long idPlan) {
         try {
-            // Check if the plan exists
+            // Verificar si el plan existe
             Plan existingPlan = planService.findById(idPlan);
-
-            // If the plan doesn't exist, return 404 Not Found
             if (existingPlan == null) {
-                return new ResponseEntity<>("Plan not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Plan no encontrado", HttpStatus.NOT_FOUND);
             }
 
-            // Attempt to delete the plan
+            // Verificar si el plan tiene suscripciones activas
+            boolean hasActiveSubscriptions = subscriptionService.hasActiveSubscriptions(idPlan);
+            if (hasActiveSubscriptions) {
+                return new ResponseEntity<>("No se puede eliminar: El plan tiene suscripciones activas", HttpStatus.CONFLICT);
+            }
+
+            // Si no hay suscripciones activas, proceder a eliminar el plan
             planService.deleteById(idPlan);
 
-            // Return 201 Created if the deletion was successful
-            return new ResponseEntity<>("Plan deleted successfully", HttpStatus.CREATED);
+            return new ResponseEntity<>("Plan eliminado correctamente", HttpStatus.OK);
 
         } catch (Exception e) {
-            // Handle any other exceptions and return 400 Bad Request
-            return new ResponseEntity<>("Unable to delete the plan. Please check the request", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No se puede eliminar el plan. Revisa la peticion", HttpStatus.BAD_REQUEST);
         }
     }
+
 
 }

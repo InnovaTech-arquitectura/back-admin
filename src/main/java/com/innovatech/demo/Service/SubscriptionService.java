@@ -1,6 +1,7 @@
 package com.innovatech.demo.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,11 @@ public class SubscriptionService {
         response.put("label", "Ingresos por plan en " + year);
 
         return response;
+    }
+
+    // Method to check if a plan has active subscriptions
+    public boolean hasActiveSubscriptions(Long planId) {
+        return subscriptionRepository.existsByPlanIdAndExpirationDateAfter(planId, new Date(System.currentTimeMillis()));
     }
 }
 

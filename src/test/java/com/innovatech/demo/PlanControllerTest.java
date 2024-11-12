@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import com.innovatech.demo.Controller.PlanController;
 import com.innovatech.demo.Entity.Plan;
 import com.innovatech.demo.Service.PlanService;
+import com.innovatech.demo.Service.SubscriptionService;
 
 public class PlanControllerTest {
 
@@ -29,6 +30,9 @@ public class PlanControllerTest {
 
     @Mock
     private PlanService planService;
+
+    @Mock
+    private SubscriptionService subscriptionService;
 
     @BeforeEach
     public void setUp() {
@@ -148,17 +152,37 @@ public class PlanControllerTest {
     @Test
     public void testDeletePlan_Success() {
         // Arrange
-        Long planId = 1L;
+        Long planId = 4L;
         Plan plan = new Plan();
         plan.setId(planId);
         when(planService.findById(planId)).thenReturn(plan);
+        when(subscriptionService.hasActiveSubscriptions(planId)).thenReturn(false);
 
         // Act
         ResponseEntity<?> response = planController.deletePlan(planId);
 
         // Assert
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("Plan deleted successfully", response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Plan eliminado correctamente", response.getBody());
+    }
+
+    @Test
+    public void testDeletePlan_WithActiveSubscriptions() {
+        // Arrange
+        Long planId = 4L;
+        Plan plan = new Plan();
+        plan.setId(planId);
+
+        when(planService.findById(planId)).thenReturn(plan);
+        // Simulación de que el plan tiene suscripciones activas
+        when(subscriptionService.hasActiveSubscriptions(planId)).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = planController.deletePlan(planId);
+
+        // Assert
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("No se puede eliminar: El plan tiene suscripciones activas", response.getBody());
     }
 
     @Test
@@ -173,6 +197,6 @@ public class PlanControllerTest {
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Plan not found", response.getBody());
+        assertEquals("Plan no encontrado", response.getBody());
     }
 }
