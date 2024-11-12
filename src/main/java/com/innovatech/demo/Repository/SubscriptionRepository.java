@@ -22,4 +22,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
         "GROUP BY s.plan.id, s.plan.name")
     List<Object[]> sumIncomeByPlanForYear(@Param("year") int year);
 
+    boolean existsByPlanIdAndExpirationDateAfter(Long planId, Date currentDate);
+
 }
