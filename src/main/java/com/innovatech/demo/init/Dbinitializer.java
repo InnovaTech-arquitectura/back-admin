@@ -41,6 +41,9 @@ public class Dbinitializer implements CommandLineRunner {
     private OrderService orderService;
 
     @Autowired
+    private OrderProductService orderProductService;
+
+    @Autowired
     private PlanRepository planRepository;
 
     @Autowired
@@ -54,6 +57,9 @@ public class Dbinitializer implements CommandLineRunner {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private RepositoryEntrepreneurship entrepreneurshipRepository;
@@ -135,6 +141,9 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Ordenes
         insertOrders();
+
+        // Productos de Orden
+        insertOrderProducts();
 
         logger.info("All data uploaded.");
     }
@@ -355,7 +364,38 @@ public class Dbinitializer implements CommandLineRunner {
         logger.info("Orders initialized successfully.");
     }
     
-
+    private void insertOrderProducts() {
+        // Obtener todas las órdenes y productos
+        List<Order> orders = orderRepository.findAll();
+        List<Product> products = productRepository.findAll();
+    
+        if (orders.isEmpty() || products.isEmpty()) {
+            throw new RuntimeException("Orders and Products must be initialized first.");
+        }
+    
+        // Asignar productos a las órdenes con cantidades específicas
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            
+            // Distribuir productos en las órdenes
+            for (int j = 0; j < products.size(); j++) {
+                Product product = products.get(j);
+    
+                // Crear una relación entre la orden y el producto con una cantidad
+                OrderProduct orderProduct = OrderProduct.builder()
+                        .order(order)
+                        .product(product)
+                        .quantity((i + 1) * (j + 1)) // Ejemplo de cantidad, puedes modificarlo
+                        .build();
+    
+                // Guardar la relación en el repositorio de OrderProduct
+                orderProductService.save(orderProduct);
+            }
+        }
+    
+        logger.info("Order products initialized successfully.");
+    }
+    
 
 
     private void insertEvents() {
