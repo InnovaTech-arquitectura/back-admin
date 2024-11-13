@@ -35,6 +35,12 @@ public class Dbinitializer implements CommandLineRunner {
     private AdministrativeEmployeeService administrativeEmployeeService;
 
     @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private PlanRepository planRepository;
 
     @Autowired
@@ -127,6 +133,9 @@ public class Dbinitializer implements CommandLineRunner {
         // Estados de Orden
         initializeOrderStates();
 
+        // Ordenes
+        insertOrders();
+
         logger.info("All data uploaded.");
     }
 
@@ -205,7 +214,7 @@ public class Dbinitializer implements CommandLineRunner {
             .userEntity(user1)
             .id_card("54353453")
             .build();
-        
+        clientService.save(client1);
 
         // Crear emprendimientos y asociarlos con los usuarios ya guardados
         Entrepreneurship ent1 = new Entrepreneurship("Tech Solutions", "tech_logo.png", 
@@ -226,6 +235,12 @@ public class Dbinitializer implements CommandLineRunner {
             .build();
         user2 = userService.save(user2);  // Guardar antes de asociar
 
+        Client client2 = Client.builder()
+            .userEntity(user2)
+            .id_card("12345678")
+            .build();
+        clientService.save(client2);
+
         Entrepreneurship ent2 = new Entrepreneurship("Creative Designs", "design_logo.png", 
             "Graphic and web design services", "Jane", "Smith");
         ent2.setUserEntity(user2);
@@ -243,6 +258,12 @@ public class Dbinitializer implements CommandLineRunner {
             .role(entrepreneurshipRole)  // Asignar el rol
             .build();
         user3 = userService.save(user3);  // Guardar antes de asociar
+
+        Client client3 = Client.builder()
+            .userEntity(user3)
+            .id_card("87654321")
+            .build();
+        clientService.save(client3);
 
         Entrepreneurship ent3 = new Entrepreneurship("Healthy Eats", "healthy_logo.png", 
             "Organic and healthy food products", "Emily", "Davis");
@@ -293,6 +314,47 @@ public class Dbinitializer implements CommandLineRunner {
             productRepository.saveAll(List.of(product1, product2, product3));
         }
     }
+
+    private void insertOrders() {
+        // Obtener los estados de orden
+        List<OrderState> orderStates = orderStateRepository.findAll();
+        if (orderStates.isEmpty()) {
+            throw new RuntimeException("Order states must be initialized first.");
+        }
+    
+        // Obtener las ciudades
+        List<City> cities = cityRepository.findAll();
+        if (cities.isEmpty()) {
+            throw new RuntimeException("Cities must be initialized first.");
+        }
+    
+        // Obtener los clientes
+        List<Client> clients = clientService.findAll();
+        if (clients.isEmpty()) {
+            throw new RuntimeException("Clients must be initialized first.");
+        }
+    
+        // Crear órdenes para cada cliente
+        for (int i = 0; i < clients.size(); i++) {
+            Client client = clients.get(i);
+            City city = cities.get(i % cities.size()); // Distribuir ciudades entre órdenes
+            OrderState orderState = orderStates.get(i % orderStates.size()); // Distribuir estados entre órdenes
+    
+            Order order = Order.builder()
+                    .sale_number("SN" + (i + 1))
+                    .additional_info("Additional info for order " + (i + 1))
+                    .address("1234 Street, City " + city.getName())
+                    .orderState(orderState) // Estado de la orden
+                    .city(city)             // Ciudad de la orden
+                    .build();
+    
+            // Guardar la orden en el repositorio
+            orderService.save(order);
+        }
+    
+        logger.info("Orders initialized successfully.");
+    }
+    
 
 
 
