@@ -29,7 +29,19 @@ public class Dbinitializer implements CommandLineRunner {
     private UserService userService;
 
     @Autowired
+    private EntrepreneurshipService entrepreneurshipService;
+
+    @Autowired
     private AdministrativeEmployeeService administrativeEmployeeService;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private OrderProductService orderProductService;
 
     @Autowired
     private PlanRepository planRepository;
@@ -47,6 +59,9 @@ public class Dbinitializer implements CommandLineRunner {
     private CourseRepository courseRepository;
 
     @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
     private RepositoryEntrepreneurship entrepreneurshipRepository;
 
     @Autowired
@@ -58,12 +73,14 @@ public class Dbinitializer implements CommandLineRunner {
     @Autowired
     private EntrepreneurshipeventregistryRepository entrepreneurshipeventregistryRepository;
 
-    // Repositorios adicionales
     @Autowired
     private CityRepository cityRepository;
 
     @Autowired
     private StateRepository stateRepository;
+
+    @Autowired
+    private UserRepository userEntityRepository;
 
     @Autowired
     private OrderStateRepository orderStateRepository;
@@ -102,7 +119,10 @@ public class Dbinitializer implements CommandLineRunner {
         createFunctionalitiesAndPlans();
 
         // Emprendimientos y Usuarios
-        insertEntrepreneurships();
+        insertEntrepreneurshipsAndUsers();
+
+        // Productos
+        insertProductsForEntrepreneurships();
 
         // Eventos
         insertEvents();
@@ -118,6 +138,12 @@ public class Dbinitializer implements CommandLineRunner {
 
         // Estados de Orden
         initializeOrderStates();
+
+        // Ordenes
+        insertOrders();
+
+        // Productos de Orden
+        insertOrderProducts();
 
         logger.info("All data uploaded.");
     }
@@ -176,90 +202,201 @@ public class Dbinitializer implements CommandLineRunner {
         }
     }
 
-    private void insertEntrepreneurships() {
-        // Lista de emprendimientos con información del usuario
-        List<Entrepreneurship> entrepreneurshipList = List.of(
-                new Entrepreneurship("Zara", "", "ropa", "Maria", "Martinez"),
-                new Entrepreneurship("Nike", "", "deporte", "Juan", "Perez"),
-                new Entrepreneurship("Apple", "", "tecnología", "Laura", "Gonzalez"),
-                new Entrepreneurship("Bodega El Barril", "", "alimentos", "Carlos", "Lopez"),
-                new Entrepreneurship("Yoga Flow", "", "salud", "Sofia", "Martinez"),
-                new Entrepreneurship("Travel With Us", "", "turismo", "Jose", "Rodriguez"),
-                new Entrepreneurship("Tech Solutions", "tech_logo.png", "Tech company providing innovative solutions", "John", "Doe"),
-                new Entrepreneurship("Creative Designs", "design_logo.png", "Graphic and web design services", "Jane", "Smith"),
-                new Entrepreneurship("Healthy Eats", "healthy_logo.png", "Organic and healthy food products", "Emily", "Davis")
-        );
+    private void insertEntrepreneurshipsAndUsers() {
+        System.out.println("Initializing database with sample users and entrepreneurship data...");
     
-        // Obtén el rol de "Entrepreneurship" para asignarlo a cada usuario creado
+        // Obtener el rol "Entrepreneurship" para asignarlo a cada usuario creado
         Role entrepreneurshipRole = roleService.findByName("Entrepreneurship")
                 .orElseThrow(() -> new RuntimeException("Role 'Entrepreneurship' not found"));
     
-        for (Entrepreneurship entrepreneurship : entrepreneurshipList) {
-            // Crear un usuario para cada emprendimiento
-            UserEntity user = UserEntity.builder()
-                    .idCard((int) (Math.random() * 100000)) // ID aleatorio de prueba
-                    .name(entrepreneurship.getNames() + " " + entrepreneurship.getLastnames())
-                    .email(entrepreneurship.getName().toLowerCase() + "@example.com")
-                    .password("1234") // Contraseña predeterminada
-                    .role(entrepreneurshipRole)
+        // Crear primer cliente
+        UserEntity user1 = UserEntity.builder()
+            .idCard(12345)
+            .name("John Doe")
+            .email("johndoe@example.com")
+            .password("password123")
+            .role(entrepreneurshipRole)  // Asignar el rol
+            .build();
+        user1 = userService.save(user1);  // Guardar antes de asociar
+
+        Client client1 = Client.builder()
+            .userEntity(user1)
+            .id_card("54353453")
+            .build();
+        clientService.save(client1);
+
+        // Crear emprendimientos y asociarlos con los usuarios ya guardados
+        Entrepreneurship ent1 = new Entrepreneurship("Tech Solutions", "tech_logo.png", 
+            "Tech company providing innovative solutions", "John", "Doe");
+        ent1.setUserEntity(user1);
+
+        entrepreneurshipService.save(ent1);
+        user1.setEntrepreneurship(ent1);
+        userService.save(user1);
+
+        // Crear segundo cliente
+        UserEntity user2 = UserEntity.builder()
+            .idCard(67890)
+            .name("Jane Smith")
+            .email("janesmith@example.com")
+            .password("password123")
+            .role(entrepreneurshipRole)  // Asignar el rol
+            .build();
+        user2 = userService.save(user2);  // Guardar antes de asociar
+
+        Client client2 = Client.builder()
+            .userEntity(user2)
+            .id_card("12345678")
+            .build();
+        clientService.save(client2);
+
+        Entrepreneurship ent2 = new Entrepreneurship("Creative Designs", "design_logo.png", 
+            "Graphic and web design services", "Jane", "Smith");
+        ent2.setUserEntity(user2);
+
+        entrepreneurshipService.save(ent2);
+        user2.setEntrepreneurship(ent2);
+        userService.save(user2);
+
+        // Crear tercer cliente
+        UserEntity user3 = UserEntity.builder()
+            .idCard(11223)
+            .name("Emily Davis")
+            .email("emilydavis@example.com")
+            .password("password123")
+            .role(entrepreneurshipRole)  // Asignar el rol
+            .build();
+        user3 = userService.save(user3);  // Guardar antes de asociar
+
+        Client client3 = Client.builder()
+            .userEntity(user3)
+            .id_card("87654321")
+            .build();
+        clientService.save(client3);
+
+        Entrepreneurship ent3 = new Entrepreneurship("Healthy Eats", "healthy_logo.png", 
+            "Organic and healthy food products", "Emily", "Davis");
+        ent3.setUserEntity(user3);
+
+        entrepreneurshipService.save(ent3);
+        user3.setEntrepreneurship(ent3);
+        userService.save(user3);
+    }
+
+    private void insertProductsForEntrepreneurships() {
+        if (productRepository.count() == 0) {
+            List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+            
+            Product product1 = new Product();
+            product1.setName("Product 1");
+            product1.setQuantity(10);
+            product1.setPrice(20.0);
+            product1.setCost(15.0);
+            product1.setDescription("Description for Product 1");
+            product1.setMultimedia("p-1");
+            product1.setEntrepreneurship(entrepreneurships.get(0));
+
+            Product product2 = new Product();
+            product2.setName("Product 2");
+            product2.setQuantity(5);
+            product2.setPrice(35.0);
+            product2.setCost(25.0);
+            product2.setDescription("Description for Product 2");
+            product2.setMultimedia("p-2");
+            product2.setEntrepreneurship(entrepreneurships.get(1));
+
+            Product product3 = new Product();
+            product3.setName("Product 3");
+            product3.setQuantity(8);
+            product3.setPrice(50.0);
+            product3.setCost(40.0);
+            product3.setDescription("Description for Product 3");
+            product3.setMultimedia("p-3");
+            product3.setEntrepreneurship(entrepreneurships.get(2));
+
+            productRepository.saveAll(List.of(product1, product2, product3));
+
+            // Actualizar el valor multimedia después de guardar
+            product1.setMultimedia("p-" + product1.getId());
+            product2.setMultimedia("p-" + product2.getId());
+            product3.setMultimedia("p-" + product3.getId());
+            productRepository.saveAll(List.of(product1, product2, product3));
+        }
+    }
+
+    private void insertOrders() {
+        // Obtener los estados de orden
+        List<OrderState> orderStates = orderStateRepository.findAll();
+        if (orderStates.isEmpty()) {
+            throw new RuntimeException("Order states must be initialized first.");
+        }
+    
+        // Obtener las ciudades
+        List<City> cities = cityRepository.findAll();
+        if (cities.isEmpty()) {
+            throw new RuntimeException("Cities must be initialized first.");
+        }
+    
+        // Obtener los clientes
+        List<Client> clients = clientService.findAll();
+        if (clients.isEmpty()) {
+            throw new RuntimeException("Clients must be initialized first.");
+        }
+    
+        // Crear órdenes para cada cliente
+        for (int i = 0; i < clients.size(); i++) {
+            Client client = clients.get(i);
+            City city = cities.get(i % cities.size()); // Distribuir ciudades entre órdenes
+            OrderState orderState = orderStates.get(i % orderStates.size()); // Distribuir estados entre órdenes
+    
+            Order order = Order.builder()
+                    .sale_number("SN" + (i + 1))
+                    .additional_info("Additional info for order " + (i + 1))
+                    .address("1234 Street, City " + city.getName())
+                    .orderState(orderState) // Estado de la orden
+                    .city(city)             // Ciudad de la orden
                     .build();
     
-            // Guarda el usuario en la base de datos
-            user = userService.save(user);
-    
-            // Asocia el usuario al emprendimiento y viceversa
-            entrepreneurship.setUserEntity(user);
-            user.setEntrepreneurship(entrepreneurship);
-    
-            // Guarda el emprendimiento con el usuario asociado
-            entrepreneurshipRepository.save(entrepreneurship);
-    
-            // Actualiza el usuario con la relación de emprendimiento no nula
-            userService.save(user);
+            // Guardar la orden en el repositorio
+            orderService.save(order);
         }
+    
+        logger.info("Orders initialized successfully.");
+    }
+    
+    private void insertOrderProducts() {
+        // Obtener todas las órdenes y productos
+        List<Order> orders = orderRepository.findAll();
+        List<Product> products = productRepository.findAll();
+    
+        if (orders.isEmpty() || products.isEmpty()) {
+            throw new RuntimeException("Orders and Products must be initialized first.");
+        }
+    
+        // Asignar productos a las órdenes con cantidades específicas
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            
+            // Distribuir productos en las órdenes
+            for (int j = 0; j < products.size(); j++) {
+                Product product = products.get(j);
+    
+                // Crear una relación entre la orden y el producto con una cantidad
+                OrderProduct orderProduct = OrderProduct.builder()
+                        .order(order)
+                        .product(product)
+                        .quantity((i + 1) * (j + 1)) // Ejemplo de cantidad, puedes modificarlo
+                        .build();
+    
+                // Guardar la relación en el repositorio de OrderProduct
+                orderProductService.save(orderProduct);
+            }
+        }
+    
+        logger.info("Order products initialized successfully.");
     }
     
 
-//     // Método para crear cupones, asociarlos a funcionalidades y al emprendimiento
-// private void createCouponsForEntrepreneurship(Entrepreneurship entrepreneurship) {
-//     // Funcionalidades que se asociarán a los cupones
-//     List<Functionality> functionalities = functionalityRepository.findAll();
-
-//     List<Coupon> coupons = List.of(
-//             Coupon.builder()
-//                     .description("Cupon de funcionalidades 1")
-//                     .expirationDate(Date.from(LocalDate.now().plusMonths(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
-//                     .expirationPeriod(30)
-//                     .entrepreneurship(entrepreneurship)
-//                     .build(),
-//             Coupon.builder()
-//                     .description("Cupon de funcionalidades 2")
-//                     .expirationDate(Date.from(LocalDate.now().plusMonths(2).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))
-//                     .expirationPeriod(60)
-//                     .entrepreneurship(entrepreneurship)
-//                     .build()
-//     );
-
-//     // Guardar cada cupón y asignar funcionalidades
-//     for (Coupon coupon : coupons) {
-//         coupon = couponRepository.save(coupon);
-
-//         // Asociar algunas funcionalidades al cupón
-//         for (int i = 0; i < 3 && i < functionalities.size(); i++) {
-//             CouponFunctionality couponFunctionality = new CouponFunctionality(coupon, functionalities.get(i));
-//             couponFunctionalityRepository.save(couponFunctionality);
-//             coupon.addFunctionality(functionalities.get(i)); // Agrega la funcionalidad al cupón
-//         }
-
-//         // Asignar el cupón al emprendimiento mediante CouponEntrepreneurship, con active en false
-//         CouponEntrepreneurship couponEntrepreneurship = CouponEntrepreneurship.builder()
-//                 .entrepreneurship(entrepreneurship)
-//                 .coupon(coupon)
-//                 .active(false) // Estado active establecido en false
-//                 .build();
-//         couponEntrepreneurshipRepository.save(couponEntrepreneurship);
-//     }
-// }
 
     private void insertEvents() {
         List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
