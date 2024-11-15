@@ -31,7 +31,7 @@ public class Client {
 
     // Relationship with table User_Entity
     @OneToOne
-    @JoinColumn(name = "id_user", referencedColumnName = "id")
+    @JoinColumn(name = "id_user_entity", referencedColumnName = "id")
     private UserEntity userEntity;
     
 }
