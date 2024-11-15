@@ -73,6 +73,7 @@ public class Entrepreneurship {
     private List<Entrepreneurshipeventregistry> eventRegistries = new ArrayList<>();
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "user_entity_id") // La FK se genera aquí en la tabla de emprendimiento
     private UserEntity userEntity;
 

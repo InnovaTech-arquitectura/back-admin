@@ -2,7 +2,11 @@ package com.innovatech.demo.Service;
 
 import java.util.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,8 @@ import com.innovatech.demo.Entity.EventEntity;
 import com.innovatech.demo.Repository.EntrepreneurshipRepository;
 import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Repository.EventRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class EventService implements CrudService<EventEntity, Long> {
@@ -87,16 +93,18 @@ public class EventService implements CrudService<EventEntity, Long> {
         List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Inicializa una lista de 12 ceros
     
         // Procesar los resultados
-        for (Object[] result : results) {
-            // Obtenemos el año directamente como un entero
-            int yearResult = ((Number) result[0]).intValue(); // El año devuelto por la consulta
-            Double totalExpense = ((Number) result[1]).doubleValue(); // El total de gastos
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
-            // No es necesario procesar el año como una fecha, simplemente trabaja con el mes y el año que tienes
-            // Aquí puedes aplicar lógica para dividir el total de gastos por meses si fuera necesario.
-            // Sin embargo, dado que no tienes información específica de los meses en tu consulta actual,
-            // este paso no sería relevante.
-            // Puedes agregar la lógica para manejar meses si la consulta devolviera datos por mes.
+        for (Object[] result : results) {
+            String dateString = (String) result[0]; // La fecha como String en formato 'yyyy-MM-dd'
+            Double totalExpense = (Double) result[1]; // El total de gastos
+    
+            // Convertir el String en formato 'YYYY-MM-DD' a un mes usando LocalDate
+            LocalDate date = LocalDate.parse(dateString, formatter);
+            int monthResult = date.getMonthValue(); // Extraer el mes como entero
+    
+            // Asignar el valor al mes correspondiente (meses en 0-index, por eso restamos 1)
+            data.set(monthResult - 1, totalExpense.intValue());
         }
     
         // Preparar la respuesta
@@ -107,11 +115,6 @@ public class EventService implements CrudService<EventEntity, Long> {
         return response;
     }
     
-    
-    
-    
 
 }
     
-
-
