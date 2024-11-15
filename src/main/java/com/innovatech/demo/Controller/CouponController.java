@@ -112,84 +112,81 @@ public class CouponController {
      * @return El cupón creado o un mensaje de conflicto en caso de duplicación.
      */
     @PostMapping("/add")
-    public ResponseEntity<?> addCoupon(@RequestBody CouponDTO couponDTO) {
-        try {
-            // Verificar que el emprendimiento asociado exista
-            Entrepreneurship entrepreneurship = entrepreneurshipRepository.findById(couponDTO.getEntrepreneurshipId())
-                    .orElseThrow(() -> new RuntimeException(
-                            "Entrepreneurship not found with ID: " + couponDTO.getEntrepreneurshipId()));
+public ResponseEntity<?> addCoupon(@RequestBody CouponDTO couponDTO) {
+    try {
+        // Verificar que el emprendimiento asociado exista
+        Entrepreneurship entrepreneurship = entrepreneurshipRepository.findById(couponDTO.getEntrepreneurshipId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Entrepreneurship not found with ID: " + couponDTO.getEntrepreneurshipId()));
 
-            // Verificar si ya existe un cupón con la misma descripción
-            Coupon existingCoupon = couponService.findByDescription(couponDTO.getDescription());
-            if (existingCoupon != null) {
-                return new ResponseEntity<>("Conflict: A coupon with this description already exists.",
-                        HttpStatus.CONFLICT);
-            }
-
-            // Crear el nuevo cupón
-            Coupon newCoupon = Coupon.builder()
-                    .description(couponDTO.getDescription())
-                    .expirationDate(couponDTO.getExpirationDate())
-                    .expirationPeriod(couponDTO.getExpirationPeriod())
-                    .entrepreneurship(entrepreneurship) // Asignar el emprendimiento al cupón
-                    .build();
-
-            // Verificar si hay un plan asociado
-            if (couponDTO.getPlanId() != null) {
-                Plan plan = planRepository.findById(couponDTO.getPlanId())
-                        .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + couponDTO.getPlanId()));
-                newCoupon.setPlan(plan); // Asignar el plan al cupón
-            }
-
-            // Asociar funcionalidades al cupón si se proporcionaron
-            // Asociar funcionalidades al cupón si se proporcionaron
-            List<CouponFunctionality> functionalitiesList = new ArrayList<>();
-
-            // Asociar funcionalidades al cupón si se proporcionaron
-            if (couponDTO.getFunctionalityIds() != null && !couponDTO.getFunctionalityIds().isEmpty()) {
-                for (Long functionalityId : couponDTO.getFunctionalityIds()) {
-                    logger.info("Functionality ID: " + functionalityId);
-                    Functionality functionality = functionalityRepository.findById(functionalityId)
-                            .orElseThrow(
-                                    () -> new RuntimeException("Functionality not found with ID: " + functionalityId));
-
-                    // Crear la relación entre el cupón y la funcionalidad
-                    CouponFunctionality couponFunctionality = new CouponFunctionality(newCoupon, functionality);
-
-                    // Añadir a la lista temporal
-                    functionalitiesList.add(couponFunctionality);
-                }
-            }
-
-            // Establecer la lista completa de funcionalidades
-            newCoupon.setCouponFunctionalities(functionalitiesList);
-
-            // Crear la relación entre el cupón y el emprendimiento
-            // Asegúrate de que la lista de couponEntrepreneurships esté inicializada
-            if (newCoupon.getCouponEntrepreneurships() == null) {
-                newCoupon.setCouponEntrepreneurships(new ArrayList<>());
-            }
-
-            // Crear la relación entre el cupón y el emprendimiento
-            CouponEntrepreneurship couponEntrepreneurship = new CouponEntrepreneurship();
-            couponEntrepreneurship.setEntrepreneurship(entrepreneurship);
-            couponEntrepreneurship.setCoupon(newCoupon);
-            couponEntrepreneurship.setActive(false); // Valor por defecto
-            newCoupon.getCouponEntrepreneurships().add(couponEntrepreneurship); // Agregar a la lista
-
-            // Guardar el cupón y las relaciones
-            Coupon savedCoupon = couponService.save(newCoupon);
-
-            return new ResponseEntity<>(savedCoupon, HttpStatus.CREATED);
-
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Unable to create coupon. Please check the request.", HttpStatus.BAD_REQUEST);
+        // Verificar si ya existe un cupón con la misma descripción
+        Coupon existingCoupon = couponService.findByDescription(couponDTO.getDescription());
+        if (existingCoupon != null) {
+            return new ResponseEntity<>("Conflict: A coupon with this description already exists.",
+                    HttpStatus.CONFLICT);
         }
+
+        // Crear el nuevo cupón
+        Coupon newCoupon = Coupon.builder()
+                .description(couponDTO.getDescription())
+                .expirationDate(couponDTO.getExpirationDate())
+                .expirationPeriod(couponDTO.getExpirationPeriod())
+                .entrepreneurship(entrepreneurship)
+                .build();
+
+        // Verificar si hay un plan asociado
+        if (couponDTO.getPlanId() != null) {
+            Plan plan = planRepository.findById(couponDTO.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + couponDTO.getPlanId()));
+            newCoupon.setPlan(plan);
+        }
+
+        // Validar que haya funcionalidades asociadas
+        if (couponDTO.getFunctionalityIds() == null || couponDTO.getFunctionalityIds().isEmpty()) {
+            throw new RuntimeException("A coupon must have at least one functionality.");
+        }
+
+        // Asociar funcionalidades al cupón
+        List<CouponFunctionality> functionalitiesList = new ArrayList<>();
+        for (Long functionalityId : couponDTO.getFunctionalityIds()) {
+            logger.info("Functionality ID: " + functionalityId);
+            Functionality functionality = functionalityRepository.findById(functionalityId)
+                    .orElseThrow(
+                            () -> new RuntimeException("Functionality not found with ID: " + functionalityId));
+
+            // Crear la relación entre el cupón y la funcionalidad
+            CouponFunctionality couponFunctionality = new CouponFunctionality(newCoupon, functionality);
+
+            // Añadir a la lista temporal
+            functionalitiesList.add(couponFunctionality);
+        }
+        newCoupon.setCouponFunctionalities(functionalitiesList);
+
+        // Crear la relación entre el cupón y el emprendimiento
+        if (newCoupon.getCouponEntrepreneurships() == null) {
+            newCoupon.setCouponEntrepreneurships(new ArrayList<>());
+        }
+
+        CouponEntrepreneurship couponEntrepreneurship = new CouponEntrepreneurship();
+        couponEntrepreneurship.setEntrepreneurship(entrepreneurship);
+        couponEntrepreneurship.setCoupon(newCoupon);
+        couponEntrepreneurship.setActive(false);
+        newCoupon.getCouponEntrepreneurships().add(couponEntrepreneurship);
+
+        // Guardar el cupón y las relaciones
+        Coupon savedCoupon = couponService.save(newCoupon);
+
+        return new ResponseEntity<>(savedCoupon, HttpStatus.CREATED);
+
+    } catch (RuntimeException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>("Unable to create coupon. Please check the request.", HttpStatus.BAD_REQUEST);
     }
+}
+
 
     /**
      * Endpoint para actualizar un cupón existente.
