@@ -65,7 +65,14 @@ public class SecurityConfig {
                 try {
                     MessageDigest digest = MessageDigest.getInstance("SHA-256");
                     byte[] hash = digest.digest(rawPassword.toString().getBytes());
-                    return Base64.getEncoder().encodeToString(hash);
+                    // Convertir el hash a formato hexadecimal (igual que en .NET)
+                    StringBuilder hexString = new StringBuilder();
+                    for (byte b : hash) {
+                        String hex = Integer.toHexString(0xff & b);
+                        if (hex.length() == 1) hexString.append('0');
+                        hexString.append(hex);
+                    }
+                    return hexString.toString().toLowerCase(); // Convertir a minúsculas
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("SHA-256 algorithm not found", e);
                 }
@@ -77,6 +84,7 @@ public class SecurityConfig {
             }
         };
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(
