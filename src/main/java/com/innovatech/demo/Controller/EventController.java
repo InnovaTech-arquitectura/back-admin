@@ -1,5 +1,6 @@
 package com.innovatech.demo.Controller;
 
+import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -17,10 +18,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.innovatech.demo.Entity.Entrepreneurship;
 import com.innovatech.demo.Entity.Entrepreneurshipeventregistry;
 import com.innovatech.demo.Entity.EventEntity;
+import com.innovatech.demo.Entity.Plan;
+import com.innovatech.demo.Repository.EntrepreneurshipRepository;
 import com.innovatech.demo.Repository.EntrepreneurshipeventregistryRepository;
 import com.innovatech.demo.Service.EventService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("event")
@@ -105,31 +111,37 @@ public class EventController {
     public ResponseEntity<?> updateEvent(@RequestBody EventEntity event) {
         try {
             EventEntity existingEvent = eventService.findById(event.getId());
-
+    
             // Si el evento no existe, retorna 404 Not Found
             if (existingEvent == null) {
                 return new ResponseEntity<>("Conflict: Event not found", HttpStatus.NOT_FOUND);
             }
-
-            // Actualiza los campos que deseas modificar
+    
+            // Actualiza los campos del evento
             existingEvent.setName(event.getName());
             existingEvent.setDate(event.getDate());
-            // Agrega aquí otros campos que necesites actualizar
-
-            // Guardar las inscripciones del evento
-            existingEvent.setEntrepreneurshipeventregistry(event.getEntrepreneurshipeventregistry());
-
-            eventService.save(existingEvent); // Guarda el evento actualizado
-
-            // Retorna 200 OK si la actualización fue exitosa
+            existingEvent.setDate2(event.getDate2()); 
+            existingEvent.setTotalCost(event.getTotalCost()); 
+            existingEvent.setEarnings(event.getEarnings()); 
+            existingEvent.setCostoLocal(event.getCostoLocal()); 
+            existingEvent.setPlace(event.getPlace()); 
+            existingEvent.setModality(event.getModality()); 
+            existingEvent.setQuota(event.getQuota()); 
+            existingEvent.setDescription(event.getDescription()); 
+    
+    
+            // Guarda el evento actualizado
+            eventService.save(existingEvent);
+    
+            // Retorna 200 OK si la actualización fue exitosa (no 201, porque no es una creación)
             return new ResponseEntity<>("Event modified successfully", HttpStatus.OK);
-
+    
         } catch (Exception e) {
             // Maneja cualquier otra excepción y retorna 400 Bad Request
             return new ResponseEntity<>("Unable to modify Event: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    
 
     // http://localhost:8090/event/delete/{idEvent}
     @DeleteMapping("/delete/{idEvent}")

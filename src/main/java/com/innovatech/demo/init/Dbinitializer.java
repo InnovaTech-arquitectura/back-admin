@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 import java.sql.Date;
 
@@ -399,8 +400,15 @@ public class Dbinitializer implements CommandLineRunner {
 
 
     private void insertEvents() {
+        
         List<Entrepreneurship> entrepreneurships = entrepreneurshipRepository.findAll();
+        
+        // Inicialización de eventos
+        Random random = new Random(); 
         for (int i = 1; i <= 5; i++) {
+            // Selección aleatoria de modalidad entre "Presencial" o "Virtual"
+            String modality = random.nextBoolean() ? "Virtual" : "Presencial";
+    
             EventEntity eventEntity = EventEntity.builder()
                     .name("Event " + i)
                     .totalCost(100 + (i * 20))
@@ -409,13 +417,14 @@ public class Dbinitializer implements CommandLineRunner {
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
                     .place(i * 10)
-                    .modality("Modality " + i)
+                    .modality(modality)  // Asignar modalidad aleatoria
                     .quota(100)
                     .description("Evento de prueba " + i)
                     .build();
-
-            eventRepository.save(eventEntity);
-
+    
+            eventRepository.save(eventEntity); // Guardar el evento en el repositorio
+    
+            // Crear asociaciones con emprendimientos
             for (int j = 0; j < i && j < entrepreneurships.size(); j++) {
                 Entrepreneurshipeventregistry entrepreneurshipeventregistry = Entrepreneurshipeventregistry.builder()
                         .eventEntity(eventEntity)
@@ -423,10 +432,13 @@ public class Dbinitializer implements CommandLineRunner {
                         .date(eventEntity.getDate())
                         .amountPaid(i * 100000)
                         .build();
+    
                 entrepreneurshipeventregistryRepository.save(entrepreneurshipeventregistry);
             }
         }
     }
+
+
 
     private void insertCourses() {
         LocalTime threePM = LocalTime.of(15, 0);
