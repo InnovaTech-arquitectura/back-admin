@@ -161,7 +161,7 @@ public class Dbinitializer implements CommandLineRunner {
         UserEntity adminUser = UserEntity.builder()
                 .idCard(123456)
                 .name("Andres")
-                .email("admin@example.com")
+                .email("dupersebas@gmail.com")
                 .password("password123")
                 .role(roleService.findByName("Administrator").get())
                 .build();

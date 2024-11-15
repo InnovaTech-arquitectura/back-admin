@@ -47,8 +47,8 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/dashboard/**")).hasAnyAuthority("Administrator", "Entrepreneurship", "Specialist", "Sales", "Billing", "Marketing")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/finance/**")).hasAnyAuthority("Administrator", "Sales", "Billing", "Marketing")
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/request")).permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/verify")).permitAll()
-                    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/set-password")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/verify")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/api/password-recovery/set-password")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint));
