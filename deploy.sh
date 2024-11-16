@@ -21,11 +21,11 @@ cd back-admin || exit 1
 if [[ $1 == "production" ]]; then
     export ENVIRONMENT=prod
 else
-    export ENVIRONMENT=testing
+    export ENVIRONMENT=test
 fi
 
 echo "Compilando el proyecto Maven..."
-mvn clean install  # Compilar el proyecto
+mvn clean install
 
 echo "Deteniendo y eliminando contenedores existentes..."
 docker-compose down
@@ -33,8 +33,8 @@ docker-compose down
 echo "Limpiando imágenes de Docker no utilizadas..."
 docker image prune -f
 
-# Levantar el contenedor
+# Levantar el contenedor con la variable de entorno ENVIRONMENT
 echo "Levantando el contenedor con docker-compose..."
-docker-compose up --build -d
+ENVIRONMENT=$ENVIRONMENT docker-compose up --build -d
 
 echo "Despliegue completado."
