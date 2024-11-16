@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,6 @@ import io.minio.errors.InternalException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
-import org.apache.commons.io.IOUtils;
 
 @RestController
 @RequestMapping("/banner")
@@ -91,13 +91,17 @@ public class PublicationController {
             Banner editedBanner = publicationService.editBanner(id, editedBannerDto, email);
 
             //save image in minio
-            try {
-                minioService.uploadFile("p-"+editedBanner.getId().toString(),editedBannerDto.getPicture());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
-                return ResponseEntity.internalServerError().body("Error uploading photo");
-            }
+            if (editedBannerDto.getPicture() !=null){
+                try {
+                    minioService.uploadFile("p-"+editedBanner.getId().toString(),editedBannerDto.getPicture());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    return ResponseEntity.internalServerError().body("Error uploading photo");
+                }
+             } else{
+                    System.out.println("No se ha cambiado la imagen");
+             }
 
             return ResponseEntity.ok(editedBanner);
         } catch (NoSuchElementException e) {
