@@ -1,7 +1,5 @@
 package com.innovatech.demo.Repository;
 
-import java.util.Optional;
-
 import com.innovatech.demo.Entity.Plan;
 
 import java.util.*;
@@ -18,6 +16,7 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     Plan findByName(String name);
 
     @Query("SELECT s.plan.name, COUNT(s), SUM(s.amount) FROM Subscription s GROUP BY s.plan.name")
-    List<Plan> Subscriptionforplan();
+    List<Object[]> Subscriptionforplan();
+
 
 }

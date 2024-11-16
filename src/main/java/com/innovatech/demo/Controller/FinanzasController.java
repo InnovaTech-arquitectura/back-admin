@@ -50,7 +50,7 @@ public class FinanzasController {
 
     // http://localhost:8090/finance/suscriptionforplan
     @GetMapping("/suscriptionforplan")
-    public ResponseEntity<List<Plan>> Subscriptionforplan() {
+    public ResponseEntity<List<Object[]>> Subscriptionforplan() {
         return new ResponseEntity<>(planService.Subscriptionforplan(), HttpStatus.OK);
     }
 
