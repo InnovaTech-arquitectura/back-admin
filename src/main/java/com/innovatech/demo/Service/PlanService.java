@@ -39,7 +39,7 @@ public class PlanService implements CrudService<Plan, Long> {
         return planRepository.findByName(name);
     }
 
-    public List<Plan> Subscriptionforplan() {
+    public List<Object[]> Subscriptionforplan() {
 
         return planRepository.Subscriptionforplan();
     }
