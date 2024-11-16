@@ -29,12 +29,6 @@ public class Client {
     @Column
     private String id_card;
 
-    // Relationship with table User
-    // @ManyToOne
-    // @JoinColumn(name = "id_user", referencedColumnName = "id")
-    // @Column(name = "id_user")
-    // private Long userid;
-
     // Relationship with table User_Entity
     @OneToOne
     @JoinColumn(name = "id_user_entity", referencedColumnName = "id")

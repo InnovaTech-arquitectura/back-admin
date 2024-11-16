@@ -24,9 +24,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Skip JWT processing for password recovery endpoints
+        String requestPath = request.getRequestURI();
+        if (requestPath.startsWith("/api/password-recovery/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = getJWT(request);
 
         if (token != null && jwtGenerator.validateToken(token)) {
@@ -38,6 +46,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
+
         filterChain.doFilter(request, response);
     }
 
@@ -48,5 +57,4 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 }

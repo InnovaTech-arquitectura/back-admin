@@ -20,12 +20,22 @@ public class UserService implements CrudService<UserEntity, Long> {
     // otherwise it would not let me test things.
 
     public UserEntity save(UserEntity userEntity) {
-
         String password = userEntity.getPassword();
-        String encodedPassword = passwordEncoder.encode(password);
-        userEntity.setPassword(encodedPassword);
+    
+        // Codifica solo si la contraseña no está en formato codificado
+        if (!isEncoded(password)) {
+            String encodedPassword = passwordEncoder.encode(password);
+            userEntity.setPassword(encodedPassword);
+        }
+    
         return userRepository.saveAndFlush(userEntity);
     }
+    
+    private boolean isEncoded(String password) {
+        // Verifica si la contraseña ya está codificada en Base64 (ejemplo)
+        return password.matches("^[A-Za-z0-9+/=]+$") && password.length() >= 44;
+    }
+    
 
     public UserEntity update(UserEntity userEntity) {
         return userRepository.saveAndFlush(userEntity);
