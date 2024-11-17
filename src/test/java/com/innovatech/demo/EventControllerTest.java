@@ -38,8 +38,8 @@ public class EventControllerTest {
     @Test
     public void testGetAllEvents() {
         // Arrange
-        EventEntity event1 = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
-        EventEntity event2 = new EventEntity(2L, "Event2", 200, Timestamp.valueOf("2023-09-22 00:00:00"), Timestamp.valueOf("2023-09-23 00:00:00"),  75, 50, 10, "Modality2", null, null);
+        EventEntity event1 = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
+        EventEntity event2 = new EventEntity(2L, "Event2", 200, Timestamp.valueOf("2023-09-22 00:00:00"), Timestamp.valueOf("2023-09-23 00:00:00"),  75, 50, "10", "Modality2", null, null);
         
         List<EventEntity> events = Arrays.asList(event1, event2);
         Page<EventEntity> eventPage = new PageImpl<>(events, PageRequest.of(0, 10), events.size());
@@ -58,7 +58,7 @@ public class EventControllerTest {
     @Test
     public void testGetEventById_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
                 when(eventService.findById(1L)).thenReturn(event);
 
         // Act
@@ -88,7 +88,7 @@ public class EventControllerTest {
 public void testAddEvent_AlreadyExists() {
     // Arrange
     EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), 
-                                         Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+                                         Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
     
     when(eventService.findByName("Event1")).thenReturn(event); // Event already exists
 
@@ -103,7 +103,7 @@ public void testAddEvent_AlreadyExists() {
     @Test
     public void testAddEvent_Conflict() {
         // Arrange
-        EventEntity existingEvent = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+        EventEntity existingEvent = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
         
         // Simula que el evento ya existe en el servicio
         when(eventService.findByName("Event1")).thenReturn(existingEvent);
@@ -122,7 +122,7 @@ public void testAddEvent_AlreadyExists() {
     @Test
     public void testUpdateEvent_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
                 when(eventService.findById(1L)).thenReturn(event);
 
         // Act
@@ -136,7 +136,7 @@ public void testAddEvent_AlreadyExists() {
     @Test
     public void testUpdateEvent_NotFound() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
                 when(eventService.findById(1L)).thenReturn(null);
 
         // Act
@@ -150,7 +150,7 @@ public void testAddEvent_AlreadyExists() {
     @Test
     public void testDeleteEvent_Success() {
         // Arrange
-        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, 10, "Modality1", null, null);
+        EventEntity event = new EventEntity(1L, "Event1", 100, Timestamp.valueOf("2023-09-21 00:00:00"), Timestamp.valueOf("2023-09-21 00:00:00"), 50, 30, "10", "Modality1", null, null);
                 when(eventService.findById(1L)).thenReturn(event);
 
         // Act
