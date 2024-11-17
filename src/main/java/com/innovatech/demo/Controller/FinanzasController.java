@@ -1,5 +1,8 @@
 package com.innovatech.demo.Controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,6 +115,20 @@ public class FinanzasController {
         if (year == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "'year' parameter is required"));
         }
+
+        // Si el año es 2024, retornar 0 para todos los meses
+    if (year == 2024) {
+        Map<String, Object> defaultResponse = new HashMap<>();
+        String[] months = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+                            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
+        List<Integer> data = new ArrayList<>(Collections.nCopies(12, 0)); // Lista con 12 ceros
+
+        defaultResponse.put("labels", months);
+        defaultResponse.put("data", data);
+        defaultResponse.put("label", "Gastos Anuales 2024");
+
+        return ResponseEntity.ok(defaultResponse);
+    }
 
         // Llamar al servicio para obtener los gastos del año proporcionado
         Map<String, Object> expenseData = eventService.getExpensesByYear(year);
