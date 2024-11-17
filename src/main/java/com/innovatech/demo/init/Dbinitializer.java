@@ -416,7 +416,7 @@ public class Dbinitializer implements CommandLineRunner {
                     .date2(Timestamp.valueOf(LocalDate.now().plusDays(i + 1).atStartOfDay()))
                     .earnings(50 + (i * 10))
                     .costoLocal(30 + (i * 5))
-                    .place(i * 10)
+                    .place("Place " + i)
                     .modality(modality)  // Asignar modalidad aleatoria
                     .quota(100)
                     .description("Evento de prueba " + i)
